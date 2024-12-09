@@ -99,7 +99,7 @@ export class User extends BaseEntity {
 	@Prop()
 	password?: string;
 
-	@Prop()
+	@Prop({ default: false })
 	is_registered_with_google?: boolean;
 
 	@Prop({

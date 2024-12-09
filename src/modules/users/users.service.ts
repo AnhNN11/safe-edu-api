@@ -5,89 +5,90 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
-// INNER
 import { User } from './entities/user.entity';
 import { UsersRepositoryInterface } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
-
-// OUTER
+import { UpdateUserDto } from './dto/update-user.dto';
 import { USER_ROLE } from '@modules/user-roles/entities/user-role.entity';
-import { BaseServiceAbstract } from 'src/services/base/base.abstract.service';
 import { UserRolesService } from '@modules/user-roles/user-roles.service';
 import { FindAllResponse, QueryParams } from 'src/types/common.type';
+import { FilterQuery } from 'mongoose';
 
 @Injectable()
-export class UsersService extends BaseServiceAbstract<User> {
+export class UsersService {
 	constructor(
 		@Inject('UsersRepositoryInterface')
-		private readonly users_repository: UsersRepositoryInterface,
-		private readonly user_roles_service: UserRolesService,
-		private readonly config_service: ConfigService,
-	) {
-		super(users_repository);
-	}
+		private readonly usersRepository: UsersRepositoryInterface,
+		private readonly userRolesService: UserRolesService,
+		private readonly configService: ConfigService,
+	) {}
 
-	async create(create_dto: CreateUserDto): Promise<User> {
+
+	async findOneByCondition(condition: FilterQuery<User>): Promise<User | null> {
+		return this.usersRepository.findOne(condition);
+	}
+	async create(createDto: CreateUserDto): Promise<User> {
 		try {
-			let user_role = await this.user_roles_service.findOneByCondition({
-				name: USER_ROLE.USER,
+			return await this.usersRepository.create({
+				...createDto,
+				// role: userRole,
 			});
-			if (!user_role) {
-				user_role = await this.user_roles_service.create({
-					name: USER_ROLE.USER,
-				});
-			}
-			const user = await this.users_repository.create({
-				...create_dto,
-				role: user_role,
-			});
-			return user;
 		} catch (error) {
-			throw new Error(`Failed to create user: ${error.message}`);
+			throw new BadRequestException('Error creating user');
 		}
 	}
 
-	async findAll(queryParams: QueryParams): Promise<FindAllResponse<User>> {
-		return await this.users_repository.findAllWithSubFields(
-			{},
-			{
-				...queryParams,
-				populate: 'role',
-			},
+	async findAll() {
+		return await this.usersRepository.findAll(
+			
 		);
 	}
-
-	async getUserByEmail(email: string): Promise<User> {
-		try {
-			const user = await this.users_repository.findOneByCondition({ email });
-			if (!user) {
-				throw new NotFoundException();
-			}
-			return user;
-		} catch (error) {
-			throw error;
+	
+	async update(
+		id: string,
+		updateUserDto: UpdateUserDto,
+	): Promise<User> {
+		const updatedUser = await this.usersRepository.update(id, updateUserDto);
+		if (!updatedUser) {
+			throw new NotFoundException(`User with ID ${id} not found`);
 		}
+		return updatedUser;
+	}
+
+	async remove(id: string): Promise<void> {
+		const result = await this.usersRepository.remove(id);
+		if (!result) {
+			throw new NotFoundException(`User with ID ${id} not found`);
+		}
+	}
+	async getUserByEmail(email: string): Promise<User> {
+		const user = await this.usersRepository.findOne({ email });
+		if (!user) {
+			throw new NotFoundException(`User with email ${email} not found`);
+		}
+		return user;
 	}
 
 	async getUserWithRole(user_id: string): Promise<User> {
-		try {
-			return await this.users_repository.getUserWithRole(user_id);
-		} catch (error) {
-			throw error;
+		const user = await this.usersRepository.getUserWithRole(user_id);
+		if (!user) {
+			throw new NotFoundException(`User with ID ${user_id} not found`);
 		}
+		return user;
 	}
 
 	async setCurrentRefreshToken(
 		id: string,
 		hashed_token: string,
 	): Promise<void> {
-		try {
-			await this.users_repository.update(id, {
-				current_refresh_token: hashed_token,
-			});
-		} catch (error) {
-			throw error;
+		const user = await this.usersRepository.findById(id);
+		if (!user) {
+			throw new NotFoundException(`User with ID ${id} not found`);
 		}
+
+		await this.usersRepository.update(id, {
+			current_refresh_token: hashed_token,
+		});
 	}
+
 }
