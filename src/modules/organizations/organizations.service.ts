@@ -18,7 +18,7 @@ export class OrganizationsService {
 
   async create(create_dto: CreateOrganizationDto):Promise<Organization> {
     try {
-      const {email, name, username, phone_number, password, address} = create_dto;
+      const {name, address} = create_dto;
     //check if name exist
       if(!this.organizations_repository.isNameExist(name, address)) {
         const organization = await this.organizations_repository.create({
