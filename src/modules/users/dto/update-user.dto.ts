@@ -2,12 +2,14 @@ import { OmitType, PartialType } from '@nestjs/swagger';
 import {
 	IsDateString,
 	IsEnum,
+	IsNotEmpty,
 	IsOptional,
 	IsPhoneNumber,
 	MaxLength,
 } from 'class-validator';
-import { GENDER } from '../entities/user.entity';
+import { GENDER, USER_ROLE } from '../entities/user.entity';
 import { CreateUserDto } from './create-user.dto';
+import { UserRole } from '@modules/user-roles/entities/user-role.entity';
 
 export class UpdateUserDto extends PartialType(
 	OmitType(CreateUserDto, ['email', 'password', 'username'] as const),
@@ -27,4 +29,7 @@ export class UpdateUserDto extends PartialType(
 	@IsOptional()
 	@MaxLength(200)
 	headline?: string;
+
+	@IsNotEmpty()
+	role?: string; 
 }
