@@ -26,7 +26,7 @@ async function bootstrap() {
 				}),
 		}),
 	);
-	const port = config_service.get('PORT');
+	const port = process.env.PORT || config_service.get('PORT') || 3000;
 	await app.listen(port, () =>
 		logger.log(`🚀 Server running on: http://localhost:${port}/api-docs`),
 	);
