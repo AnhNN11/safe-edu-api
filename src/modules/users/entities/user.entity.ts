@@ -5,7 +5,6 @@ import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
 
 // INNER
-import { Address, AddressSchema } from './address.entity';
 
 // OUTER
 import { UserRole } from '@modules/user-roles/entities/user-role.entity';
@@ -18,13 +17,6 @@ export enum GENDER {
 	OTHER = 'Other',
 }
 
-export enum LANGUAGES {
-	ENGLISH = 'English',
-	FRENCH = 'French',
-	JAPANESE = 'Japanese',
-	KOREAN = 'Korean',
-	SPANISH = 'Spanish',
-}
 @Schema({
 	timestamps: {
 		createdAt: 'created_at',
@@ -56,9 +48,7 @@ export class User extends BaseEntity {
 		this.gender = user?.gender;
 		this.phone_number = user?.phone_number;
 	}
-	@Prop()
-	friendly_id?: number;
-
+	
 	@Prop({
 		required: true,
 		minlength: 2,
@@ -86,12 +76,6 @@ export class User extends BaseEntity {
 	})
 	// @Expose({ name: 'mail', toPlainOnly: true })
 	email: string;
-
-	@Prop({
-		type: [String],
-		enum: LANGUAGES,
-	})
-	interested_languages?: LANGUAGES[];
 
 	@Prop({
 		match: /^([+]\d{2})?\d{10}$/,
@@ -144,36 +128,10 @@ export class User extends BaseEntity {
 	@Transform((value) => value.obj.role?.name, { toClassOnly: true })
 	role: UserRole | mongoose.Types.ObjectId;
 
-	@Prop()
-	headline?: string;
-
-	@Prop({
-		type: [
-			{
-				type: AddressSchema,
-			},
-		],
-	})
-	@Type(() => Address)
-	address?: Address[];
-
-	@Prop({
-		default: 'cus_mock_id',
-	})
-	@Exclude()
-	stripe_customer_id?: string;
-
-	default_address?: string;
 
 	@Prop()
 	@Exclude()
 	current_refresh_token?: string;
-
-	@Prop()
-	last_check_in?: Date;
-
-	@Prop()
-	last_get_check_in_rewards?: Date;
 
 	@Expose({ name: 'full_name' })
 	get fullName(): string {
@@ -191,13 +149,6 @@ export const UserSchemaFactory = () => {
 		const user = await this.model.findOne(this.getFilter());
 		await Promise.all([]);
 		return next();
-	});
-	user_schema.virtual('default_address').get(function (this: UserDocument) {
-		if (this.address.length) {
-			return `${(this.address[0].street && ' ') || ''}${this.address[0].city} ${
-				this.address[0].state
-			} ${this.address[0].country}`;
-		}
 	});
 	return user_schema;
 };

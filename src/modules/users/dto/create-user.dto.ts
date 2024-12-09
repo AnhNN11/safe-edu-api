@@ -6,12 +6,11 @@ import {
 	IsEnum,
 	IsNotEmpty,
 	IsOptional,
+	IsPhoneNumber,
 	IsStrongPassword,
 	MaxLength,
 	ValidateNested,
 } from 'class-validator';
-import { LANGUAGES } from '../entities/user.entity';
-import { CreateAddressDto } from './create-address.dto';
 
 export class CreateUserDto {
 	@IsNotEmpty()
@@ -32,23 +31,10 @@ export class CreateUserDto {
 	username: string;
 
 	@IsOptional()
-	// @IsPhoneNumber()
+	@IsPhoneNumber('VN')
 	phone_number?: string;
 
 	@IsNotEmpty()
 	@IsStrongPassword()
 	password?: string;
-
-	@IsOptional()
-	@IsArray()
-	@ArrayMinSize(1)
-	@ValidateNested({ each: true })
-	@Type(() => CreateAddressDto)
-	address?: CreateAddressDto[];
-
-	@IsOptional()
-	@IsArray()
-	@ArrayMinSize(1)
-	@IsEnum(LANGUAGES, { each: true })
-	interested_languages?: LANGUAGES[];
 }

@@ -1,12 +1,24 @@
-export enum SORT_TYPE {
-	'DESC' = 'desc',
-	'ASC' = 'acs',
-}
-
 export type FindAllResponse<T> = { count: number; items: T[] };
 
-export type SortParams = { sort_by: string; sort_type: SORT_TYPE };
+export type SortParams = {
+	column: string;
+	isAscending: boolean;
+};
 
-export type SearchParams = { keywork: string; field: string };
+export type FilterParams = {
+	column: string;
+	value: string | number | boolean;
+	filterOperator: number;
+};
 
-export type PaginateParams = { offset: number; limit: number };
+export type SearchParams = {
+	value: string;
+};
+
+export type QueryParams = {
+	page: number;
+	limit: number;
+	sort: SortParams[];
+	filter: FilterParams[];
+	globalFilter: SearchParams;
+};

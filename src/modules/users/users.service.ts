@@ -15,12 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { USER_ROLE } from '@modules/user-roles/entities/user-role.entity';
 import { BaseServiceAbstract } from 'src/services/base/base.abstract.service';
 import { UserRolesService } from '@modules/user-roles/user-roles.service';
-import { FindAllResponse } from 'src/types/common.type';
-import {
-	isDifferentMonthOrYear,
-	isLastDayOfMonth,
-} from 'src/shared/helpers/date.helper';
-
+import { FindAllResponse, QueryParams } from 'src/types/common.type';
 
 @Injectable()
 export class UsersService extends BaseServiceAbstract<User> {
@@ -34,29 +29,33 @@ export class UsersService extends BaseServiceAbstract<User> {
 	}
 
 	async create(create_dto: CreateUserDto): Promise<User> {
-		let user_role = await this.user_roles_service.findOneByCondition({
-			name: USER_ROLE.USER,
-		});
-		if (!user_role) {
-			user_role = await this.user_roles_service.create({
+		try {
+			let user_role = await this.user_roles_service.findOneByCondition({
 				name: USER_ROLE.USER,
 			});
+			if (!user_role) {
+				user_role = await this.user_roles_service.create({
+					name: USER_ROLE.USER,
+				});
+			}
+			const user = await this.users_repository.create({
+				...create_dto,
+				role: user_role,
+			});
+			return user;
+		} catch (error) {
+			throw new Error(`Failed to create user: ${error.message}`);
 		}
-		const user = await this.users_repository.create({
-			...create_dto,
-			role: user_role,
-		});
-		return user;
 	}
 
-	async findAll(
-		filter?: object,
-		options?: object,
-	): Promise<FindAllResponse<User>> {
-		return await this.users_repository.findAllWithSubFields(filter, {
-			...options,
-			populate: 'role',
-		});
+	async findAll(queryParams: QueryParams): Promise<FindAllResponse<User>> {
+		return await this.users_repository.findAllWithSubFields(
+			{},
+			{
+				...queryParams,
+				populate: 'role',
+			},
+		);
 	}
 
 	async getUserByEmail(email: string): Promise<User> {
@@ -91,6 +90,4 @@ export class UsersService extends BaseServiceAbstract<User> {
 			throw error;
 		}
 	}
-
-	
 }

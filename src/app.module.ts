@@ -11,6 +11,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
 import { AwsS3Module } from '@modules/aws-s3/aws-s3.module';
+import * as mongoose from 'mongoose';
+import { TestModule } from '@modules/users copy/test.module';
+
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -36,16 +39,23 @@ import { AwsS3Module } from '@modules/aws-s3/aws-s3.module';
 		}),
 		MongooseModule.forRootAsync({
 			imports: [ConfigModule],
-			useFactory: async (configService: ConfigService) => ({
-				uri: configService.get<string>('DATABASE_URI'),
-				dbName: configService.get<string>('DATABASE_NAME'),
-			}),
+			useFactory: async (configService: ConfigService) => {
+				const uri = configService.get<string>('DATABASE_URI');
+				const dbName = configService.get<string>('DATABASE_NAME');
+				// Log MongoDB queries
+				mongoose.set('debug', true);
+				return {
+					uri,
+					dbName,
+				};
+			},
 			inject: [ConfigService],
 		}),
 		UserRolesModule,
 		UsersModule,
 		AuthModule,
 		AwsS3Module,
+		TestModule,
 	],
 	controllers: [AppController],
 	providers: [

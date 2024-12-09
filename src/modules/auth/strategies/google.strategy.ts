@@ -10,6 +10,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor(
 		private readonly auth_service: AuthService,
 		private readonly config_service: ConfigService,
+		
 	) {
 		super({
 			clientID: config_service.get('GOOGLE_CLIENT_ID'),
