@@ -1,4 +1,9 @@
-import { BaseRepositoryInterface } from '@repositories/base/base.interface.repository';
 import { UserRole } from '../entities/user-role.entity';
 
-export type UserRolesRepositoryInterface = BaseRepositoryInterface<UserRole>;
+export interface UserRolesRepositoryInterface {
+  create(data: Partial<UserRole>): Promise<UserRole>;
+  findAll(): Promise<UserRole[]>;
+  findOne(id: string): Promise<UserRole | null>;
+  update(id: string, data: Partial<UserRole>): Promise<UserRole>;
+  remove(id: string): Promise<void>;
+}

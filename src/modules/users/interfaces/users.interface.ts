@@ -1,16 +1,13 @@
 import { User } from '@modules/users/entities/user.entity';
-import { BaseRepositoryInterface } from '@repositories/base/base.interface.repository';
+import { FilterQuery } from 'mongoose';
 import { FindAllResponse, QueryParams } from 'src/types/common.type';
 
-export interface UsersRepositoryInterface
-	extends BaseRepositoryInterface<User> {
-	findAllWithSubFields(
-		condition: object,
-		options: QueryParams & {
-			projection?: string;
-			populate?: string[] | any;
-		},
-	): Promise<FindAllResponse<User>>;
-
-	getUserWithRole(user_id: string): Promise<User>;
+export interface UsersRepositoryInterface {
+	create(data: Partial<User>): Promise<User>;
+	findAll();
+	getUserWithRole(userId: string): Promise<User | null>;
+	update(id: string, data: Partial<User>): Promise<User | null>;
+	remove(id: string): Promise<boolean>;
+	findOne(condition: FilterQuery<User>): Promise<User | null>;  
+	findById(id : string)
 }

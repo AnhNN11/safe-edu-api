@@ -39,11 +39,11 @@ export class AuthService {
 			if (user) {
 				// Chỗ này tuỳ theo logic của mỗi người
 				// Mình dùng để hiển thị đơn giản việc tài khoản đã link với Google
-				if (!user.is_registered_with_google) {
-					await this.users_service.update(user._id.toString(), {
-						is_registered_with_google: true,
-					});
-				}
+				// if (!user.is_registered_with_google) {
+				// 	await this.users_service.update(user._id.toString(), {
+				// 		is_registered_with_google: true,
+				// 	});
+				// }
 				// Tái sử dụng lại method signIn để lấy access token và refresh token
 				return await this.signIn(user._id.toString());
 			}
