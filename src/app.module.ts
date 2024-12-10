@@ -12,7 +12,8 @@ import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
 import { AwsS3Module } from '@modules/aws-s3/aws-s3.module';
 import * as mongoose from 'mongoose';
-import { TestModule } from '@modules/users copy/test.module';
+import { TopicsModule } from '@modules/topic/topic.module';
+import { CategoriesModule } from '@modules/category/category.module';
 
 @Module({
 	imports: [
@@ -55,7 +56,8 @@ import { TestModule } from '@modules/users copy/test.module';
 		UsersModule,
 		AuthModule,
 		AwsS3Module,
-		TestModule,
+		TopicsModule,
+		CategoriesModule,
 	],
 	controllers: [AppController],
 	providers: [

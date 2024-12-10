@@ -17,6 +17,13 @@ export enum GENDER {
 	OTHER = 'Other',
 }
 
+export enum USER_ROLE {
+	ADMIN = 'Admin',
+	STUDENT = 'Student',
+	USER = 'User',
+	MANAGER = 'Manager',
+	SUPERVISOR = 'Supervisor'
+}
 @Schema({
 	timestamps: {
 		createdAt: 'created_at',
@@ -34,7 +41,7 @@ export class User extends BaseEntity {
 		email?: string;
 		username?: string;
 		password?: string;
-		role?: mongoose.Types.ObjectId;
+		role?: string;
 		gender?: GENDER;
 		phone_number?: string;
 	}) {
@@ -99,7 +106,7 @@ export class User extends BaseEntity {
 	@Prop()
 	password?: string;
 
-	@Prop()
+	@Prop({ default: false })
 	is_registered_with_google?: boolean;
 
 	@Prop({
@@ -126,8 +133,7 @@ export class User extends BaseEntity {
 	})
 	@Type(() => UserRole)
 	@Transform((value) => value.obj.role?.name, { toClassOnly: true })
-	role: UserRole | mongoose.Types.ObjectId;
-
+	role: string;
 
 	@Prop()
 	@Exclude()
