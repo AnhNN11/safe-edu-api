@@ -12,7 +12,6 @@ import {
 import { SignUpDto, SignUpGoogleDto } from './dto/sign-up.dto';
 
 // OUTER
-import { User } from '@modules/users/entities/user.entity';
 import { UsersService } from '@modules/users/users.service';
 import { TokenPayload } from './interfaces/token.interface';
 import {
@@ -20,6 +19,7 @@ import {
 	refresh_token_private_key,
 } from 'src/constraints/jwt.constraint';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
+import { User } from '@modules/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
