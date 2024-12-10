@@ -35,6 +35,7 @@ export class AuthService {
 			let user = await this.users_service.findOneByCondition({
 				email: sign_up_dto.email,
 			});
+
 			// Nếu user đã có trong database thì bỏ qua bước tạo user
 			if (user) {
 				// Chỗ này tuỳ theo logic của mỗi người
@@ -45,7 +46,9 @@ export class AuthService {
 				// 	});
 				// }
 				// Tái sử dụng lại method signIn để lấy access token và refresh token
+
 				return await this.signIn(user._id.toString());
+				
 			}
 			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
 			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
