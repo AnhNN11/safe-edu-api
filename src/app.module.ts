@@ -13,6 +13,7 @@ import { GlobalExceptionFilter } from './exception-filters/global-exception.filt
 import { AwsS3Module } from '@modules/aws-s3/aws-s3.module';
 import * as mongoose from 'mongoose';
 import { TopicsModule } from '@modules/topic/topic.module';
+import { CategoriesModule } from '@modules/category/category.module';
 
 @Module({
 	imports: [
@@ -55,7 +56,8 @@ import { TopicsModule } from '@modules/topic/topic.module';
 		UsersModule,
 		AuthModule,
 		AwsS3Module,
-		TopicsModule
+		TopicsModule,
+		CategoriesModule,
 	],
 	controllers: [AppController],
 	providers: [

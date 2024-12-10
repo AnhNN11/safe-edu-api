@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { User } from '@modules/users/entities/user.entity';
@@ -13,8 +13,18 @@ export class UsersRepository implements UsersRepositoryInterface {
 		return await this.userModel.findOne(condition).exec(); 
 	  }
 	async create(data: Partial<User>): Promise<User> {
-		const newUser = new this.userModel(data);
-		return await newUser.save();
+		console.log('data:', JSON.stringify(data, null, 2));
+		
+		try {
+			const newUser = new this.userModel(data);
+			const savedUser = await newUser.save();
+			return savedUser;
+		  } catch (error) {
+			console.error('Error saving new user:', error.message);
+		  
+			// Tùy chỉnh lỗi phản hồi
+			throw new BadRequestException('Failed to create user. Please try again.');
+		  }
 	}
 	async findAll() {
 		const users = await this.userModel
