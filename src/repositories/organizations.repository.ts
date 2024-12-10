@@ -13,13 +13,12 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		return await this.organizationModel.findOne(condition).exec(); 
 	  }
 	async create(data: Partial<Organization>): Promise<Organization> {
-		const newUser = new this.organizationModel(data);
-		return await newUser.save();
+		const newOrganization = new this.organizationModel(data);
+		return await newOrganization.save();
 	}
 	async findAll() {
 		const organizations = await this.organizationModel
 		  .find()
-		  .populate('role')
 		  .exec(); 
 	  
 		const total = await this.organizationModel.countDocuments().exec();
@@ -40,7 +39,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	}
 
 	async isNameExist(name: string, address: string) {
-		if(this.organizationModel.exists({ address }) && !this.organizationModel.exists({ name })) {
+		if(this.organizationModel.exists({ name })) {
 			return true;
 		} else {
 			return false;

@@ -6,35 +6,36 @@ import { Organization } from './entities/organization.entity';
 import { ConfigService } from '@nestjs/config';
 import mongoose from 'mongoose';
 import { OrganizationsRepositoryInterface } from '@modules/organizations/interfaces/organizations.interface';
+import { log } from 'console';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
 		@Inject('OrganizationsRepositoryInterface')
 		private readonly organizations_repository: OrganizationsRepositoryInterface,
-		private readonly organizations_service: OrganizationsService,
-		private readonly config_service: ConfigService,
 	) {}
 
   async create(create_dto: CreateOrganizationDto):Promise<Organization> {
     try {
       const {name, address} = create_dto;
+      
     //check if name exist
-      if(!this.organizations_repository.isNameExist(name, address)) {
-        const organization = await this.organizations_repository.create({
-          ...create_dto
-        })
-        return organization;
-      }
+      // if(!this.organizations_repository.isNameExist(name, address)) {
+      //   const organization = await this.organizations_repository.create({
+      //     ...create_dto
+      //   })
+      //   return organization;
+      // }
+      return await this.organizations_repository.create({
+        ...create_dto
+      })
     } catch (error) {
       throw new Error(`Failed to create organization: ${error.message}`);
     }
   }
 
   async findAll() {
-    return await this.organizations_repository.findAll(
-
-    );
+    return await this.organizations_repository.findAll();
   }
 
   async findOneById(_id: string) {

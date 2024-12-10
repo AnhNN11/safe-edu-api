@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsStrongPassword, MaxLength } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 export class CreateOrganizationDto {
 

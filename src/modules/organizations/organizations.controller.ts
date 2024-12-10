@@ -2,33 +2,34 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Organization } from './entities/organization.entity';
 
 @Controller('organizations')
+@ApiTags('organizations')
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new user' })
+  @ApiOperation({ summary: 'Create a new organization' })
   async create(@Body() createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
     return await this.organizationsService.create(createOrganizationDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Retrive all users'})
+  @ApiOperation({ summary: 'Retrive all organizations'})
   async findAll() {
     return await this.organizationsService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Retrive a user by id'})
+  @ApiOperation({ summary: 'Retrive a organization by id'})
   findOne(@Param('id') id: string): Promise<Organization> {
     return this.organizationsService.findOneById(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a user by ID' })
+  @ApiOperation({ summary: 'Update a organization by ID' })
   async update(
     @Param('id') id: string, 
     @Body() updateOrganizationDto: UpdateOrganizationDto
@@ -37,7 +38,7 @@ export class OrganizationsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a user by ID' })
+  @ApiOperation({ summary: 'Delete a organization by ID' })
   async remove(@Param('id') id: string): Promise<void> {
     await this.organizationsService.remove(id);
   }
