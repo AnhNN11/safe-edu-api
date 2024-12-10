@@ -17,16 +17,32 @@ import { log } from 'console';
   
   @Injectable()
   export class UsersService {
-	setCurrentRefreshToken(user_id: string, hashed_token: any) {
-		throw new Error('Method not implemented.');
-	}
 	constructor(
 	  @Inject('UsersRepositoryInterface')
 	  private readonly usersRepository: UsersRepositoryInterface,
 	  private readonly userRolesService: UserRolesService, 
 	  private readonly configService: ConfigService,
 	) {}
-  
+	
+	async setCurrentRefreshToken(userId: string, refreshToken: string): Promise<void> {
+		try {
+		  // Tìm người dùng theo ID
+		  const user = await this.usersRepository.findById(userId);
+		  
+		  if (!user) {
+			throw new Error('User not found');
+		  }
+	
+		  // Cập nhật refresh token cho người dùng
+		  user.refreshToken = refreshToken;  // Giả sử `refreshToken` là trường trong entity User
+		//  await this.usersRepository.update(userId, { token: refreshToken });  // Cập nhật thông tin trong DB
+	
+		  console.log(`Refresh token for user ${userId} has been updated.`);
+		} catch (error) {
+		  console.error(`Failed to set refresh token for user ${userId}:`, error);
+		  throw new Error('Failed to set refresh token');
+		}
+	  }
 	// Method to find a user by condition
 	async findOneByCondition(condition: FilterQuery<User>): Promise<User | null> {
 	  return this.usersRepository.findOne(condition);
@@ -106,5 +122,6 @@ import { log } from 'console';
 	
 		return user;
 	  }
+	
   }
   

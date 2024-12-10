@@ -1,9 +1,12 @@
+import { USER_ROLE } from '@modules/user-roles/entities/user-role.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
 	BadRequestException,
 	ConflictException,
+	HttpException,
+	HttpStatus,
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -20,6 +23,7 @@ import {
 	refresh_token_private_key,
 } from 'src/constraints/jwt.constraint';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
+import { UserRolesService } from '@modules/user-roles/user-roles.service';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +31,7 @@ export class AuthService {
 	constructor(
 		private config_service: ConfigService,
 		private readonly users_service: UsersService,
+		private readonly user_role : UserRolesService,
 		private readonly jwt_service: JwtService,
 	) {}
 
@@ -35,21 +40,40 @@ export class AuthService {
 			let user = await this.users_service.findOneByCondition({
 				email: sign_up_dto.email,
 			});
+			console.log(user);
+			
+			let roleUser = await this.user_role.findOne(user.role)
+
+			console.log('roleUser='+roleUser);
+			
 
 			// Nếu user đã có trong database thì bỏ qua bước tạo user
-			if (user) {
-				// Chỗ này tuỳ theo logic của mỗi người
-				// Mình dùng để hiển thị đơn giản việc tài khoản đã link với Google
-				// if (!user.is_registered_with_google) {
-				// 	await this.users_service.update(user._id.toString(), {
-				// 		is_registered_with_google: true,
-				// 	});
-				// }
-				// Tái sử dụng lại method signIn để lấy access token và refresh token
-
-				return await this.signIn(user._id.toString());
-				
-			}
+			try {
+				if (user) {
+				  // Kiểm tra nếu role là 'User'
+				  if (roleUser.name.toString() == "Admin" ||roleUser.name.toString() == "Manager" ) {
+					// Log thông tin người dùng và role
+					console.log("User ID:", user._id.toString());
+					console.log("Role:", roleUser.name.toString());
+					const signInResult = await this.signIn(user._id.toString());
+					return signInResult;
+				  } else {
+					console.log("Role is not Admin/Manager, cannot sign in.");
+					throw new HttpException("Invalid role", HttpStatus.FORBIDDEN);
+				  }
+				} else {
+				  console.log("User not found");
+				  throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+				}
+			  } catch (error) {
+				// Log lỗi khi có ngoại lệ xảy ra
+				console.error("Error during sign in process:", error);
+				throw new HttpException({
+				  statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+				  message: "Sign in failed",
+				  error: error.message,
+				}, HttpStatus.INTERNAL_SERVER_ERROR);
+			  }
 			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
 			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
 			user = await this.users_service.create({

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule, getModelToken } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 
 // INNER
 import { UsersService } from './users.service';
@@ -11,22 +11,20 @@ import { UsersRepository } from '@repositories/users.repository';
 import { UserRolesModule } from '@modules/user-roles/user-roles.module';
 
 @Module({
-	imports: [
-		MongooseModule.forFeatureAsync([
-			{
-				name: User.name,
-				useFactory: UserSchemaFactory,
-				inject: [],
-				imports: [MongooseModule.forFeature([])],
-			},
-		]),
-		UserRolesModule,
-	],
-	controllers: [UsersController],
-	providers: [
-		UsersService,
-		{ provide: 'UsersRepositoryInterface', useClass: UsersRepository },
-	],
-	exports: [UsersService],
+  imports: [
+    MongooseModule.forFeatureAsync([
+      {
+        name: User.name,
+        useFactory: UserSchemaFactory,
+      },
+    ]),
+    UserRolesModule, // Import UserRolesModule
+  ],
+  controllers: [UsersController],
+  providers: [
+    UsersService,
+    { provide: 'UsersRepositoryInterface', useClass: UsersRepository },
+  ],
+  exports: [UsersService],
 })
 export class UsersModule {}
