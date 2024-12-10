@@ -7,7 +7,10 @@ export type UserRoleDocument = HydratedDocument<UserRole>;
 
 export enum USER_ROLE {
 	ADMIN = 'Admin',
+	STUDENT = 'Student',
 	USER = 'User',
+	MANAGER = 'Manager',
+	SUPERVISOR = 'Supervisor'
 }
 
 @Schema({
@@ -25,7 +28,7 @@ export class UserRole extends BaseEntity {
 		enum: USER_ROLE,
 		required: true,
 	})
-	@Expose({ name: 'role', toPlainOnly: true }) // Will not working with @Exclude decorate for class
+	@Expose({ name: 'role', toPlainOnly: true }) 
 	name: string;
 
 	@Prop()
