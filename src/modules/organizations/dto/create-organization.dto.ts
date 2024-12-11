@@ -6,5 +6,5 @@ export class CreateOrganizationDto {
     name: string;
 
     @IsNotEmpty()
-    address?: string
+    province: string
 }

@@ -9,4 +9,5 @@ export interface OrganizationsRepositoryInterface {
 	findOne(condition: FilterQuery<Organization>): Promise<Organization | null>;  
 	findById(id : string)
 	isNameExist(name: string, address: string);
+	findAllWithPaging(query: Record<string, any>, current: number, pageSize: number);
 }

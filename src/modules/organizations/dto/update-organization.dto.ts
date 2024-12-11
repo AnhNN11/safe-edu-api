@@ -1,10 +1,10 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateOrganizationDto {
 
-    @IsNotEmpty()
+    @IsOptional()
     name: string;
 
-    @IsNotEmpty()
-    address?: string
+    @IsOptional()
+    province: string
 }

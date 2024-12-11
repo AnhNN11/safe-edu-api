@@ -9,6 +9,9 @@ import { UsersRepository } from '@repositories/users.repository';
 
 // OUTER
 import { UserRolesModule } from '@modules/user-roles/user-roles.module';
+import { OrganizationsService } from '@modules/organizations/organizations.service';
+import { OrganizationsRepository } from '@repositories/organizations.repository';
+import { OrganizationsModule } from '@modules/organizations/organizations.module';
 
 @Module({
 	imports: [
@@ -21,12 +24,13 @@ import { UserRolesModule } from '@modules/user-roles/user-roles.module';
 			},
 		]),
 		UserRolesModule,
+		OrganizationsModule
 	],
 	controllers: [UsersController],
 	providers: [
 		UsersService,
 		{ provide: 'UsersRepositoryInterface', useClass: UsersRepository },
 	],
-	exports: [UsersService],
+	exports: [UsersService], 
 })
 export class UsersModule {}

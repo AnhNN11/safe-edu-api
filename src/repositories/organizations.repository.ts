@@ -38,11 +38,30 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		return await this.organizationModel.findById(id).exec(); // Using Mongoose's findById method
 	}
 
-	async isNameExist(name: string, address: string) {
-		if(this.organizationModel.exists({ name })) {
+	async isNameExist(name: string, province: string) {
+		if(this.organizationModel.exists({ name, province })) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	async findAllWithPaging(query: Record<string, any>, current: number = 1, pageSize: number = 10) {
+		const {sort, ...filters} = query
+		
+		current = Number(current) || 1;
+  		pageSize = Number(pageSize) || 10;
+
+		const totalItems = await this.organizationModel.countDocuments(filters);
+		const totalPages = Math.ceil(totalItems / pageSize);
+		const offset = (current - 1) * pageSize;
+
+		const result = await this.organizationModel
+			.find(filters)
+			.limit(pageSize)
+			.skip(offset)
+			.sort(sort as any);
+
+		return { items: result, totalPages }
 	}
 }

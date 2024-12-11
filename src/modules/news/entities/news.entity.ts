@@ -33,10 +33,15 @@ export class News extends BaseEntity {
 	@Prop()
 	topic_id: string;
 
-	@Prop()
+	@Prop({
+		required: true,
+		minlength: 2,
+	})
 	title: string;
 
-	@Prop()
+	@Prop({
+		required: true,
+	})
 	content: string;
 
 	@Prop({

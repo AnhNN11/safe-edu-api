@@ -14,6 +14,8 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { GoogleAuthGuard } from './guards/google-oauth.guard';
+import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
+import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -226,5 +228,17 @@ export class AuthController {
 	async protected(@Req() request: RequestWithUser) {
 		const { user } = request;
 		return 'Access protected resource';
+	}
+
+	@Post('sign-up-with-student')
+	@ApiOperation({summary: "sign up with student"})
+	async signUpWithStudent(@Body() sign_up_with_std_dto: SignUpWithStudentDto) {
+		return await this.auth_service.signUpWithStudent(sign_up_with_std_dto);
+	}
+
+	@Post('sign-up-with-citizen')
+	@ApiOperation({summary: "sign up with citizen"})
+	async signUpWithCitizen(@Body() sign_up_with_citizen_dto: SignUpWithCitizenDto) {
+		return await this.auth_service.signUpWithCitizen(sign_up_with_citizen_dto);
 	}
 }

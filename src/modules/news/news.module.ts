@@ -6,6 +6,8 @@ import { News, NewsSchemaFactory } from './entities/news.entity';
 import { NewsRepository } from '@repositories/news.repository';
 import { AwsS3Service } from 'src/services/aws-s3.service';
 import { GeneratorService } from 'src/services/generator.service';
+import { TopicsModule } from '@modules/topic/topic.module';
+import { TopicsService } from '@modules/topic/topic.service';
 
 @Module({
   imports: [
@@ -14,7 +16,9 @@ import { GeneratorService } from 'src/services/generator.service';
       useFactory: NewsSchemaFactory,
         inject: [],
         imports: [MongooseModule.forFeature([])],
-    }])
+    }
+  ]),
+    TopicsModule,
   ],
   controllers: [NewController],
   providers: [

@@ -5,6 +5,8 @@ import { NewsRepository } from '@repositories/news.repository';
 import { News } from './entities/news.entity';
 import mongoose from 'mongoose';
 import { AwsS3Service } from 'src/services/aws-s3.service';
+import { TopicsRepository } from '@repositories/topic.repository';
+import { TopicsService } from '@modules/topic/topic.service';
 
 @Injectable()
 export class NewService {
@@ -12,15 +14,22 @@ export class NewService {
     @Inject('NewsRepositoryInterface')
     private readonly news_repository: NewsRepository,
     private readonly awsS3Service: AwsS3Service,
+    private readonly topic_service: TopicsService
   ) {}
 
   async create(createNewDto: CreateNewDto): Promise<News> {
     try {
-      return await this.news_repository.create({
-        ...createNewDto
-      })
-    } catch (err) {
-      throw new Error(`Failed to create news: ${err.message}`);
+      const topic = await this.topic_service.findOne(createNewDto.topic_id);
+
+      if(topic) {
+        const news = await this.news_repository.create({
+          ...createNewDto,
+          topic_id: topic.id
+        })
+        return news;
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -49,11 +58,11 @@ export class NewService {
       imageUrl = await this.awsS3Service.uploadImage(updateNewDto.imageUrl);
     }
 
-    const updatedCategoryData = {
-      ...updateNewDto,
-      image: imageUrl,
-    };
-    return updatedNews;
+    const updatedNewsData = await this.news_repository.update(id, {...updateNewDto})
+    if(!updatedNewsData) {
+      throw new NotFoundException(`News with ID ${id} not found`);
+    }
+    return updatedNewsData;
   }
 
   async remove(id: string) {

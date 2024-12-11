@@ -1,18 +1,18 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class UpdateNewDto {
-    @IsNotEmpty()
+    @IsOptional()
 	topic_id: string;
   
-    @IsNotEmpty()
+    @IsOptional()
 	title: string;
 
-    @IsNotEmpty()
+    @IsOptional()
 	content: string;
     
     @IsOptional()
 	imageUrl: string;
 
-    @IsNotEmpty()
+    @IsOptional()
 	author: string;
 }

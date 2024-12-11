@@ -19,19 +19,19 @@ export type OrganizationDocument = HydratedDocument<Organization>;
 
 export class Organization extends BaseEntity {
     constructor(organization: {
-        name?: string;
-        address?: string;
+        name: string;
+        province: string;
     }) {
         super();
         this.name = organization?.name;
-        this.address = organization.address;
+        this.province = organization.province;
     }
 
     @Prop()
     name: string;
 
     @Prop()
-    address?: string;
+    province: string;
 }
 
 export const OrganizationsSchema = SchemaFactory.createForClass(Organization);

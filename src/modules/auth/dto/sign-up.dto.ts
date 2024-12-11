@@ -1,6 +1,7 @@
 import {
 	IsEmail,
 	IsNotEmpty,
+	IsOptional,
 	IsStrongPassword,
 	MaxLength,
 } from 'class-validator';
@@ -13,7 +14,7 @@ export class SignUpDto {
 	@MaxLength(50)
 	last_name: string;
 
-	@IsNotEmpty()
+	@IsOptional()
 	@MaxLength(50)
 	@IsEmail()
 	email: string;
@@ -21,6 +22,9 @@ export class SignUpDto {
 	@IsNotEmpty()
 	@IsStrongPassword()
 	password: string;
+
+	@IsOptional()
+	organizationId: string;
 }
 
 export class SignUpGoogleDto {

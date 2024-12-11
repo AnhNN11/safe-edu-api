@@ -20,6 +20,8 @@ import {
 } from 'src/constraints/jwt.constraint';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { User } from '@modules/users/entities/user.entity';
+import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
+import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,45 +32,45 @@ export class AuthService {
 		private readonly jwt_service: JwtService,
 	) {}
 
-	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
-		try {
-			let user = await this.users_service.findOneByCondition({
-				email: sign_up_dto.email,
-			});
-			// Nếu user đã có trong database thì bỏ qua bước tạo user
-			if (user) {
-				// Chỗ này tuỳ theo logic của mỗi người
-				// Mình dùng để hiển thị đơn giản việc tài khoản đã link với Google
-				// if (!user.is_registered_with_google) {
-				// 	await this.users_service.update(user._id.toString(), {
-				// 		is_registered_with_google: true,
-				// 	});
-				// }
-				// Tái sử dụng lại method signIn để lấy access token và refresh token
-				return await this.signIn(user._id.toString());
-			}
-			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
-			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
-			user = await this.users_service.create({
-				...sign_up_dto,
-				username: `${sign_up_dto.email.split('@')[0]}${Math.floor(
-					10 + Math.random() * (999 - 10),
-				)}`, // Random username
-			});
-			const refresh_token = this.generateRefreshToken({
-				user_id: user._id.toString(),
-			});
-			await this.storeRefreshToken(user._id.toString(), refresh_token);
-			return {
-				access_token: this.generateAccessToken({
-					user_id: user._id.toString(),
-				}),
-				refresh_token,
-			};
-		} catch (error) {
-			throw error;
-		}
-	}
+	// async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
+	// 	try {
+	// 		let user = await this.users_service.findOneByCondition({
+	// 			email: sign_up_dto.email,
+	// 		});
+	// 		// Nếu user đã có trong database thì bỏ qua bước tạo user
+	// 		if (user) {
+	// 			// Chỗ này tuỳ theo logic của mỗi người
+	// 			// Mình dùng để hiển thị đơn giản việc tài khoản đã link với Google
+	// 			// if (!user.is_registered_with_google) {
+	// 			// 	await this.users_service.update(user._id.toString(), {
+	// 			// 		is_registered_with_google: true,
+	// 			// 	});
+	// 			// }
+	// 			// Tái sử dụng lại method signIn để lấy access token và refresh token
+	// 			return await this.signIn(user._id.toString());
+	// 		}
+	// 		// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
+	// 		// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
+	// 		user = await this.users_service.create({
+	// 			...sign_up_dto,
+	// 			username: `${sign_up_dto.email.split('@')[0]}${Math.floor(
+	// 				10 + Math.random() * (999 - 10),
+	// 			)}`, // Random username
+	// 		});
+	// 		const refresh_token = this.generateRefreshToken({
+	// 			user_id: user._id.toString(),
+	// 		});
+	// 		await this.storeRefreshToken(user._id.toString(), refresh_token);
+	// 		return {
+	// 			access_token: this.generateAccessToken({
+	// 				user_id: user._id.toString(),
+	// 			}),
+	// 			refresh_token,
+	// 		};
+	// 	} catch (error) {
+	// 		throw error;
+	// 	}
+	// }
 
 	async signUp(sign_up_dto: SignUpDto) {
 		try {
@@ -199,6 +201,106 @@ export class AuthService {
 		try {
 			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
 			await this.users_service.setCurrentRefreshToken(user_id, hashed_token);
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async signUpWithStudent(sign_up_with_std_dto: SignUpWithStudentDto) {
+		try {
+			const {first_name, last_name, phone_number, role, organizationId} = sign_up_with_std_dto;
+			const existed_student_phone_number = await this.users_service.findOneByCondition({
+				phone_number: sign_up_with_std_dto.phone_number,
+			});
+			if (existed_student_phone_number) {
+				throw new ConflictException({
+					message: ERRORS_DICTIONARY.STUDENT_PHONE_NUMBER_EXISTS,
+					details: 'Phone number already existed!!',
+				});
+			}
+			if (first_name == null || last_name == null) {
+				throw new ConflictException({
+					message: ERRORS_DICTIONARY.STUDENT_NAME_IS_NULL,
+					details: 'Name can not be null or empty!!'	
+				})
+			}
+			const hashed_password = await bcrypt.hash(
+				sign_up_with_std_dto.password,
+				this.SALT_ROUND,
+			);
+			const student = await this.users_service.create({
+				first_name,
+				last_name,
+				phone_number,
+				password: hashed_password,
+				role,
+				email: null,
+				username: first_name + last_name,
+				organizationId
+			});
+			const refresh_token = this.generateRefreshToken({
+				user_id: student._id.toString(),
+			});
+			try {
+				await this.storeRefreshToken(student._id.toString(), refresh_token);
+				return {
+					access_token: this.generateAccessToken({
+						user_id: student._id.toString(),
+					}),
+					refresh_token,
+				};
+			} catch (error) {
+				console.error("Error storing refresh token or generating access token:", error);
+				throw new Error("An error occurred while processing tokens. Please try again.");
+			}
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
+		try {
+			const {first_name, last_name, phone_number, role, password} = sign_up_with_citizen_dto;
+			const existed_citizen_phone_number = await this.users_service.findOneByCondition({
+				phone_number: phone_number,
+			});
+			if (existed_citizen_phone_number) {
+				throw new ConflictException({
+					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
+					details: 'phone number already existed!!',
+				});
+			}
+
+			if (first_name == null || last_name == null) {
+				throw new ConflictException({
+					message: ERRORS_DICTIONARY.CITIZEN_NAME_IS_NULL,
+					details: 'Name can not be null or empty!!'	
+				})
+			}
+			const hashed_password = await bcrypt.hash(
+				sign_up_with_citizen_dto.password,
+				this.SALT_ROUND,
+			);
+			const citizen = await this.users_service.create({
+				first_name,
+				last_name,
+				phone_number,
+				password: hashed_password,
+				role,
+				email: null,
+				username: first_name + last_name,
+				organizationId: null
+			});
+			const refresh_token = this.generateRefreshToken({
+				user_id: citizen._id.toString(),
+			});
+			await this.storeRefreshToken(citizen._id.toString(), refresh_token);
+			return {
+				access_token: this.generateAccessToken({
+					user_id: citizen._id.toString(),
+				}),
+				refresh_token,
+			};
 		} catch (error) {
 			throw error;
 		}
