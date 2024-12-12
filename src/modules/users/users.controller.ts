@@ -38,7 +38,6 @@ export class UsersController {
 	@Post()
 	@ApiOperation({ summary: 'Create a new user' })
 	async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-		console.log('controller');
 		return await this.usersService.create(createUserDto);
 	}
 
@@ -72,4 +71,6 @@ export class UsersController {
 	async remove(@Param('id') id: string): Promise<void> {
 		await this.usersService.remove(id);
 	}
+
+	
 }

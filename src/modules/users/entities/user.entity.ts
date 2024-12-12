@@ -1,6 +1,6 @@
 import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, Model } from 'mongoose';
+import mongoose, { HydratedDocument, Model, Types } from 'mongoose';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
 
@@ -8,6 +8,7 @@ import { NextFunction } from 'express';
 
 // OUTER
 import { UserRole } from '@modules/user-roles/entities/user-role.entity';
+import { Organization } from '@modules/organizations/entities/organization.entity';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -77,7 +78,7 @@ export class User extends BaseEntity {
 	last_name: string;
 
 	@Prop({
-		required: true,
+		required: false,
 		unique: true,
 		match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
 	})
@@ -97,7 +98,7 @@ export class User extends BaseEntity {
 	phone_number?: string;
 
 	@Prop({
-		required: true,
+		required: false,
 		unique: true,
 	})
 	username: string;
@@ -108,6 +109,11 @@ export class User extends BaseEntity {
 
 	@Prop({ default: false })
 	is_registered_with_google?: boolean;
+
+	@Prop({ type: Types.ObjectId, 
+			ref: 'Organization', 
+			required: false})
+	organizationId: string
 
 	@Prop({
 		default:

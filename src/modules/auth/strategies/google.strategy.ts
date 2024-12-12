@@ -20,13 +20,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 		});
 	}
 
-	async validate(accessToken: string, refreshToken: string, profile: Profile) {
-		const { name, emails, photos } = profile;
-		return await this.auth_service.authInWithGoogle({
-			email: emails[0].value,
-			first_name: name.givenName,
-			last_name: name.familyName,
-			avatar: photos[0].value,
-		});
-	}
+	// async validate(accessToken: string, refreshToken: string, profile: Profile) {
+	// 	const { name, emails, photos } = profile;
+	// 	return await this.auth_service.authInWithGoogle({
+	// 		email: emails[0].value,
+	// 		first_name: name.givenName,
+	// 		last_name: name.familyName,
+	// 		avatar: photos[0].value,
+	// 	});
+	// }
 }

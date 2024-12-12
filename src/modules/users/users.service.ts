@@ -14,6 +14,7 @@ import {
   import { FindAllResponse, QueryParams } from 'src/types/common.type';
   import { FilterQuery } from 'mongoose';
 import { log } from 'console';
+import { OrganizationsService } from '@modules/organizations/organizations.service';
   
   @Injectable()
   export class UsersService {
@@ -22,6 +23,7 @@ import { log } from 'console';
 	  private readonly usersRepository: UsersRepositoryInterface,
 	  private readonly userRolesService: UserRolesService, 
 	  private readonly configService: ConfigService,
+	  private readonly organizationService: OrganizationsService,
 	) {}
 	
 	async setCurrentRefreshToken(userId: string, refreshToken: string): Promise<void> {
@@ -57,24 +59,45 @@ import { log } from 'console';
 	  return role;
 	}
   
-	
+	async setCurrentRefreshToken(
+		id: string,
+		hashed_token: string,
+	): Promise<void> {
+		try {
+			await this.usersRepository.update(id, {
+				current_refresh_token: hashed_token,
+			});
+		} catch (error) {
+			throw error;
+		}
+	}
+
 	async create(createDto: CreateUserDto): Promise<User> {
 		console.log('service');
 		
 		
 		const role = await this.userRolesService.findOne(createDto.role);
+		const organization = await this.organizationService.findOneById(createDto.organizationId);
 		console.log('findOne='+typeof(role.name));
-		
+
 		if (!role) {
 		  throw new BadRequestException('Role not found');
 		}
 		console.log('role='+role.name);
-		 const user = await this.usersRepository.create({
-		   ...createDto,
-		   role: role.id,
-		 });
-	  
-		 return user;
+		if(organization) {
+			const user = await this.usersRepository.create({
+				...createDto,
+				role: role.id,
+				organizationId: organization.id
+			})
+			return user;
+		} else {
+			const user = await this.usersRepository.create({
+				...createDto,
+				role: role.id,
+			  });
+			  return user;
+		}
 	  }
 	// Find all users
 	async findAll() {

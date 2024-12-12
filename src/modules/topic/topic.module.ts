@@ -25,7 +25,7 @@ import { GeneratorService } from 'src/services/generator.service';
     GeneratorService,
     { provide: 'TopicsRepositoryInterface', useClass: TopicsRepository },
   ],
-  exports: [AwsS3Service],
+  exports: [TopicsService],
 
 })
 export class TopicsModule {}
