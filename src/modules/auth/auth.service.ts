@@ -1,9 +1,12 @@
+import { USER_ROLE } from '@modules/user-roles/entities/user-role.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
 	BadRequestException,
 	ConflictException,
+	HttpException,
+	HttpStatus,
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -29,6 +32,7 @@ export class AuthService {
 	constructor(
 		private config_service: ConfigService,
 		private readonly users_service: UsersService,
+		private readonly user_role : UserRolesService,
 		private readonly jwt_service: JwtService,
 	) {}
 

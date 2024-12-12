@@ -59,7 +59,8 @@ import { NewsModule } from '@modules/news/news.module';
 		NewsModule,
 		AuthModule,
 		AwsS3Module,
-		TopicsModule
+		TopicsModule,
+		CategoriesModule,
 	],
 	controllers: [AppController],
 	providers: [

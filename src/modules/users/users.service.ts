@@ -25,7 +25,26 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
 	  private readonly configService: ConfigService,
 	  private readonly organizationService: OrganizationsService,
 	) {}
-  
+	
+	async setCurrentRefreshToken(userId: string, refreshToken: string): Promise<void> {
+		try {
+		  // Tìm người dùng theo ID
+		  const user = await this.usersRepository.findById(userId);
+		  
+		  if (!user) {
+			throw new Error('User not found');
+		  }
+	
+		  // Cập nhật refresh token cho người dùng
+		  user.refreshToken = refreshToken;  // Giả sử `refreshToken` là trường trong entity User
+		//  await this.usersRepository.update(userId, { token: refreshToken });  // Cập nhật thông tin trong DB
+	
+		  console.log(`Refresh token for user ${userId} has been updated.`);
+		} catch (error) {
+		  console.error(`Failed to set refresh token for user ${userId}:`, error);
+		  throw new Error('Failed to set refresh token');
+		}
+	  }
 	// Method to find a user by condition
 	async findOneByCondition(condition: FilterQuery<User>): Promise<User | null> {
 	  return this.usersRepository.findOne(condition);
@@ -126,5 +145,6 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
 	
 		return user;
 	  }
+	
   }
   
