@@ -2,7 +2,7 @@ import { BaseEntity } from "@modules/shared/base/base.entity";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Exclude } from "class-transformer";
 import { NextFunction } from 'express';
-import { HydratedDocument, StringExpressionOperatorReturningBoolean } from "mongoose";
+import mongoose, { HydratedDocument, StringExpressionOperatorReturningBoolean } from "mongoose";
 
 export type OrganizationDocument = HydratedDocument<Organization>;
 
@@ -32,6 +32,12 @@ export class Organization extends BaseEntity {
 
     @Prop()
     province: string;
+
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SupervisorOrganization' }],
+		default: [],
+	})
+	supervisorOrganizations: mongoose.Types.ObjectId[];
 }
 
 export const OrganizationsSchema = SchemaFactory.createForClass(Organization);

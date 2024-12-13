@@ -22,9 +22,8 @@ export class Competition extends BaseEntity {
     description?: string;
     startDate?: Date;
     endDate?: Date;
-    _image?: string;
+    image_url?: string;
     video?: string;
-    isActive?: boolean;
     status?: 'Upcoming' | 'Ongoing' | 'Completed';
   }) {
     super();
@@ -32,9 +31,8 @@ export class Competition extends BaseEntity {
     this.description = competition?.description;
     this.startDate = competition?.startDate;
     this.endDate = competition?.endDate;
-    this._image = competition?._image;
+    this.image_url = competition?.image_url;
     this.video = competition?.video;
-    this.isActive = competition?.isActive ?? true;
     this.status = competition?.status || 'Upcoming';
   }
 
@@ -65,20 +63,15 @@ export class Competition extends BaseEntity {
   endDate: Date;
 
   @Prop({
-    default: 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
-  })
-  _image: string;
+      required: false,
+    	default: null,
+	})
+  image_url: string;
 
   @Prop({
     type: String,
   })
   video?: string;
-
-  @Prop({
-    type: Boolean,
-    default: true,
-  })
-  isActive: boolean;
 
   @Prop({
     required: true,
@@ -92,10 +85,8 @@ export const CompetitionSchema = SchemaFactory.createForClass(Competition);
 
 export const CompetitionSchemaFactory = () => {
   const competitionSchema = CompetitionSchema;
-
   competitionSchema.pre('findOneAndDelete', async function (next: NextFunction) {
     const competition = await this.model.findOne(this.getFilter());
-
     return next();
   });
 

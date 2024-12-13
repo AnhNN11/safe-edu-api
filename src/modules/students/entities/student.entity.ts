@@ -27,6 +27,7 @@ export enum GENDER {
 		virtuals: true,
 	},
 })
+
 export class Student extends BaseEntity {
 	constructor(Student: {
 		first_name?: string;
@@ -39,7 +40,7 @@ export class Student extends BaseEntity {
 		super();
 		this.first_name = Student?.first_name;
 		this.last_name = Student?.last_name;
-		this.student_name = Student?.student_name;
+		this.student_name = this.first_name + this.last_name;
 		this.password = Student?.password;
 		this.gender = Student?.gender;
 		this.phone_number = Student?.phone_number;
@@ -110,6 +111,19 @@ export class Student extends BaseEntity {
 	get fullName(): string {
 		return `${this.first_name} ${this.last_name}`;
 	}
+
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],
+		default: [],
+	})
+	achievements: mongoose.Types.ObjectId[];
+
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationWithStudent' }],
+		default: [],
+	})
+	registration_competition: mongoose.Types.ObjectId[];
+
 }
 
 export const StudentSchema = SchemaFactory.createForClass(Student);

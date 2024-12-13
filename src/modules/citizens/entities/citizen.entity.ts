@@ -5,10 +5,15 @@ import { NextFunction } from 'express';
 
 export type CitizenDocument = HydratedDocument<Citizen>;
 
+export enum GENDER {
+	MALE = 'Male',
+	FEMALE = 'Female',
+	OTHER = 'Other',
+}
 @Schema({
   timestamps: {
-    createdAt: 'created_at', // Mapping to 'createdAt'
-    updatedAt: 'updated_at', // Mapping to 'updatedAt'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at', 
   },
   toJSON: {
     getters: true,
@@ -22,7 +27,7 @@ export class Citizen extends BaseEntity {
     last_name?: string;
     avatar?: string;
     phone?: string;
-    gender?: 'Male' | 'Female' | 'Other';
+    gender?: GENDER;
   }) {
     super();
     this.password = citizen?.password;
@@ -64,27 +69,34 @@ export class Citizen extends BaseEntity {
 
   @Prop({
     required: true,
-    match: /^[0-9]{10}$/, // Match for 10-digit phone number format
+    match: /^[0-9]{10}$/,
   })
   phone: string;
 
   @Prop({
-    enum: ['Male', 'Female', 'Other'],
-    required: true,
+      enum: GENDER,
   })
-  gender: 'Male' | 'Female' | 'Other';
+  gender: GENDER;
+
+  @Prop({
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],
+      default: [],
+  })
+  achievements: mongoose.Types.ObjectId[];
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationWithStudent' }],
+    default: [],
+  })
+  registration_competition: mongoose.Types.ObjectId[];
 }
 
 export const CitizenSchema = SchemaFactory.createForClass(Citizen);
 
 export const CitizenSchemaFactory = () => {
   const citizenSchema = CitizenSchema;
-
-  // Add pre-hook logic if needed
   citizenSchema.pre('findOneAndDelete', async function (next: NextFunction) {
     const citizen = await this.model.findOne(this.getFilter());
-
-    // Add cascading deletion logic if necessary
     return next();
   });
 

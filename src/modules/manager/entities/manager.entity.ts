@@ -35,7 +35,7 @@ export class Manager extends BaseEntity {
 		password?: string;
 		gender?: GENDER;
 		phone_number?: string;
-		organization: Organization;
+		organization_Id: mongoose.Types.ObjectId;
 	}) {
 		super();
 		this.first_name = Manager?.first_name;
@@ -44,7 +44,7 @@ export class Manager extends BaseEntity {
 		this.password = Manager?.password;
 		this.gender = Manager?.gender;
 		this.phone_number = Manager?.phone_number;
-		this.organization = Manager?.organization;
+		this.organization_Id = Manager?.organization_Id;
 	}
 
 	@Prop({
@@ -102,9 +102,12 @@ export class Manager extends BaseEntity {
 
 
 	@Prop({
-		enum:Organization,
-	})
-	organization : Organization;
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Organization',
+		required: true, 
+	  })
+	organization_Id: mongoose.Types.ObjectId;
+
 	@Prop()
 	@Exclude()
 	current_refresh_token?: string;
@@ -119,7 +122,6 @@ export const ManagerSchema = SchemaFactory.createForClass(Manager);
 
 export const ManagerSchemaFactory = () => {
 	const Manager_schema = ManagerSchema;
-
 	Manager_schema.pre('findOneAndDelete', async function (next: NextFunction) {
 		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
 		const Manager = await this.model.findOne(this.getFilter());

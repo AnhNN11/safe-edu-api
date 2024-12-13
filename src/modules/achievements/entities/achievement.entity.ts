@@ -20,24 +20,17 @@ export class Achievement extends BaseEntity {
   constructor(achievement: {
     title?: string;
     description?: string;
-    _image?: string;
-    isActive?: boolean;
-    createdBy?: mongoose.Types.ObjectId;
-    updatedBy?: mongoose.Types.ObjectId;
+    image_url?: string;
   }) {
     super();
     this.title = achievement?.title;
     this.description = achievement?.description;
-    this._image = achievement?._image;
-    this.isActive = achievement?.isActive;
-    this.createdBy = achievement?.createdBy;
-    this.updatedBy = achievement?.updatedBy;
+    this.image_url = achievement?.image_url;
   }
 
   @Prop({
     required: true,
     minlength: 2,
-    maxlength: 100,
     set: (title: string) => title.trim(),
   })
   title: string;
@@ -52,29 +45,15 @@ export class Achievement extends BaseEntity {
     required: false,
     default: null,
   })
-  _image?: string;
-
-  @Prop({
-    required: true,
-    default: true,
-  })
-  isActive: boolean;
-
-  @Prop()
-  createdBy: mongoose.Types.ObjectId;
-
-  @Prop()
-  updatedBy?: mongoose.Types.ObjectId;
+  image_url?: string;
 }
 
 export const AchievementSchema = SchemaFactory.createForClass(Achievement);
 
 export const AchievementSchemaFactory = () => {
   const achievementSchema = AchievementSchema;
-
   achievementSchema.pre('findOneAndDelete', async function (next: NextFunction) {
     const achievement = await this.model.findOne(this.getFilter());
-    // Thêm logic nếu cần, ví dụ: xoá các dữ liệu liên quan
     await Promise.all([]);
     return next();
   });

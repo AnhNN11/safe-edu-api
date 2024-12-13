@@ -6,56 +6,54 @@ import { NextFunction } from 'express';
 export type UserAchievementDocument = HydratedDocument<UserAchievement>;
 
 @Schema({
-  timestamps: {
-    createdAt: 'created_date', // Mapping to 'createdDate'
-    updatedAt: false, // No updatedAt field
-  },
-  toJSON: {
-    getters: true,
-    virtuals: true,
-  },
+	timestamps: {
+		createdAt: 'created_at',
+		updatedAt: 'updated_at',
+	},
+	toJSON: {
+		getters: true,
+		virtuals: true,
+	},
 })
+
 export class UserAchievement extends BaseEntity {
   constructor(userAchievement: {
-    userId?: number;
-    achievementId?: number;
-    createdDate?: Date;
+    student_Id?:  mongoose.Types.ObjectId;
+    citizen_Id?: mongoose.Types.ObjectId;
+    achievement_Id:  mongoose.Types.ObjectId;
   }) {
     super();
-    this.userId = userAchievement?.userId;
-    this.achievementId = userAchievement?.achievementId;
-    this.createdDate = userAchievement?.createdDate;
+    this.student_Id = userAchievement?.student_Id;
+    this.citizen_Id = userAchievement?.citizen_Id;
+    this.achievement_Id = userAchievement?.achievement_Id; 
   }
 
   @Prop({
-    required: true,
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student',
   })
-  userId: number;
-
+  student_Id?: mongoose.Types.ObjectId;
+  
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Citizen',
+  })
+  citizen_Id?: mongoose.Types.ObjectId;
+  
   @Prop({
     required: true,
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Achievement',
   })
-  achievementId: number;
-
-  @Prop({
-    required: true,
-    type: Date,
-  })
-  createdDate: Date; // Awarded date
+  achievement_Id: mongoose.Types.ObjectId;
 }
 
 export const UserAchievementSchema = SchemaFactory.createForClass(UserAchievement);
 
 export const UserAchievementSchemaFactory = () => {
   const userAchievementSchema = UserAchievementSchema;
-
-  // Add pre-hook logic if needed
   userAchievementSchema.pre('findOneAndDelete', async function (next: NextFunction) {
     const userAchievement = await this.model.findOne(this.getFilter());
-
-    // Add cascading deletion logic if necessary
     return next();
   });
 

@@ -6,15 +6,16 @@ import { NextFunction } from 'express';
 export type NotificationDocument = HydratedDocument<Notification>;
 
 @Schema({
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: false, // No updatedAt field
-  },
-  toJSON: {
-    getters: true,
-    virtuals: true,
-  },
+	timestamps: {
+		createdAt: 'created_at',
+		updatedAt: 'updated_at',
+	},
+	toJSON: {
+		getters: true,
+		virtuals: true,
+	},
 })
+
 export class Notification extends BaseEntity {
   constructor(notification: {
     deviceId?: number;
