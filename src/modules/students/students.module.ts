@@ -22,13 +22,13 @@ import { StudentsRepository } from '@repositories/student.repository';
 				imports: [MongooseModule.forFeature([])],
 			},
 		]),
-		OrganizationsModule
+		OrganizationsModule,
 	],
 	controllers: [StudentsController],
 	providers: [
 		StudentsService,
 		{ provide: 'StudentsRepositoryInterface', useClass: StudentsRepository },
 	],
-	exports: [StudentsService], 
+	exports: [StudentsService],
 })
 export class StudentsModule {}

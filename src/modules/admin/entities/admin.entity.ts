@@ -4,9 +4,6 @@ import mongoose, { HydratedDocument, Model } from 'mongoose';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
 
-// INNER
-
-// OUTER
 
 export type adminDocument = HydratedDocument<Admin>;
 

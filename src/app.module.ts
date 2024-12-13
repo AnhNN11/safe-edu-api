@@ -64,7 +64,6 @@ import { UserAchievementsModule } from '@modules/user-achievements/user-achievem
 			},
 			inject: [ConfigService],
 		}),
-
 		OrganizationsModule,
 		NewsModule,
 		TopicsModule,
