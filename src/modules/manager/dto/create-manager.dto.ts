@@ -1,3 +1,4 @@
+import { Organization } from './../../organizations/entities/organization.entity';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -31,5 +32,6 @@ export class CreateManagerDto {
   @IsStrongPassword()
   password?: string;
 
-
+  @IsNotEmpty()
+  organization: Organization;
 }

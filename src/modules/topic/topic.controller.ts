@@ -19,9 +19,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { IFile } from 'src/interfaces/file.interface';
 import { AwsS3Service } from 'src/services/aws-s3.service';
 import { Roles } from 'src/decorators/roles.decorator';
-import { USER_ROLE } from '@modules/user-roles/entities/user-role.entity';
+;
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
-import { RolesGuard } from '@modules/auth/guards/roles.guard';
+
 import { Public } from 'src/decorators/auth.decorator';
 
 
@@ -34,8 +34,7 @@ export class TopicsController {
 
   @Post()
   @Public()
-  @Roles(USER_ROLE.ADMIN)
-	@UseGuards(RolesGuard)
+
 	@UseGuards(JwtAccessTokenGuard)
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(
@@ -85,8 +84,7 @@ export class TopicsController {
 
   @Put(':id')
   @Public()
-  @Roles(USER_ROLE.ADMIN)
-  @UseGuards(RolesGuard)
+  
 	@UseGuards(JwtAccessTokenGuard)
   async update(@Param('id') id: string, @Body() updateDto: UpdateTopicDto) {
     return this.topicsService.update(id, updateDto);
@@ -94,8 +92,7 @@ export class TopicsController {
 
   @Delete(':id')
   @Public()
-  @Roles(USER_ROLE.ADMIN)
-  @UseGuards(RolesGuard)
+
 	@UseGuards(JwtAccessTokenGuard)
   async delete(@Param('id') id: string) {
     return this.topicsService.delete(id);
@@ -104,8 +101,7 @@ export class TopicsController {
 
   @Get()
   @Public()
-  @Roles(USER_ROLE.ADMIN)
-	@UseGuards(RolesGuard)
+
 	@UseGuards(JwtAccessTokenGuard)
   async findAll() {
     return this.topicsService.findAll();
@@ -114,8 +110,7 @@ export class TopicsController {
   @Get(':id')
   @Get()
   @Public()
-  @Roles(USER_ROLE.ADMIN)
-	@UseGuards(RolesGuard)
+
 	@UseGuards(JwtAccessTokenGuard)
   async findOne(@Param('id') id: string) {
     return this.topicsService.findOne(id);

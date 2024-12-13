@@ -3,7 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Model } from 'mongoose';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
-import { GENDER } from '@modules/users/entities/user.entity';
 
 // INNER
 
@@ -27,7 +26,7 @@ export class Admin extends BaseEntity {
 		last_name?: string;
 		email?: string;
 		password?: string;
-		gender?: GENDER;
+
 		phone_number?: string;
 	}) {
 		super();
@@ -35,7 +34,6 @@ export class Admin extends BaseEntity {
 		this.last_name = admin?.last_name;
 		this.email = admin?.email;
 		this.password = admin?.password;
-		this.gender = admin?.gender;
 		this.phone_number = admin?.phone_number;
 	}
 
@@ -77,22 +75,11 @@ export class Admin extends BaseEntity {
 	@Prop()
 	password?: string;
 
-	@Prop({ default: false })
-	is_registered_with_google?: boolean;
-
 	@Prop({
 		default:
 			'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
 	})
 	avatar?: string;
-
-
-	@Prop({
-		enum: GENDER,
-	})
-	gender: GENDER;
-
-
 
 	@Prop()
 	@Exclude()

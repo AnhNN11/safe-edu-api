@@ -27,8 +27,6 @@ export class Topic extends BaseEntity {
 		this.topic_name = topic?.topic_name;
         this.description = topic?.description;
         this.image = topic?.image;
-    
-		
 	}
 	
 	@Prop({
@@ -49,8 +47,10 @@ export class Topic extends BaseEntity {
 	})
 	image?: string;
 
-
-
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
+	})
+	categories: mongoose.Schema.Types.ObjectId[];
 }
 
 export const TopicSchema = SchemaFactory.createForClass(Topic);

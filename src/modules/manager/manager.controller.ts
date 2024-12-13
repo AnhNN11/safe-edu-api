@@ -22,7 +22,7 @@ import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-
 // Outer imports
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 import { Roles } from 'src/decorators/roles.decorator';
-import { RolesGuard } from '@modules/auth/guards/roles.guard';
+
 import { Manager } from './entities/manager.entity';
 
 
@@ -69,7 +69,7 @@ export class ManagerController {
 
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a user by ID' })
-	@UseGuards(JwtAccessTokenGuard, RolesGuard)
+	@UseGuards(JwtAccessTokenGuard)
 	async remove(@Param('id') id: string): Promise<void> {
 		await this.ManagerService.remove(id);
 	}

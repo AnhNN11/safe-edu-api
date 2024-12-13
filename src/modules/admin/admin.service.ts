@@ -6,8 +6,7 @@ import {
   } from '@nestjs/common';
   import { ConfigService } from '@nestjs/config';
 
-  import { USER_ROLE, UserRole } from '@modules/user-roles/entities/user-role.entity';
-  import { UserRolesService } from '@modules/user-roles/user-roles.service';
+
   import { FindAllResponse, QueryParams } from 'src/types/common.type';
   import { FilterQuery } from 'mongoose';
 import { log } from 'console';

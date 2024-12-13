@@ -19,7 +19,7 @@ export type CategoryDocument = HydratedDocument<Category>;
 export class Category extends BaseEntity {
 	constructor(Category: {
 		category_name?: string;
-        topic_id?:string;
+        topic_id?:mongoose.Schema.Types.ObjectId;
 		description?: string;
         image?: string;
 		
@@ -29,8 +29,6 @@ export class Category extends BaseEntity {
         this.topic_id = Category?.topic_id;
         this.description = Category?.description;
         this.image = Category?.image;
-    
-		
 	}
 	
 	@Prop({
@@ -43,8 +41,12 @@ export class Category extends BaseEntity {
 	})
 	category_name: string;
 
-    @Prop()
-	topic_id: string;
+	@Prop({
+		required: true,
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Topic',
+	  })
+	  topic_id: mongoose.Schema.Types.ObjectId;
 
     @Prop()
 	description: string;

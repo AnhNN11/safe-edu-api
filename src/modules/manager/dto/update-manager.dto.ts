@@ -10,8 +10,9 @@ import {
 
 
 
-import { GENDER } from '@modules/users/entities/user.entity';
 import { CreateManagerDto } from './create-manager.dto';
+import { Organization } from '@modules/organizations/entities/organization.entity';
+import { GENDER } from '../entities/manager.entity';
 
 export class UpdateManagerDto extends PartialType(
 	OmitType(CreateManagerDto, ['email', 'password'] as const),
@@ -32,5 +33,6 @@ export class UpdateManagerDto extends PartialType(
 	@MaxLength(200)
 	headline?: string;
 
-
+	@IsNotEmpty()
+	organization: Organization;
 }

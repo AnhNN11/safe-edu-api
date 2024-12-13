@@ -8,9 +8,6 @@ import {
 	MaxLength,
 } from 'class-validator';
 
-
-
-import { GENDER } from '@modules/users/entities/user.entity';
 import { CreateAdminDto } from './create-admin.dto';
 
 export class UpdateAdminDto extends PartialType(
@@ -23,10 +20,6 @@ export class UpdateAdminDto extends PartialType(
 	@IsOptional()
 	@IsDateString()
 	date_of_birth?: Date;
-
-	@IsOptional()
-	@IsEnum(GENDER)
-	gender?: GENDER;
 
 	@IsOptional()
 	@MaxLength(200)

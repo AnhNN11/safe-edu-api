@@ -1,13 +1,19 @@
+import { Organization } from './../../organizations/entities/organization.entity';
 import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Model } from 'mongoose';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
-import { GENDER } from '@modules/users/entities/user.entity';
+
 
 // INNER
 
 // OUTER
+export enum GENDER {
+	MALE = 'Male',
+	FEMALE = 'Female',
+	OTHER = 'Other',
+}
 
 export type managerDocument = HydratedDocument<Manager>;
 
@@ -29,6 +35,7 @@ export class Manager extends BaseEntity {
 		password?: string;
 		gender?: GENDER;
 		phone_number?: string;
+		organization: Organization;
 	}) {
 		super();
 		this.first_name = Manager?.first_name;
@@ -37,6 +44,7 @@ export class Manager extends BaseEntity {
 		this.password = Manager?.password;
 		this.gender = Manager?.gender;
 		this.phone_number = Manager?.phone_number;
+		this.organization = Manager?.organization;
 	}
 
 	@Prop({
@@ -93,7 +101,10 @@ export class Manager extends BaseEntity {
 	gender: GENDER;
 
 
-
+	@Prop({
+		enum:Organization,
+	})
+	organization : Organization;
 	@Prop()
 	@Exclude()
 	current_refresh_token?: string;
