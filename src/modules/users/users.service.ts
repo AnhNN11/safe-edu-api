@@ -23,7 +23,14 @@ import { log } from 'console';
 	  private readonly userRolesService: UserRolesService, 
 	  private readonly configService: ConfigService,
 	) {}
-	
+	async getUserRole(userId: string): Promise<string> {
+		const user = await this.usersRepository.findById(userId); // Truy vấn người dùng từ database
+		if (!user) {
+		  throw new Error('User not found');
+		}
+		return user.role; // Trả về role của người dùng
+	  }
+	  
 	async setCurrentRefreshToken(userId: string, refreshToken: string): Promise<void> {
 		try {
 		  // Tìm người dùng theo ID

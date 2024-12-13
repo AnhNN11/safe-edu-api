@@ -9,10 +9,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { AdminModule } from '@modules/admin/admin.module';
 
 @Module({
   imports: [
     UsersModule, 
+    AdminModule,
     UserRolesModule, // Import UserRolesModule để sử dụng UserRolesService
     PassportModule, 
     JwtModule.register({}),

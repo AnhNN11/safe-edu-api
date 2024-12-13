@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import {
 	BadRequestException,
 	ConflictException,
+	ConsoleLogger,
 	HttpException,
 	HttpStatus,
 	Injectable,
@@ -24,6 +25,8 @@ import {
 } from 'src/constraints/jwt.constraint';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { UserRolesService } from '@modules/user-roles/user-roles.service';
+import { log } from 'node:console';
+import { AdminService } from '@modules/admin/admin.service';
 
 @Injectable()
 export class AuthService {
@@ -31,43 +34,26 @@ export class AuthService {
 	constructor(
 		private config_service: ConfigService,
 		private readonly users_service: UsersService,
+		private readonly admin_service: AdminService,
 		private readonly user_role : UserRolesService,
+		
 		private readonly jwt_service: JwtService,
 	) {}
 
 	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
 		try {
-			let user = await this.users_service.findOneByCondition({
+			let admin = await this.admin_service.findOneByCondition({
 				email: sign_up_dto.email,
 			});
-			console.log(user);
-			
-			let roleUser = await this.user_role.findOne(user.role)
 
-			console.log('roleUser='+roleUser);
-			
-
-			// Nếu user đã có trong database thì bỏ qua bước tạo user
 			try {
-				if (user) {
-				  // Kiểm tra nếu role là 'User'
-				  if (roleUser.name.toString() == "Admin" ||roleUser.name.toString() == "Manager" ) {
-					// Log thông tin người dùng và role
-					console.log("User ID:", user._id.toString());
-					console.log("Role:", roleUser.name.toString());
-					const signInResult = await this.signIn(user._id.toString());
+				if (admin) {
+					const signInResult = await this.signIn(admin._id.toString());
+		
 					return signInResult;
-				  } else {
-					console.log("Role is not Admin/Manager, cannot sign in.");
-					throw new HttpException("Invalid role", HttpStatus.FORBIDDEN);
-				  }
-				} else {
-				  console.log("User not found");
-				  throw new HttpException("User not found", HttpStatus.NOT_FOUND);
 				}
 			  } catch (error) {
 				// Log lỗi khi có ngoại lệ xảy ra
-				console.error("Error during sign in process:", error);
 				throw new HttpException({
 				  statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 				  message: "Sign in failed",
@@ -76,19 +62,17 @@ export class AuthService {
 			  }
 			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
 			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
-			user = await this.users_service.create({
+			admin = await this.admin_service.create({
 				...sign_up_dto,
-				username: `${sign_up_dto.email.split('@')[0]}${Math.floor(
-					10 + Math.random() * (999 - 10),
-				)}`, // Random username
+			
 			});
 			const refresh_token = this.generateRefreshToken({
-				user_id: user._id.toString(),
+				id: admin._id.toString(),
 			});
-			await this.storeRefreshToken(user._id.toString(), refresh_token);
+			await this.storeRefreshToken(admin._id.toString(), refresh_token);
 			return {
 				access_token: this.generateAccessToken({
-					user_id: user._id.toString(),
+					id: admin._id.toString(),
 				}),
 				refresh_token,
 			};
@@ -120,12 +104,12 @@ export class AuthService {
 				password: hashed_password,
 			});
 			const refresh_token = this.generateRefreshToken({
-				user_id: user._id.toString(),
+				id: user._id.toString(),
 			});
 			await this.storeRefreshToken(user._id.toString(), refresh_token);
 			return {
 				access_token: this.generateAccessToken({
-					user_id: user._id.toString(),
+					id: user._id.toString(),
 				}),
 				refresh_token,
 			};
@@ -134,15 +118,15 @@ export class AuthService {
 		}
 	}
 
-	async signIn(user_id: string) {
+	async signIn(id: string) {
 		try {
 			const access_token = this.generateAccessToken({
-				user_id,
+				id,
 			});
 			const refresh_token = this.generateRefreshToken({
-				user_id,
+				id
 			});
-			await this.storeRefreshToken(user_id, refresh_token);
+			await this.storeRefreshToken(id, refresh_token);
 			return {
 				access_token,
 				refresh_token,
@@ -179,14 +163,16 @@ export class AuthService {
 	}
 
 	async getUserIfRefreshTokenMatched(
-		user_id: string,
+		id: string,
 		refresh_token: string,
 	): Promise<User> {
 		try {
 			const user = await this.users_service.findOneByCondition({
-				_id: user_id,
+				_id: id,
 			});
 			if (!user) {
+				
+				
 				throw new UnauthorizedException({
 					message: ERRORS_DICTIONARY.UNAUTHORIZED_EXCEPTION,
 					details: 'Unauthorized',
@@ -222,10 +208,10 @@ export class AuthService {
 		});
 	}
 
-	async storeRefreshToken(user_id: string, token: string): Promise<void> {
+	async storeRefreshToken(id: string, token: string): Promise<void> {
 		try {
 			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
-			await this.users_service.setCurrentRefreshToken(user_id, hashed_token);
+			await this.admin_service.setCurrentRefreshToken(id, hashed_token);
 		} catch (error) {
 			throw error;
 		}

@@ -36,6 +36,12 @@ export class UserRolesController {
 		return this.user_roles_service.findOne(id);
 	}
 
+	//get by name
+	@Get('name/:name')
+	async findOneByName(@Param('name') name: string): Promise<UserRole> {
+	  return this.user_roles_service.findOneByName(name);
+	}
+
 	@Patch(':id')
 	update(
 		@Param('id') id: string,

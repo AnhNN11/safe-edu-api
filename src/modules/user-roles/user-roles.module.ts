@@ -6,22 +6,19 @@ import { UserRole, UserRoleSchema } from './entities/user-role.entity';
 import { UserRolesRepository } from '@repositories/user-roles.repository';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: UserRole.name, schema: UserRoleSchema },
-    ]),
-  ],
-  controllers: [UserRolesController],
-  providers: [
-    UserRolesService,
-    {
-      provide: 'UserRolesRepositoryInterface',
-      useClass: UserRolesRepository,
-    },
-  ],
-  exports: [
-    UserRolesService, // Để sử dụng trong UsersModule
-    { provide: 'UserRolesRepositoryInterface', useClass: UserRolesRepository }, // Export luôn Interface nếu cần
-  ],
+	imports: [
+		MongooseModule.forFeature([
+			{ name: UserRole.name, schema: UserRoleSchema },
+		]),
+	],
+	controllers: [UserRolesController],
+	providers: [
+		UserRolesService,
+		{
+			provide: 'UserRolesRepositoryInterface',
+			useClass: UserRolesRepository,
+		},
+	],
+	exports: [UserRolesService],
 })
 export class UserRolesModule {}

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
-import { RequestWithUser } from 'src/types/requests.type';
+import { RequestWithAdmin, RequestWithUser } from 'src/types/requests.type';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
 import { SignUpDto } from './dto/sign-up.dto';
 import {
@@ -166,9 +166,9 @@ export class AuthController {
 			},
 		},
 	})
-	async signIn(@Req() request: RequestWithUser) {
-		const { user } = request;
-		return await this.auth_service.signIn(user._id.toString());
+	async signIn(@Req() request: RequestWithAdmin) {
+		const { admin } = request;
+		return await this.auth_service.signIn(admin._id.toString());
 	}
 
 	@UseGuards(GoogleAuthGuard)
@@ -211,10 +211,10 @@ export class AuthController {
 
 	@UseGuards(JwtRefreshTokenGuard)
 	@Post('refresh')
-	async refreshAccessToken(@Req() request: RequestWithUser) {
-		const { user } = request;
+	async refreshAccessToken(@Req() request: RequestWithAdmin) {
+		const { admin } = request;
 		const access_token = this.auth_service.generateAccessToken({
-			user_id: user._id.toString(),
+			id: admin._id.toString(),
 		});
 		return {
 			access_token,

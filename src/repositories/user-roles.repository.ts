@@ -30,6 +30,11 @@ export class UserRolesRepository
     return this.user_role_model.findById(id).exec();
   }
 
+  //Find one method by name
+  async findOneByName(name: string): Promise<UserRole | null> {
+    return this.user_role_model.findOne({ name }).exec();
+  }
+
   // Update method
   async update(id: string, data: Partial<UserRole>): Promise<UserRole> {
     return this.user_role_model.findByIdAndUpdate(id, data, { new: true }).exec();

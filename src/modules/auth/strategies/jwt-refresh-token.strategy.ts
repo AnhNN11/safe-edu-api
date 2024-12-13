@@ -23,7 +23,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 
 	async validate(request: Request, payload: TokenPayload) {
 		return await this.auth_service.getUserIfRefreshTokenMatched(
-			payload.user_id,
+			payload.id,
 			request.headers.authorization.split('Bearer ')[1],
 		);
 	}

@@ -14,6 +14,7 @@ import { AwsS3Module } from '@modules/aws-s3/aws-s3.module';
 import * as mongoose from 'mongoose';
 import { TopicsModule } from '@modules/topic/topic.module';
 import { CategoriesModule } from '@modules/category/category.module';
+import { AdminModule } from '@modules/admin/admin.module';
 
 @Module({
 	imports: [
@@ -58,6 +59,7 @@ import { CategoriesModule } from '@modules/category/category.module';
 		AwsS3Module,
 		TopicsModule,
 		CategoriesModule,
+		AdminModule,
 	],
 	controllers: [AppController],
 	providers: [
