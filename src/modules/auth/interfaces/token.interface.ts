@@ -1,3 +1,5 @@
 export class TokenPayload {
-	user_id: string;
+	id: string;
+	
 }
+

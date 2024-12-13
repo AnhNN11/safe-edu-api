@@ -5,14 +5,27 @@ import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { database_config } from './configs/configuration.config';
-import { UsersModule } from '@modules/users/users.module';
-import { UserRolesModule } from '@modules/user-roles/user-roles.module';
-import { AuthModule } from './modules/auth/auth.module';
+
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
-import { AwsS3Module } from '@modules/aws-s3/aws-s3.module';
 import * as mongoose from 'mongoose';
-import { TestModule } from '@modules/users copy/test.module';
+import { TopicsModule } from '@modules/topic/topic.module';
+
+import { OrganizationsModule } from '@modules/organizations/organizations.module';
+import { NewsModule } from '@modules/news/news.module';
+import { AdminModule } from '@modules/admin/admin.module';
+import { CategoriesModule } from '@modules/category/category.module';
+import { StudentsModule } from '@modules/students/students.module';
+import { CitizensModule } from '@modules/citizens/citizens.module';
+import { ArticlesModule } from '@modules/articles/articles.module';
+import { CompetitionsModule } from '@modules/competitions/competitions.module';
+import { ManagerModule } from '@modules/manager/manager.module';
+import { NotificationsModule } from '@modules/notifications/notifications.module';
+import { RegistrationWithCitizenModule } from '@modules/registration-with-citizen/registration-with-citizen.module';
+import { RegistrationWithStudentModule } from '@modules/registration-with-student/registration-with-student.module';
+import { SupervisorsModule } from '@modules/supervisors/supervisors.module';
+import { SupervisorsOrganizationsModule } from '@modules/supervisors-organizations/supervisors-organizations.module';
+import { UserAchievementsModule } from '@modules/user-achievements/user-achievements.module';
 
 @Module({
 	imports: [
@@ -51,11 +64,24 @@ import { TestModule } from '@modules/users copy/test.module';
 			},
 			inject: [ConfigService],
 		}),
-		UserRolesModule,
-		UsersModule,
-		AuthModule,
-		AwsS3Module,
-		TestModule,
+
+		OrganizationsModule,
+		NewsModule,
+		TopicsModule,
+		CategoriesModule,
+		AdminModule,
+		StudentsModule,
+		CitizensModule,
+		ArticlesModule,
+		CategoriesModule,
+		CompetitionsModule,
+		ManagerModule,
+		NotificationsModule,
+		RegistrationWithCitizenModule,
+		RegistrationWithStudentModule,
+		SupervisorsModule,
+		SupervisorsOrganizationsModule,
+		UserAchievementsModule,
 	],
 	controllers: [AppController],
 	providers: [
