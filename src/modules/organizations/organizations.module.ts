@@ -1,10 +1,9 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
 import { OrganizationsController } from './organizations.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Organization, OrganizationSchemaFactory, OrganizationsSchema } from './entities/organization.entity';
 import { OrganizationsRepository } from '@repositories/organizations.repository';
-import { StudentsModule } from '@modules/students/students.module';
 
 @Module({
 	imports: [
@@ -15,8 +14,7 @@ import { StudentsModule } from '@modules/students/students.module';
 				inject: [],
 				imports: [MongooseModule.forFeature([])],
       }
-    ]),
-	forwardRef(() => StudentsModule),
+    ])
 	],
 	controllers: [OrganizationsController],
 	providers: [

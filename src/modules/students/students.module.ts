@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // INNER
@@ -23,14 +23,15 @@ import { AuthService } from '@modules/auth/auth.service';
 				imports: [MongooseModule.forFeature([])],
 			},
 		]),
-		forwardRef(() => OrganizationsModule),
+		OrganizationsModule,
 	],
 	controllers: [StudentsController],
 	providers: [
 		StudentsService,
-		OrganizationsService,
 		{ provide: 'StudentsRepositoryInterface', useClass: StudentsRepository },
 	],
-	exports: [StudentsService],
+	exports: [StudentsService,
+		'StudentsRepositoryInterface',
+	],
 })
 export class StudentsModule {}

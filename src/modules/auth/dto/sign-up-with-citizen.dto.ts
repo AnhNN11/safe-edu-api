@@ -16,7 +16,4 @@ export class SignUpWithCitizenDto {
     @IsNotEmpty()
     @IsStrongPassword()
     password: string;
-
-    @IsNotEmpty()
-    role: string
 }

@@ -83,4 +83,10 @@ export class AuthController {
 	async signUpWithStudent(@Body() sign_up_with_std_dto: SignUpWithStudentDto) {
 		return await this.auth_service.signUpWithStudent(sign_up_with_std_dto);
 	}
+
+	@Post('sign-up-with-citizen')
+	@ApiOperation({ summary: 'sign up with citizen' })
+	async signUpWithCitizen(@Body() sign_up_with_citizen_dto: SignUpWithCitizenDto) {
+		return await this.auth_service.signUpWithCitizen(sign_up_with_citizen_dto);
+	}
 }

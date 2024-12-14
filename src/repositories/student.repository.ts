@@ -49,7 +49,16 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	}
 
 	async findOneByCondition(condition: FilterQuery<Student>): Promise<Student | null> {
-		return await this.student_Model.findOne(condition).exec(); 
+		try {
+			console.log('Condition:', condition);
+			const student = await this.student_Model.findOne(condition).exec();
+			
+			console.log('Found student:', student);
+			return student;
+		} catch (error) {
+			console.error('Error finding student:', error); 
+			throw error;
+		}
 	}
 
 	async delete(id: string | Types.ObjectId): Promise<Student | null> {

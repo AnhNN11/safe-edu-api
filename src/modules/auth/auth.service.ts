@@ -27,6 +27,7 @@ import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
 import { AdminService } from '@modules/admin/admin.service';
 import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { RolesEnum } from 'src/enums/roles..enum';
+import { CitizensService } from '@modules/citizens/Citizens.service';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
 		private config_service: ConfigService,
 		private readonly admin_service: AdminService,
 		private readonly student_service: StudentsService,
+		private readonly citizen_service: CitizensService,
 		private readonly jwt_service: JwtService,
 	) {}
 
@@ -95,10 +97,19 @@ export class AuthService {
 	// 	}
 	// }
 
-	async storeRefreshToken(id: string, token: string): Promise<void> {
+	async storeRefreshTokenForStudent(_id: string, token: string): Promise<void> {
 		try {
 			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
-			await this.admin_service.setCurrentRefreshToken(id, hashed_token);
+			await this.student_service.setCurrentRefreshToken(_id, hashed_token);
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async storeRefreshTokenForCitizen(_id: string, token: string): Promise<void> {
+		try {
+			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
+			await this.citizen_service.setCurrentRefreshToken(_id, hashed_token);
 		} catch (error) {
 			throw error;
 		}
@@ -136,7 +147,7 @@ export class AuthService {
 				role: 'Student',
 			});
 			try {
-				await this.storeRefreshToken(student._id.toString(), refresh_token);
+				await this.storeRefreshTokenForStudent(student._id.toString(), refresh_token);
 				return {
 					access_token: this.generateAccessToken({
 						userId: student._id.toString(),
@@ -159,5 +170,58 @@ export class AuthService {
 	}
 	
 	}
-}
 
+	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
+		try {
+			const { first_name, last_name, phone_number } =
+			sign_up_with_citizen_dto;
+			const existed_student_phone_number =
+				await this.student_service.findOneByCondition({
+					phone_number: sign_up_with_citizen_dto.phone_number,
+				});
+
+			if (first_name == null || last_name == null) {
+				throw new ConflictException({
+					message: ERRORS_DICTIONARY.STUDENT_NAME_IS_NULL,
+					details: 'Name can not be null or empty!!',
+				});
+			}
+			const hashed_password = await bcrypt.hash(
+				sign_up_with_citizen_dto.password,
+				this.SALT_ROUND,
+			);
+			const citizen = await this.citizen_service.create({
+				first_name,
+				last_name,
+				phone_number,
+				password: hashed_password,
+			});
+
+			const refresh_token = this.generateRefreshToken({
+				userId: citizen._id.toString(),
+				role: 'Student',
+			});
+			try {
+				await this.citizen_service.setCurrentRefreshToken(citizen._id.toString(), refresh_token);
+				return {
+					access_token: this.generateAccessToken({
+						userId: citizen._id.toString(),
+						role: 'Citizen',
+					}),
+					refresh_token,
+				};
+		} catch (error) {
+			console.error(
+				'Error storing refresh token or generating access token:',
+				error,
+			);
+			throw new Error(
+				'An error occurred while processing tokens. Please try again.',
+			);
+		}
+	}
+	catch(error) {
+		throw error;
+	}
+	}
+}

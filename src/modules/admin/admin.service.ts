@@ -19,7 +19,7 @@ export class AdminService {
 	constructor(
 		@Inject('AdminRepositoryInterface')
 		private readonly adminRepository: AdminRepositoryInterface,
-		private readonly configService: ConfigService,
+		// private readonly configService: ConfigService,
 	) {}
 
 	async setCurrentRefreshToken(

@@ -28,8 +28,8 @@ export class StudentsController {
 
   @Get(':id')
 	@ApiOperation({ summary: 'Retrieve a user by ID' })
-	async findOne(@Param('id') id: string): Promise<Student> {
-  return await this.studentsService.findOneByCondition({ id });
+	async findOne(@Param('id') _id: string): Promise<Student> {
+  return await this.studentsService.findOneByCondition({ _id });
 	}
 
   @Patch(':id')

@@ -14,19 +14,17 @@ export class StudentsService {
 		private readonly organizationService: OrganizationsService, 
 	  ) {}
 
-	async setCurrentRefreshToken(student_id: string, refreshToken: string): Promise<void> {
+	async setCurrentRefreshToken(_id: string, refreshToken: string): Promise<void> {
 		try {
-		  const student = await this.studentsRepository.findOneByCondition({ student_id });
-		  
+		  const student = await this.studentsRepository.findOneByCondition({ _id });
 		  if (!student) {
 			throw new Error('User not found');
 		  }
-		  student.current_refresh_token = refreshToken;  
-		 await this.studentsRepository.update(student_id, { current_refresh_token: refreshToken }); 
-	
-		  console.log(`Refresh token for user ${student_id} has been updated.`);
+		  	student.current_refresh_token = refreshToken;  
+			await this.studentsRepository.update(_id, { current_refresh_token: refreshToken }); 
+		  	console.log(`Refresh token for user ${_id} has been updated.`);
 		} catch (error) {
-		  console.error(`Failed to set refresh token for user ${student_id}:`, error);
+		  console.error(`Failed to set refresh token for user ${_id}:`, error);
 		  throw new Error('Failed to set refresh token');
 		}
 	  }
@@ -46,8 +44,8 @@ export class StudentsService {
 		return await this.studentsRepository.findAll();
 	  }
 
-	async findOne(id: string) {
-		return await this.studentsRepository.findOneByCondition({id});
+	async findOne(_id: string) {
+		return await this.studentsRepository.findOneByCondition({_id});
 	}
 	async findOneByCondition(condition: FilterQuery<Student>): Promise<Student | null> {
 		return this.studentsRepository.findOneByCondition(condition);
@@ -76,4 +74,5 @@ export class StudentsService {
 		  deleted_at: new Date(),
 		});
 	}
+
 }

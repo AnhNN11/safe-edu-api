@@ -1,92 +1,111 @@
 import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Model, Types } from 'mongoose';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
+
+// INNER
+
+// OUTER
+import { Organization } from '@modules/organizations/entities/organization.entity';
 
 export type CitizenDocument = HydratedDocument<Citizen>;
 
+export enum GENDER {
+	MALE = 'Male',
+	FEMALE = 'Female',
+	OTHER = 'Other',
+}
+
 @Schema({
-  timestamps: {
-    createdAt: 'created_at', // Mapping to 'createdAt'
-    updatedAt: 'updated_at', // Mapping to 'updatedAt'
-  },
-  toJSON: {
-    getters: true,
-    virtuals: true,
-  },
+	timestamps: {
+		createdAt: 'created_at',
+		updatedAt: 'updated_at',
+	},
+	toJSON: {
+		getters: true,
+		virtuals: true,
+	},
 })
 export class Citizen extends BaseEntity {
-  constructor(citizen: {
-    password?: string;
-    first_name?: string;
-    last_name?: string;
-    avatar?: string;
-    phone?: string;
-    gender?: 'Male' | 'Female' | 'Other';
-  }) {
-    super();
-    this.password = citizen?.password;
-    this.first_name = citizen?.first_name;
-    this.last_name = citizen?.last_name;
-    this.avatar = citizen?.avatar;
-    this.phone = citizen?.phone;
-    this.gender = citizen?.gender;
-  }
+	constructor(Citizen: {
+		first_name?: string;
+		last_name?: string;
+		password?: string;
+		gender?: GENDER;
+		phone_number?: string;
+	}) {
+		super();
+		this.first_name = Citizen?.first_name;
+		this.last_name = Citizen?.last_name;
+		this.password = Citizen?.password;
+		this.gender = Citizen?.gender;
+		this.phone_number = Citizen?.phone_number;
+	}
+	
+	@Prop({
+		required: true,
+		minlength: 2,
+		maxlength: 60,
+		set: (first_name: string) => {
+			return first_name.trim();
+		},
+	})
+	first_name: string;
 
-  @Prop({
-    required: true,
-    minlength: 6,
-    maxlength: 100,
-    set: (password: string) => password.trim(),
-  })
-  password: string;
+	@Prop({
+		required: true,
+		minlength: 2,
+		maxlength: 60,
+		set: (last_name: string) => {
+			return last_name.trim();
+		},
+	})
+	last_name: string;
 
-  @Prop({
-    required: true,
-    minlength: 2,
-    maxlength: 50,
-    set: (first_name: string) => first_name.trim(),
-  })
-  first_name: string;
+	@Prop({
+		match: /^([+]\d{2})?\d{10}$/,
+	})
+	phone_number: string;
 
-  @Prop({
-    required: true,
-    minlength: 2,
-    maxlength: 50,
-    set: (last_name: string) => last_name.trim(),
-  })
-  last_name: string;
+	@Exclude()
+	@Prop()
+	password?: string;
 
-  @Prop({
-    default: 'https://example.com/default-avatar.png',
-  })
-  avatar: string;
+	@Prop({
+		default:
+			'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
+	})
+	avatar?: string;
 
-  @Prop({
-    required: true,
-    match: /^[0-9]{10}$/, // Match for 10-digit phone number format
-  })
-  phone: string;
+	@Prop()
+	date_of_birth?: Date;
 
-  @Prop({
-    enum: ['Male', 'Female', 'Other'],
-    required: true,
-  })
-  gender: 'Male' | 'Female' | 'Other';
+	@Prop({
+		enum: GENDER,
+	})
+	gender: GENDER;
+
+	@Prop()
+	@Exclude()
+	current_refresh_token?: string;
+
+	@Expose({ name: 'full_name' })
+	get fullName(): string {
+		return `${this.first_name} ${this.last_name}`;
+	}
 }
 
 export const CitizenSchema = SchemaFactory.createForClass(Citizen);
 
 export const CitizenSchemaFactory = () => {
-  const citizenSchema = CitizenSchema;
+	const Citizen_schema = CitizenSchema;
 
-  // Add pre-hook logic if needed
-  citizenSchema.pre('findOneAndDelete', async function (next: NextFunction) {
-    const citizen = await this.model.findOne(this.getFilter());
-
-    // Add cascading deletion logic if necessary
-    return next();
-  });
-
-  return citizenSchema;
+	Citizen_schema.pre('findOneAndDelete', async function (next: NextFunction) {
+		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
+		const Citizen = await this.model.findOne(this.getFilter());
+		await Promise.all([]);
+		return next();
+	});
+	return Citizen_schema;
 };
