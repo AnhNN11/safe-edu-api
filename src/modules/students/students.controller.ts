@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
+import { RolesGuard } from '@modules/auth/guards/roles.guard';
+import { Student } from './entities/student.entity';
 
 @Controller('students')
+@ApiTags('students')
+@ApiBearerAuth('token')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
   @Post()
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentsService.create(createStudentDto);
+  @ApiOperation({ summary: 'Create a new student' })
+  async create(@Body() createStudentDto: CreateStudentDto) {
+    return await this.studentsService.create(createStudentDto);
   }
 
   @Get()
-  findAll() {
-    return this.studentsService.findAll();
+  @ApiOperation({ summary: 'Retrieve all students' })
+  @UseGuards(JwtAccessTokenGuard, RolesGuard)
+  async findAll() {
+    return await this.studentsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentsService.findOne(+id);
-  }
+	@ApiOperation({ summary: 'Retrieve a user by ID' })
+	async findOne(@Param('id') id: string): Promise<Student> {
+  return await this.studentsService.findOneByCondition({ id });
+	}
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(+id, updateStudentDto);
-  }
+  @ApiOperation({ summary: 'Update a student by ID' })
+  async update(
+		@Param('id') id: string,
+		@Body() updateStudentDto: UpdateStudentDto,
+	): Promise<Student> {
+		return await this.studentsService.update(id, updateStudentDto);
+	}
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(+id);
-  }
+	@ApiOperation({ summary: 'Delete a student by ID' })
+	@UseGuards(JwtAccessTokenGuard, RolesGuard)
+	async remove(@Param('id') id: string): Promise<void> {
+		await this.studentsService.remove(id);
+	}
+
+  @Get(':phone_number')
+	@ApiOperation({ summary: 'Retrieve a user by phone_number' })
+	async findOneByPhoneNumber(@Param('phone_number') phone_number: string): Promise<Student> {
+		return await this.studentsService.findOneByCondition({ phone_number });
+	}
+
 }

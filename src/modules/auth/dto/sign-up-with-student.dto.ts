@@ -18,8 +18,5 @@ export class SignUpWithStudentDto {
     password: string;
 
     @IsNotEmpty()
-    role: string
-
-    @IsNotEmpty()
     organizationId: string;
 }

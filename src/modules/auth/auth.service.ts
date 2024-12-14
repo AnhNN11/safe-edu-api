@@ -106,7 +106,7 @@ export class AuthService {
 
 	async signUpWithStudent(sign_up_with_std_dto: SignUpWithStudentDto) {
 		try {
-			const { first_name, last_name, phone_number, role, organizationId } =
+			const { first_name, last_name, phone_number, organizationId } =
 				sign_up_with_std_dto;
 			const existed_student_phone_number =
 				await this.student_service.findOneByCondition({
@@ -128,25 +128,22 @@ export class AuthService {
 				last_name,
 				phone_number,
 				password: hashed_password,
-				role,
-				email: null,
-				username: first_name + last_name,
 				organizationId,
 			});
 
-			// const refresh_token = this.generateRefreshToken({
-			// 	userId: studentId,
-			// 	role: RolesEnum.STUDENT,
-			// });
-			// try {
-			// 	await this.storeRefreshToken(student._id.toString(), refresh_token);
-			// 	return {
-			// 		access_token: this.generateAccessToken({
-			// 			userId: student._id.toString(),
-			// 			role: RolesEnum.STUDENT,
-			// 		}),
-			// 		refresh_token,
-			// 	};
+			const refresh_token = this.generateRefreshToken({
+				userId: student._id.toString(),
+				role: 'Student',
+			});
+			try {
+				await this.storeRefreshToken(student._id.toString(), refresh_token);
+				return {
+					access_token: this.generateAccessToken({
+						userId: student._id.toString(),
+						role: 'Student',
+					}),
+					refresh_token,
+				};
 		} catch (error) {
 			console.error(
 				'Error storing refresh token or generating access token:',
@@ -160,4 +157,7 @@ export class AuthService {
 	catch(error) {
 		throw error;
 	}
+	
+	}
 }
+

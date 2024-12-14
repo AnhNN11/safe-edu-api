@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // INNER
@@ -11,6 +11,7 @@ import { Student, StudentSchemaFactory } from './entities/student.entity';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 import { StudentsRepository } from '@repositories/student.repository';
+import { AuthService } from '@modules/auth/auth.service';
 
 @Module({
 	imports: [
@@ -22,11 +23,12 @@ import { StudentsRepository } from '@repositories/student.repository';
 				imports: [MongooseModule.forFeature([])],
 			},
 		]),
-		OrganizationsModule,
+		forwardRef(() => OrganizationsModule),
 	],
 	controllers: [StudentsController],
 	providers: [
 		StudentsService,
+		OrganizationsService,
 		{ provide: 'StudentsRepositoryInterface', useClass: StudentsRepository },
 	],
 	exports: [StudentsService],
