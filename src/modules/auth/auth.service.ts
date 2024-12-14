@@ -28,6 +28,7 @@ import { AdminService } from '@modules/admin/admin.service';
 import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { RolesEnum } from 'src/enums/roles..enum';
 import { CitizensService } from '@modules/citizens/Citizens.service';
+import { Citizen } from '@modules/citizens/entities/Citizen.entity';
 
 @Injectable()
 export class AuthService {
@@ -97,6 +98,7 @@ export class AuthService {
 	// 	}
 	// }
 
+
 	async storeRefreshTokenForStudent(_id: string, token: string): Promise<void> {
 		try {
 			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
@@ -112,6 +114,72 @@ export class AuthService {
 			await this.citizen_service.setCurrentRefreshToken(_id, hashed_token);
 		} catch (error) {
 			throw error;
+		}
+	}
+
+	async signIn(_id: string) {
+		try {
+			const [student, citizen] = await Promise.all([
+				await this.student_service.findOneByCondition({ _id }),
+				await this.citizen_service.findOneByCondition({ _id })
+			]);
+
+			if (student) {
+				console.log("hello" + student)
+				const access_token = this.generateAccessToken({
+					userId: student._id.toString(),
+					role: 'Student',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: student._id.toString(),
+					role: 'Student',
+				});
+				await this.storeRefreshTokenForStudent(_id, refresh_token);
+				return {
+					access_token,
+					refresh_token,
+				};
+			} 
+
+			if (citizen) {
+				const access_token = this.generateAccessToken({
+					userId: citizen._id.toString(),
+					role: 'Citizen',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: citizen._id.toString(),
+					role: 'Citizen',
+				});
+				await this.storeRefreshTokenForStudent(_id, refresh_token);
+				return {
+					access_token,
+					refresh_token,
+				};
+			}
+		} catch (error) {
+			throw error;
+		}
+	}
+
+
+	async getAuthenticatedUser(phone_number: string, password: string): Promise<Student | Citizen> {
+		try {
+			const student = await this.student_service.findOneByCondition({ phone_number })
+			if (student) {
+				await this.verifyPlainContentWithHashedContent(password, student.password);
+				return student;
+			}
+			
+			const citizen = await this.citizen_service.findOneByCondition({ phone_number });
+			if (citizen) {
+				await this.verifyPlainContentWithHashedContent(password, citizen.password);
+				return citizen;
+			}
+		} catch (error) {
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.WRONG_CREDENTIALS,
+				details: 'Wrong credentials!!',
+			});
 		}
 	}
 
@@ -164,11 +232,9 @@ export class AuthService {
 				'An error occurred while processing tokens. Please try again.',
 			);
 		}
-	}
-	catch(error) {
-		throw error;
-	}
-	
+		} catch(error) {
+			throw error;
+		}	
 	}
 
 	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
@@ -223,5 +289,22 @@ export class AuthService {
 	catch(error) {
 		throw error;
 	}
+	}
+
+	async verifyOTP(otp: string) {
+		if (otp == "000000") {
+			return { 
+				success: true, 
+				message: "OTP Verified Successfully"
+			}
+		} else {
+			throw new HttpException(
+				{
+				  status: "error",
+				  message: "Invalid OTP",
+				},
+				HttpStatus.BAD_REQUEST, 
+			);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
@@ -15,6 +15,9 @@ import {
 import { GoogleAuthGuard } from './guards/google-oauth.guard';
 import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
 import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { access_token_public_key } from 'src/constraints/jwt.constraint';
+import { VerifiedOTPDto } from './dto/verified-otp';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -88,5 +91,17 @@ export class AuthController {
 	@ApiOperation({ summary: 'sign up with citizen' })
 	async signUpWithCitizen(@Body() sign_up_with_citizen_dto: SignUpWithCitizenDto) {
 		return await this.auth_service.signUpWithCitizen(sign_up_with_citizen_dto);
+	}
+
+	@Post('sign-in')
+	@ApiOperation({ summary: 'sign in'})
+	async signIn(@Body() sign_in_dto: SignInDto){
+		return await this.auth_service.signIn(sign_in_dto.id);
+	}
+
+	@Post('verify-otp')
+	@ApiOperation({ summary: 'verify-otp'})
+	async verifiedOTP(@Body() verified_otp: VerifiedOTPDto) {
+		return await this.auth_service.verifyOTP(verified_otp.otp);
 	}
 }

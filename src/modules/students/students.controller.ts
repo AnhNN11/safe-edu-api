@@ -46,11 +46,12 @@ export class StudentsController {
 	@UseGuards(JwtAccessTokenGuard, RolesGuard)
 	async remove(@Param('id') id: string): Promise<void> {
 		await this.studentsService.remove(id);
-	}
+	} 
 
-  @Get(':phone_number')
+  @Get('phone/:phone_number')
 	@ApiOperation({ summary: 'Retrieve a user by phone_number' })
 	async findOneByPhoneNumber(@Param('phone_number') phone_number: string): Promise<Student> {
+    console.log("hello" + " " +phone_number);
 		return await this.studentsService.findOneByCondition({ phone_number });
 	}
 
