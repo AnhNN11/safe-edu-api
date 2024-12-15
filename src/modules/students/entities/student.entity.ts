@@ -32,7 +32,6 @@ export class Student extends BaseEntity {
 	constructor(Student: {
 		first_name?: string;
 		last_name?: string;
-		student_name?: string;
 		password?: string;
 		gender?: GENDER;
 		phone_number?: string;
@@ -40,7 +39,6 @@ export class Student extends BaseEntity {
 		super();
 		this.first_name = Student?.first_name;
 		this.last_name = Student?.last_name;
-		this.student_name = this.first_name + this.last_name;
 		this.password = Student?.password;
 		this.gender = Student?.gender;
 		this.phone_number = Student?.phone_number;
@@ -69,20 +67,11 @@ export class Student extends BaseEntity {
 	@Prop({
 		match: /^([+]\d{2})?\d{10}$/,
 	})
-	phone_number?: string;
-
-	@Prop({
-		required: false,
-		unique: true,
-	})
-	student_name: string;
+	phone_number: string;
 
 	@Exclude()
 	@Prop()
 	password?: string;
-
-	@Prop({ default: false })
-	is_registered_with_google?: boolean;
 
 	@Prop({ type: Types.ObjectId, 
 			ref: 'Organization', 

@@ -26,6 +26,8 @@ import { AdminRepository } from '@repositories/admin.repository';
     AdminService,
     { provide: 'AdminRepositoryInterface', useClass: AdminRepository},
   ],
-  exports: [AdminService],
+  exports: [AdminService,
+    'AdminRepositoryInterface'
+  ],
 })
 export class AdminModule {}

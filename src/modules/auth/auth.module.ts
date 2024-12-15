@@ -12,9 +12,13 @@ import { StudentsModule } from '@modules/students/students.module';
 import { AdminService } from '@modules/admin/admin.service';
 import { StudentsService } from '@modules/students/students.service';
 import { SupervisorsService } from '@modules/supervisors/supervisors.service';
+import { OrganizationsModule } from '@modules/organizations/organizations.module';
+import { AdminModule } from '@modules/admin/admin.module';
+import { CitizensService } from '@modules/citizens/Citizens.service';
+import { CitizensModule } from '@modules/citizens/citizens.module';
 
 @Module({
-	imports: [StudentsModule, PassportModule, JwtModule.register({})],
+	imports: [StudentsModule, AdminModule, PassportModule, JwtModule.register({}), OrganizationsModule, CitizensModule],
 	controllers: [AuthController],
 	providers: [
 		AuthService,
@@ -25,6 +29,7 @@ import { SupervisorsService } from '@modules/supervisors/supervisors.service';
 		StudentsService,
 		AdminService,
 		SupervisorsService,
+		CitizensService,
 	],
 })
 export class AuthModule {}

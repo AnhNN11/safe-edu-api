@@ -8,6 +8,5 @@ export interface StudentsRepositoryInterface {
 	getStudentWithRole(StudentId: string): Promise<Student | null>;
 	update(id: string, data: Partial<Student>): Promise<Student | null>;
 	remove(id: string): Promise<boolean>;
-	findOne(condition: FilterQuery<Student>): Promise<Student | null>;  
-	findById(id : string)
+	findOneByCondition(condition: FilterQuery<Student>): Promise<Student | null>;  
 }

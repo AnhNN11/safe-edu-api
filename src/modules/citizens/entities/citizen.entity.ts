@@ -1,7 +1,13 @@
 import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Model, Types } from 'mongoose';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
+
+// INNER
+
+// OUTER
+import { Organization } from '@modules/organizations/entities/organization.entity';
 
 export type CitizenDocument = HydratedDocument<Citizen>;
 
@@ -10,6 +16,7 @@ export enum GENDER {
 	FEMALE = 'Female',
 	OTHER = 'Other',
 }
+
 @Schema({
   timestamps: {
     createdAt: 'created_at',
@@ -94,11 +101,13 @@ export class Citizen extends BaseEntity {
 export const CitizenSchema = SchemaFactory.createForClass(Citizen);
 
 export const CitizenSchemaFactory = () => {
-  const citizenSchema = CitizenSchema;
-  citizenSchema.pre('findOneAndDelete', async function (next: NextFunction) {
-    const citizen = await this.model.findOne(this.getFilter());
-    return next();
-  });
+	const Citizen_schema = CitizenSchema;
 
-  return citizenSchema;
+	Citizen_schema.pre('findOneAndDelete', async function (next: NextFunction) {
+		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
+		const Citizen = await this.model.findOne(this.getFilter());
+		await Promise.all([]);
+		return next();
+	});
+	return Citizen_schema;
 };
