@@ -20,14 +20,14 @@ export class News extends BaseEntity {
 	constructor(news: {
 		title?: string;
 		content?: string;
-		imageUrl?: string;
+		image_Url?: string;
 		author?: string;
-		category_id?: mongoose.Schema.Types.ObjectId;
+		category_id?: mongoose.Types.ObjectId;
 	}) {
 		super();
 		this.title = news?.title;
 		this.content = news?.content;
-		this.imageUrl = news?.imageUrl;
+		this.image_Url = news?.image_Url;
 		this.author = news?.author;
 		this.category_id = news?.category_id;
 	}
@@ -37,7 +37,7 @@ export class News extends BaseEntity {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Category',
 	  })
-	  category_id:mongoose.Schema.Types.ObjectId ;
+	  category_id:mongoose.Types.ObjectId ;
 
 	@Prop({
 		required: true,
@@ -54,7 +54,7 @@ export class News extends BaseEntity {
 		default:
 			'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
 	})
-	imageUrl: string;
+	image_Url: string;
 
 	@Prop()
 	author: string;

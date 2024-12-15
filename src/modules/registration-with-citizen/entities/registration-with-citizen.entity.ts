@@ -6,48 +6,48 @@ import { NextFunction } from 'express';
 export type RegistrationWithCitizenDocument = HydratedDocument<RegistrationWithCitizen>;
 
 @Schema({
-  timestamps: {
-    createdAt: 'created_date', // Mapping to 'createdDate'
-    updatedAt: false, // No updatedAt field
-  },
-  toJSON: {
-    getters: true,
-    virtuals: true,
-  },
+	timestamps: {
+		createdAt: 'created_at',
+		updatedAt: 'updated_at',
+	},
+	toJSON: {
+		getters: true,
+		virtuals: true,
+	},
 })
+
 export class RegistrationWithCitizen extends BaseEntity {
   constructor(registration: {
-    competitionId?: number;
+    competition_Id?: mongoose.Types.ObjectId;
+    citizen_Id?: mongoose.Types.ObjectId;
     createdDate?: Date;
   }) {
     super();
-    this.competitionId = registration?.competitionId;
-    this.createdDate = registration?.createdDate;
+    this.citizen_Id = registration?.citizen_Id;
+    this.competition_Id = registration?.competition_Id;
   }
 
-  @Prop({
-    required: true,
-    type: Number,
-  })
-  competitionId: number;
+    @Prop({
+      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Student', 
+    })
+    citizen_Id: mongoose.Types.ObjectId;
 
   @Prop({
     required: true,
-    type: Date,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Competition',
   })
-  createdDate: Date; // Registration date
+  competition_Id: mongoose.Types.ObjectId;
 }
 
 export const RegistrationWithCitizenSchema = SchemaFactory.createForClass(RegistrationWithCitizen);
 
 export const RegistrationWithCitizenSchemaFactory = () => {
   const registrationSchema = RegistrationWithCitizenSchema;
-
-  // Add pre-hook logic if needed
   registrationSchema.pre('findOneAndDelete', async function (next: NextFunction) {
     const registration = await this.model.findOne(this.getFilter());
-
-    // Add cascading deletion logic if necessary
     return next();
   });
 

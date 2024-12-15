@@ -7,8 +7,8 @@ export type SupervisorOrganizationDocument = HydratedDocument<SupervisorOrganiza
 
 @Schema({
   timestamps: {
-    createdAt: 'created_at', // Mapping to 'createdAt'
-    updatedAt: false, // No updatedAt field
+    createdAt: 'created_at', 
+    updatedAt: 'updated_at', 
   },
   toJSON: {
     getters: true,
@@ -17,37 +17,35 @@ export type SupervisorOrganizationDocument = HydratedDocument<SupervisorOrganiza
 })
 export class SupervisorOrganization extends BaseEntity {
   constructor(supervisorOrganization: {
-    supervisorId?: number;
-    organizationId?: number;
+    supervisor_Id?: mongoose.Types.ObjectId;
+    organization_Id?: mongoose.Types.ObjectId;
   }) {
     super();
-    this.supervisorId = supervisorOrganization?.supervisorId;
-    this.organizationId = supervisorOrganization?.organizationId;
+    this.supervisor_Id = supervisorOrganization?.supervisor_Id;
+    this.organization_Id = supervisorOrganization?.organization_Id;
   }
 
   @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Supervisor',
     required: true,
-    type: Number,
   })
-  supervisorId: number;
-
+  supervisor_Id: mongoose.Types.ObjectId;
+  
   @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
     required: true,
-    type: Number,
   })
-  organizationId: number;
+  organization_Id: mongoose.Types.ObjectId;
 }
 
 export const SupervisorOrganizationSchema = SchemaFactory.createForClass(SupervisorOrganization);
 
 export const SupervisorOrganizationSchemaFactory = () => {
   const supervisorOrganizationSchema = SupervisorOrganizationSchema;
-
-  // Add pre-hook logic if needed
   supervisorOrganizationSchema.pre('findOneAndDelete', async function (next: NextFunction) {
     const supervisorOrganization = await this.model.findOne(this.getFilter());
-
-    // Add cascading deletion logic if necessary
     return next();
   });
 

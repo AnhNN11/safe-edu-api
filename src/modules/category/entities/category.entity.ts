@@ -16,19 +16,20 @@ export type CategoryDocument = HydratedDocument<Category>;
 		virtuals: true,
 	},
 })
+
 export class Category extends BaseEntity {
 	constructor(Category: {
 		category_name?: string;
-        topic_id?:mongoose.Schema.Types.ObjectId;
+        topic_id?: mongoose.Types.ObjectId;
 		description?: string;
-        image?: string;
+        image_url?: string;
 		
 	}) {
 		super();
 		this.category_name = Category?.category_name;
         this.topic_id = Category?.topic_id;
         this.description = Category?.description;
-        this.image = Category?.image;
+        this.image_url = Category?.image_url;
 	}
 	
 	@Prop({
@@ -45,19 +46,27 @@ export class Category extends BaseEntity {
 		required: true,
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Topic',
-	  })
-	  topic_id: mongoose.Schema.Types.ObjectId;
+	})
+	topic_id: mongoose.Types.ObjectId;
 
     @Prop()
 	description: string;
+	
 	@Prop({
-		default:
-			'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
+		required: false,
+    	default: null,
 	})
-	image?: string;
+	image_url: string;
 
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'News' }],
+	})
+	news: mongoose.Types.ObjectId[];
 
-
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
+	})
+	articles: mongoose.Types.ObjectId[];
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
@@ -67,11 +76,7 @@ export const CategorySchemaFactory = () => {
 
   category_schema.pre('findOneAndDelete', async function (next: NextFunction) {
     const category = await this.model.findOne(this.getFilter());
-    
-
-
     await Promise.all([]); 
-
     return next();
   });
 
