@@ -20,13 +20,13 @@ export class Topic extends BaseEntity {
 	constructor(topic: {
 		topic_name?: string;
 		description?: string;
-        image?: string;
+        image_url?: string;
 		
 	}) {
 		super();
 		this.topic_name = topic?.topic_name;
         this.description = topic?.description;
-        this.image = topic?.image;
+        this.image_url = topic?.image_url;
 	}
 	
 	@Prop({
@@ -42,10 +42,10 @@ export class Topic extends BaseEntity {
     @Prop()
 	description: string;
 	@Prop({
-		default:
-			'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
+		required: false,
+		default: null,
 	})
-	image?: string;
+	image_url: string;
 
 	@Prop({
 		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
@@ -60,11 +60,7 @@ export const TopicSchemaFactory = () => {
 
   topic_schema.pre('findOneAndDelete', async function (next: NextFunction) {
     const topic = await this.model.findOne(this.getFilter());
-    
-
-
     await Promise.all([]); 
-
     return next();
   });
 

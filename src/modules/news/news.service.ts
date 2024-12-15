@@ -51,7 +51,7 @@ export class NewService {
   ): Promise<News> {
     const updatedNews = await this.findOneById(id);
 
-    let imageUrl = updateNewDto.imageUrl || updatedNews.imageUrl;
+    let imageUrl = updateNewDto.imageUrl || updatedNews.image_Url;
 
     // Handle image upload if a new file is provided
     if (typeof updateNewDto.imageUrl !== 'string' && updateNewDto.imageUrl) {

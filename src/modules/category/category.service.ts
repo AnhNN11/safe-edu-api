@@ -29,7 +29,7 @@ export class CategoryService {
   ): Promise<Category> {
     const existingCategory = await this.findOne(id);
 
-    let imageUrl = updateDto.image || existingCategory.image;
+    let imageUrl = updateDto.image || existingCategory.image_url;
 
     // Handle image upload if a new file is provided
     if (typeof updateDto.image !== 'string' && updateDto.image) {
