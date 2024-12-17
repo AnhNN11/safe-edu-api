@@ -1,4 +1,4 @@
-import { Student } from '@modules/Students/entities/student.entity';
+import { Student } from '@modules/students/entities/student.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
