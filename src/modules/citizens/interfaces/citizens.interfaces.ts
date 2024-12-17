@@ -1,4 +1,4 @@
-import { Citizen } from '@modules/Citizens/entities/Citizen.entity';
+import { Citizen } from '@modules/citizens/entities/Citizen.entity';
 import { FilterQuery } from 'mongoose';
 import { FindAllResponse, QueryParams } from 'src/types/common.type';
 
