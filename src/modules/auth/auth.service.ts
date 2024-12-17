@@ -1,4 +1,4 @@
-import { Student } from '@modules/Students/entities/Student.entity';
+import { Student } from '@modules/Students/entities/student.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -27,8 +27,8 @@ import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
 import { AdminService } from '@modules/admin/admin.service';
 import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { RolesEnum } from 'src/enums/roles..enum';
-import { CitizensService } from '@modules/citizens/Citizens.service';
-import { Citizen } from '@modules/citizens/entities/Citizen.entity';
+import { CitizensService } from '@modules/citizens/citizens.service';
+import { Citizen } from '@modules/citizens/entities/citizen.entity';
 
 @Injectable()
 export class AuthService {

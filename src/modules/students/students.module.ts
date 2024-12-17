@@ -13,7 +13,7 @@ import { StudentsService } from './students.service';
 import { StudentsRepository } from '@repositories/student.repository';
 import { AuthService } from '@modules/auth/auth.service';
 import { CitizensModule } from '@modules/citizens/citizens.module';
-import { CitizensService } from '@modules/citizens/Citizens.service';
+import { CitizensService } from '@modules/citizens/citizens.service';
 
 @Module({
 	imports: [

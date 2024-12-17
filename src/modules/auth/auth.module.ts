@@ -14,7 +14,7 @@ import { StudentsService } from '@modules/students/students.service';
 import { SupervisorsService } from '@modules/supervisors/supervisors.service';
 import { OrganizationsModule } from '@modules/organizations/organizations.module';
 import { AdminModule } from '@modules/admin/admin.module';
-import { CitizensService } from '@modules/citizens/Citizens.service';
+import { CitizensService } from '@modules/citizens/citizens.service';
 import { CitizensModule } from '@modules/citizens/citizens.module';
 
 @Module({

@@ -1,4 +1,4 @@
-import { Student } from '@modules/Students/entities/Student.entity';
+import { Student } from '@modules/students/entities/student.entity';
 import { FilterQuery } from 'mongoose';
 import { FindAllResponse, QueryParams } from 'src/types/common.type';
 

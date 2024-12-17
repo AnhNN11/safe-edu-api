@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 // OUTER
 
-import { ManagerController } from './Manager.controller';
+import { ManagerController } from './manager.controller';
 import { Manager, ManagerSchemaFactory } from './entities/manager.entity';
 import { ManagerRepository } from '@repositories/manager.repository';
 import { ManagerService } from './manager.service';

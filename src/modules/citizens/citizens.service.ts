@@ -1,9 +1,9 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCitizenDto } from './dto/create-Citizen.dto';
-import { UpdateCitizenDto } from './dto/update-Citizen.dto';
+import { CreateCitizenDto } from './dto/create-citizen.dto';
+import { UpdateCitizenDto } from './dto/update-citizen.dto';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 import { FilterQuery } from 'mongoose';
-import { Citizen } from './entities/Citizen.entity';
+import { Citizen } from './entities/citizen.entity';
 import { CitizensRepositoryInterface } from './interfaces/citizens.interfaces';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { StudentsRepositoryInterface } from '@modules/students/interfaces/students.interface';
@@ -12,7 +12,7 @@ import { StudentsRepositoryInterface } from '@modules/students/interfaces/studen
 export class CitizensService {
 	constructor(
 		@Inject('CitizensRepositoryInterface')
-		private readonly CitizensRepository: CitizensRepositoryInterface,
+		private readonly citizensRepository: CitizensRepositoryInterface,
 		private readonly organizationService: OrganizationsService,
 		@Inject('StudentsRepositoryInterface')
 		private readonly studentsRepository: StudentsRepositoryInterface, 
@@ -20,12 +20,12 @@ export class CitizensService {
 
 	async setCurrentRefreshToken(_id: string, refreshToken: string): Promise<void> {
 		try {
-		  const Citizen = await this.CitizensRepository.findOneByCondition({ _id });
+		  const Citizen = await this.citizensRepository.findOneByCondition({ _id });
 		  if (!Citizen) {
 			throw new Error('User not found');
 		  }
 		  	Citizen.current_refresh_token = refreshToken;  
-			await this.CitizensRepository.update(_id, { current_refresh_token: refreshToken }); 
+			await this.citizensRepository.update(_id, { current_refresh_token: refreshToken }); 
 		  	console.log(`Refresh token for user ${_id} has been updated.`);
 		} catch (error) {
 		  console.error(`Failed to set refresh token for user ${_id}:`, error);
@@ -36,7 +36,7 @@ export class CitizensService {
 		const { first_name, last_name, phone_number} = createDto;
 		const [existed_phone_number_student, existed_phone_number_student_citizen] = await Promise.all([
 			await this.studentsRepository.findOneByCondition({ phone_number }),
-			await this.CitizensRepository.findOneByCondition({ phone_number })
+			await this.citizensRepository.findOneByCondition({ phone_number })
 		]);
 
 		if (existed_phone_number_student || existed_phone_number_student_citizen) {
@@ -46,7 +46,7 @@ export class CitizensService {
 			});
 		}
 
-		const citizen = await this.CitizensRepository.create({
+		const citizen = await this.citizensRepository.create({
 			first_name,
 			last_name,
 			phone: phone_number,
@@ -55,14 +55,14 @@ export class CitizensService {
 	  }
 
 	  async findAll() {
-		return await this.CitizensRepository.findAll();
+		return await this.citizensRepository.findAll();
 	  }
 
 	async findOne(_id: string) {
-		return await this.CitizensRepository.findOneByCondition({_id});
+		return await this.citizensRepository.findOneByCondition({_id});
 	}
 	async findOneByCondition(condition: FilterQuery<Citizen>, action: string): Promise<Citizen | null> {
-		const citizen = await this.CitizensRepository.findOneByCondition(condition);
+		const citizen = await this.citizensRepository.findOneByCondition(condition);
 		if (!citizen) {
 			if (action === 'sign-up' || action === 'sign-in') {
 				return citizen;
@@ -80,7 +80,7 @@ export class CitizensService {
 		id: string,
 		updateCitizenDto: UpdateCitizenDto,
 	  ): Promise<Citizen> {
-		const updatedUser = await this.CitizensRepository.update(id,{...updateCitizenDto});
+		const updatedUser = await this.citizensRepository.update(id,{...updateCitizenDto});
 		if (!updatedUser) {
 			throw new BadRequestException({
 				message: ERRORS_DICTIONARY.CITIZEN_NOT_FOUND,
@@ -91,14 +91,14 @@ export class CitizensService {
 	  }
 
 	  async remove(id: string): Promise<void> {
-		const result = await this.CitizensRepository.remove(id);
+		const result = await this.citizensRepository.remove(id);
 		if (!result) {
 		  throw new NotFoundException(`Citizen with ID ${id} not found`);
 		}
 	  }
 
 	async delete(id: string): Promise<Citizen> {
-		return await this.CitizensRepository.update(id, {
+		return await this.citizensRepository.update(id, {
 		  deleted_at: new Date(),
 		});
 	}
