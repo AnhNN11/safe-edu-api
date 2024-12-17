@@ -19,8 +19,8 @@ export class AdminService {
 	constructor(
 		@Inject('AdminRepositoryInterface')
 		private readonly adminRepository: AdminRepositoryInterface,
-		private readonly configService: ConfigService,
-	) {}
+		// private readonly configService: ConfigService,
+	) { }
 
 	async setCurrentRefreshToken(
 		adminId: string,
@@ -48,9 +48,21 @@ export class AdminService {
 	async findOneByCondition(
 		condition: FilterQuery<Admin>,
 	): Promise<Admin | null> {
-		return this.adminRepository.findOne(condition);
+		console.log('Condition:', condition);
+		const result = await this.adminRepository.findOne(condition);
+		console.log('Result:', result);
+		return result;
 	}
 
+
+	async findOneById(
+		adminId: string,
+	): Promise<Admin | null> {
+
+		const admin = await this.adminRepository.findById(adminId);
+		console.log('Result:', admin);
+		return admin;
+	}
 	//
 
 	async create(createDto: CreateAdminDto): Promise<Admin> {

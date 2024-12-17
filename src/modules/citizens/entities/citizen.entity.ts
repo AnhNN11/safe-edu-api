@@ -1,7 +1,13 @@
 import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Model, Types } from 'mongoose';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
+
+// INNER
+
+// OUTER
+import { Organization } from '@modules/organizations/entities/organization.entity';
 
 export type CitizenDocument = HydratedDocument<Citizen>;
 
@@ -10,6 +16,7 @@ export enum GENDER {
 	FEMALE = 'Female',
 	OTHER = 'Other',
 }
+
 @Schema({
   timestamps: {
     createdAt: 'created_at',
@@ -26,7 +33,7 @@ export class Citizen extends BaseEntity {
     first_name?: string;
     last_name?: string;
     avatar?: string;
-    phone?: string;
+    phone_number?: string;
     gender?: GENDER;
   }) {
     super();
@@ -34,7 +41,7 @@ export class Citizen extends BaseEntity {
     this.first_name = citizen?.first_name;
     this.last_name = citizen?.last_name;
     this.avatar = citizen?.avatar;
-    this.phone = citizen?.phone;
+    this.phone_number = citizen?.phone_number;
     this.gender = citizen?.gender;
   }
 
@@ -71,12 +78,16 @@ export class Citizen extends BaseEntity {
     required: true,
     match: /^[0-9]{10}$/,
   })
-  phone: string;
+  phone_number: string;
 
   @Prop({
       enum: GENDER,
   })
   gender: GENDER;
+
+  @Prop()
+	@Exclude()
+	current_refresh_token?: string;
 
   @Prop({
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],
@@ -94,11 +105,13 @@ export class Citizen extends BaseEntity {
 export const CitizenSchema = SchemaFactory.createForClass(Citizen);
 
 export const CitizenSchemaFactory = () => {
-  const citizenSchema = CitizenSchema;
-  citizenSchema.pre('findOneAndDelete', async function (next: NextFunction) {
-    const citizen = await this.model.findOne(this.getFilter());
-    return next();
-  });
+	const Citizen_schema = CitizenSchema;
 
-  return citizenSchema;
+	Citizen_schema.pre('findOneAndDelete', async function (next: NextFunction) {
+		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
+		const Citizen = await this.model.findOne(this.getFilter());
+		await Promise.all([]);
+		return next();
+	});
+	return Citizen_schema;
 };

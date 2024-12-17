@@ -11,6 +11,7 @@ import { Student, StudentSchemaFactory } from './entities/student.entity';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 import { StudentsRepository } from '@repositories/student.repository';
+import { AuthService } from '@modules/auth/auth.service';
 
 @Module({
 	imports: [
@@ -29,6 +30,8 @@ import { StudentsRepository } from '@repositories/student.repository';
 		StudentsService,
 		{ provide: 'StudentsRepositoryInterface', useClass: StudentsRepository },
 	],
-	exports: [StudentsService],
+	exports: [StudentsService,
+		'StudentsRepositoryInterface',
+	],
 })
 export class StudentsModule {}

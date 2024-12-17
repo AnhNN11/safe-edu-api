@@ -1,4 +1,4 @@
-import { Student } from '@modules/Students/entities/Student.entity';
+import { Student } from '@modules/students/entities/student.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -11,6 +11,7 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
+import nodemailer from "nodemailer";
 import { StudentsService } from '@modules/students/students.service';
 
 // INNER
@@ -27,7 +28,10 @@ import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
 import { AdminService } from '@modules/admin/admin.service';
 import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { RolesEnum } from 'src/enums/roles..enum';
-
+import { CitizensService } from '@modules/citizens/citizens.service';
+import { Citizen } from '@modules/citizens/entities/citizen.entity';
+import {  HttpServer } from '@nestjs/common';
+import {MailerService} from '@nestjs-modules/mailer';
 @Injectable()
 export class AuthService {
 	private SALT_ROUND = 11;
@@ -35,8 +39,31 @@ export class AuthService {
 		private config_service: ConfigService,
 		private readonly admin_service: AdminService,
 		private readonly student_service: StudentsService,
+		private readonly citizen_service: CitizensService,
 		private readonly jwt_service: JwtService,
+		private readonly mailer_service: MailerService,
 	) {}
+
+	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
+		console.log('auth');
+		
+		try {
+			let admin = await this.admin_service.findOneByCondition({
+				email: sign_up_dto.email,
+			});
+			// kiem tra neu admin da co duoc dang ky trong db
+			if (admin) {
+			
+				return await this.signInAdmin(admin._id.toString());
+			}
+			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
+			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
+			
+		} catch (error) {
+			throw error;
+		}
+	}
+
 
 	private async verifyPlainContentWithHashedContent(
 		plain_text: string,
@@ -95,18 +122,118 @@ export class AuthService {
 	// 	}
 	// }
 
-	async storeRefreshToken(id: string, token: string): Promise<void> {
+
+	async storeRefreshTokenForStudent(_id: string, token: string): Promise<void> {
 		try {
 			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
-			await this.admin_service.setCurrentRefreshToken(id, hashed_token);
+			await this.student_service.setCurrentRefreshToken(_id, hashed_token);
 		} catch (error) {
 			throw error;
 		}
 	}
 
+	async storeRefreshTokenForCitizen(_id: string, token: string): Promise<void> {
+		try {
+			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
+			await this.citizen_service.setCurrentRefreshToken(_id, hashed_token);
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async signInAdmin(_id:string){
+		const admin =await this.admin_service.findOneByCondition({ _id })
+		if(admin)
+			{
+				console.log("hello" + admin)
+				const access_token = this.generateAccessToken({
+					userId: admin._id.toString(),
+					role: 'Admin',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: admin._id.toString(),
+					role: 'admin',
+				});
+				
+				return {
+					access_token,
+					refresh_token,
+				};
+			} 
+	}
+
+	async signIn(_id: string) {
+		try {
+			const [student, citizen] = await Promise.all([
+				await this.student_service.findOneByCondition({ _id }),
+				await this.citizen_service.findOneByCondition({ _id }),
+				
+			]);
+
+			if (student) {
+				console.log("hello" + student)
+				const access_token = this.generateAccessToken({
+					userId: student._id.toString(),
+					role: 'Student',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: student._id.toString(),
+					role: 'Student',
+				});
+				await this.storeRefreshTokenForStudent(_id, refresh_token);
+				return {
+					access_token,
+					refresh_token,
+				};
+			} 
+
+			
+
+			if (citizen) {
+				const access_token = this.generateAccessToken({
+					userId: citizen._id.toString(),
+					role: 'Citizen',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: citizen._id.toString(),
+					role: 'Citizen',
+				});
+				await this.storeRefreshTokenForStudent(_id, refresh_token);
+				return {
+					access_token,
+					refresh_token,
+				};
+			}
+		} catch (error) {
+			throw error;
+		}
+	}
+
+
+	async getAuthenticatedUser(phone_number: string, password: string): Promise<Student | Citizen> {
+		try {
+			const student = await this.student_service.findOneByCondition({ phone_number })
+			if (student) {
+				await this.verifyPlainContentWithHashedContent(password, student.password);
+				return student;
+			}
+			
+			const citizen = await this.citizen_service.findOneByCondition({ phone_number });
+			if (citizen) {
+				await this.verifyPlainContentWithHashedContent(password, citizen.password);
+				return citizen;
+			}
+		} catch (error) {
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.WRONG_CREDENTIALS,
+				details: 'Wrong credentials!!',
+			});
+		}
+	}
+
 	async signUpWithStudent(sign_up_with_std_dto: SignUpWithStudentDto) {
 		try {
-			const { first_name, last_name, phone_number, role, organizationId } =
+			const { first_name, last_name, phone_number, organizationId } =
 				sign_up_with_std_dto;
 			const existed_student_phone_number =
 				await this.student_service.findOneByCondition({
@@ -128,25 +255,75 @@ export class AuthService {
 				last_name,
 				phone_number,
 				password: hashed_password,
-				role,
-				email: null,
-				username: first_name + last_name,
 				organizationId,
 			});
 
-			// const refresh_token = this.generateRefreshToken({
-			// 	userId: studentId,
-			// 	role: RolesEnum.STUDENT,
-			// });
-			// try {
-			// 	await this.storeRefreshToken(student._id.toString(), refresh_token);
-			// 	return {
-			// 		access_token: this.generateAccessToken({
-			// 			userId: student._id.toString(),
-			// 			role: RolesEnum.STUDENT,
-			// 		}),
-			// 		refresh_token,
-			// 	};
+			const refresh_token = this.generateRefreshToken({
+				userId: student._id.toString(),
+				role: 'Student',
+			});
+			try {
+				await this.storeRefreshTokenForStudent(student._id.toString(), refresh_token);
+				return {
+					access_token: this.generateAccessToken({
+						userId: student._id.toString(),
+						role: 'Student',
+					}),
+					refresh_token,
+				};
+		} catch (error) {
+			console.error(
+				'Error storing refresh token or generating access token:',
+				error,
+			);
+			throw new Error(
+				'An error occurred while processing tokens. Please try again.',
+			);
+		}
+		} catch(error) {
+			throw error;
+		}	
+	}
+
+	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
+		try {
+			const { first_name, last_name, phone_number } =
+			sign_up_with_citizen_dto;
+			const existed_student_phone_number =
+				await this.student_service.findOneByCondition({
+					phone_number: sign_up_with_citizen_dto.phone_number,
+				});
+
+			if (first_name == null || last_name == null) {
+				throw new ConflictException({
+					message: ERRORS_DICTIONARY.STUDENT_NAME_IS_NULL,
+					details: 'Name can not be null or empty!!',
+				});
+			}
+			const hashed_password = await bcrypt.hash(
+				sign_up_with_citizen_dto.password,
+				this.SALT_ROUND,
+			);
+			const citizen = await this.citizen_service.create({
+				first_name,
+				last_name,
+				phone_number,
+				password: hashed_password,
+			});
+
+			const refresh_token = this.generateRefreshToken({
+				userId: citizen._id.toString(),
+				role: 'Student',
+			});
+			try {
+				await this.citizen_service.setCurrentRefreshToken(citizen._id.toString(), refresh_token);
+				return {
+					access_token: this.generateAccessToken({
+						userId: citizen._id.toString(),
+						role: 'Citizen',
+					}),
+					refresh_token,
+				};
 		} catch (error) {
 			console.error(
 				'Error storing refresh token or generating access token:',
@@ -159,5 +336,33 @@ export class AuthService {
 	}
 	catch(error) {
 		throw error;
+	}
+	}
+
+	async verifyOTP(otp: string) {
+		if (otp == "000000") {
+			return { 
+				success: true, 
+				message: "OTP Verified Successfully"
+			}
+		} else {
+			throw new HttpException(
+				{
+				  status: "error",
+				  message: "Invalid OTP",
+				},
+				HttpStatus.BAD_REQUEST, 
+			);
+		}
+	}
+
+	sendMail(): void{
+		this.mailer_service.sendMail({
+			to: 'monkeyold113@gmail.com' ,
+			from: 'baopqtde181053@fpt.edu.vn',
+			subject: 'Verify email',
+			text: 'hello',
+			html: '<b>Welcome to Safe Edu</b>'
+		})
 	}
 }

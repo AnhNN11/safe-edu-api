@@ -19,7 +19,7 @@ export class SupervisorsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.supervisorsService.findOne(+id);
+    return this.supervisorsService.findOne(id);
   }
 
   @Patch(':id')

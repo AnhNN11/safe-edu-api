@@ -26,6 +26,7 @@ import { RegistrationWithStudentModule } from '@modules/registration-with-studen
 import { SupervisorsModule } from '@modules/supervisors/supervisors.module';
 import { SupervisorsOrganizationsModule } from '@modules/supervisors-organizations/supervisors-organizations.module';
 import { UserAchievementsModule } from '@modules/user-achievements/user-achievements.module';
+import { AuthModule } from '@modules/auth/auth.module';
 
 @Module({
 	imports: [
@@ -81,6 +82,7 @@ import { UserAchievementsModule } from '@modules/user-achievements/user-achievem
 		SupervisorsModule,
 		SupervisorsOrganizationsModule,
 		UserAchievementsModule,
+		AuthModule
 	],
 	controllers: [AppController],
 	providers: [
