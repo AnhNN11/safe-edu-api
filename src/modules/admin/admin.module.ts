@@ -1,3 +1,4 @@
+import { AdminRepository } from '@repositories/admin.repository';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -9,7 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { Admin, AdminSchemaFactory } from './entities/admin.entity';
-import { AdminRepository } from '@repositories/admin.repository';
+
 
 @Module({
   imports: [

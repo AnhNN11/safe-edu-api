@@ -1,3 +1,4 @@
+import { StudentsRepository } from '@repositories/student.repository';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -10,7 +11,7 @@ import { OrganizationsModule } from '@modules/organizations/organizations.module
 import { Student, StudentSchemaFactory } from './entities/student.entity';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
-import { StudentsRepository } from '@repositories/student.repository';
+
 import { AuthService } from '@modules/auth/auth.service';
 import { CitizensModule } from '@modules/citizens/citizens.module';
 import { CitizensService } from '@modules/citizens/citizens.service';
