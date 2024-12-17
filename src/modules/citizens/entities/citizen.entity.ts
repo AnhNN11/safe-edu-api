@@ -24,34 +24,27 @@ export enum GENDER {
   },
   toJSON: {
     getters: true,
-    virtuals: true,
+    virtuals: true, 
   },
 })
 export class Citizen extends BaseEntity {
   constructor(citizen: {
-    password?: string;
     first_name?: string;
     last_name?: string;
     avatar?: string;
     phone?: string;
     gender?: GENDER;
+    date_of_birth?: Date;
   }) {
     super();
-    this.password = citizen?.password;
     this.first_name = citizen?.first_name;
     this.last_name = citizen?.last_name;
     this.avatar = citizen?.avatar;
     this.phone = citizen?.phone;
     this.gender = citizen?.gender;
+    this.date_of_birth = citizen?.date_of_birth;
   }
 
-  @Prop({
-    required: true,
-    minlength: 6,
-    maxlength: 100,
-    set: (password: string) => password.trim(),
-  })
-  password: string;
 
   @Prop({
     required: true,
@@ -84,6 +77,13 @@ export class Citizen extends BaseEntity {
       enum: GENDER,
   })
   gender: GENDER;
+
+  @Prop()
+	date_of_birth?: Date;
+
+  @Prop()
+	@Exclude()
+	current_refresh_token?: string;
 
   @Prop({
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],

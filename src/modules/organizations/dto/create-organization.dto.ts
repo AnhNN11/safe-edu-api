@@ -1,10 +1,10 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 
 export class CreateOrganizationDto {
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Tên trường không được để trống' })
     name: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Tên tỉnh thành không được để trống' })
     province: string
 }

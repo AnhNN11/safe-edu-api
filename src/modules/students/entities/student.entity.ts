@@ -32,16 +32,16 @@ export class Student extends BaseEntity {
 	constructor(Student: {
 		first_name?: string;
 		last_name?: string;
-		password?: string;
 		gender?: GENDER;
 		phone_number?: string;
+		date_of_birth?: Date;
 	}) {
 		super();
 		this.first_name = Student?.first_name;
 		this.last_name = Student?.last_name;
-		this.password = Student?.password;
 		this.gender = Student?.gender;
 		this.phone_number = Student?.phone_number;
+		this.date_of_birth = Student?.date_of_birth;
 	}
 	
 	@Prop({
@@ -66,12 +66,9 @@ export class Student extends BaseEntity {
 
 	@Prop({
 		match: /^([+]\d{2})?\d{10}$/,
+		unique: true,
 	})
 	phone_number: string;
-
-	@Exclude()
-	@Prop()
-	password?: string;
 
 	@Prop({ type: Types.ObjectId, 
 			ref: 'Organization', 

@@ -28,7 +28,6 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	async findAll() {
 		const Students = await this.student_Model
 		  .find()
-		  .populate('role', 'organization')
 		  .exec(); 
 	  
 		const total = await this.student_Model.countDocuments().exec();
@@ -51,12 +50,17 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	async findOneByCondition(condition: FilterQuery<Student>): Promise<Student | null> {
 		try {
 			console.log('Condition:', condition);
+	
+			if ('phone_number' in condition) {
+				console.log('Searching by phone_number:', condition.phone_number);
+			} else if ('_id' in condition || 'id' in condition) {
+				console.log('Searching by ID:', condition._id || condition.id);
+			}
 			const student = await this.student_Model.findOne(condition).exec();
-			
 			console.log('Found student:', student);
 			return student;
 		} catch (error) {
-			console.error('Error finding student:', error); 
+			console.error('Error finding student:', error);
 			throw error;
 		}
 	}
