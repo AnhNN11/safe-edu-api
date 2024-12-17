@@ -14,22 +14,32 @@ import { StudentsService } from '@modules/students/students.service';
 import { SupervisorsService } from '@modules/supervisors/supervisors.service';
 import { OrganizationsModule } from '@modules/organizations/organizations.module';
 import { AdminModule } from '@modules/admin/admin.module';
-import { CitizensService } from '@modules/citizens/Citizens.service';
+import { CitizensService } from '@modules/citizens/citizens.service';
 import { CitizensModule } from '@modules/citizens/citizens.module';
-
+import {  HttpModule } from '@nestjs/axios';
+import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
-	imports: [StudentsModule, AdminModule, PassportModule, JwtModule.register({}), OrganizationsModule, CitizensModule],
+	imports: [StudentsModule, AdminModule, PassportModule, JwtModule.register({}), OrganizationsModule, CitizensModule, HttpModule,
+		MailerModule.forRoot({
+			transport: {
+				host: 'smtp.gmail.com',
+				auth: {
+					user: 'baopqtde181053@fpt.edu.vn',
+					pass: 'zpzy mxra zvxa lnzv',
+				},
+			},
+		}),
+	],
 	controllers: [AuthController],
 	providers: [
 		AuthService,
-		LocalStrategy,
-		JwtAccessTokenStrategy,
-		// JwtRefreshTokenStrategy,
-		GoogleStrategy,
-		StudentsService,
-		AdminService,
-		SupervisorsService,
-		CitizensService,
+        LocalStrategy,
+        JwtAccessTokenStrategy,
+        GoogleStrategy,
+        StudentsService,
+        AdminService,
+        SupervisorsService,
+        CitizensService,
 	],
 })
 export class AuthModule {}
