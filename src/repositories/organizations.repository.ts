@@ -18,7 +18,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	}
 	async findAll() {
 		const organizations = await this.organizationModel
-		  .find()
+		  .find({ isActive: true, deleted_at: null, deleted_by: null})
 		  .exec(); 
 	  
 		const total = await this.organizationModel.countDocuments().exec();
@@ -63,5 +63,20 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 			.sort(sort as any);
 
 		return { items: result, totalPages }
+	}
+
+	async isNullOrEmpty(value: string) {
+		return value == null || value.trim() === "";	
+	}
+
+	async findAllIsActive() {
+		const organizations = await this.organizationModel
+		  .find({ isActive: true, deleted_at: null, deleted_by: null})
+		  .exec(); 
+	  
+		const total = await this.organizationModel
+			.countDocuments({ isActive: true, deleted_at: null, deleted_by: null })
+			.exec();
+		return { items: organizations, total };
 	}
 }

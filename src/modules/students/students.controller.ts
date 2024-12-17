@@ -21,15 +21,14 @@ export class StudentsController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all students' })
-  @UseGuards(JwtAccessTokenGuard, RolesGuard)
   async findAll() {
     return await this.studentsService.findAll();
   }
 
   @Get(':id')
 	@ApiOperation({ summary: 'Retrieve a user by ID' })
-	async findOne(@Param('id') _id: string): Promise<Student> {
-  return await this.studentsService.findOneByCondition({ _id });
+	async findOne(@Param('id') _id: string, action: string): Promise<Student> {
+  return await this.studentsService.findOneByCondition({ _id }, action);
 	}
 
   @Patch(':id')
@@ -43,16 +42,15 @@ export class StudentsController {
 
   @Delete(':id')
 	@ApiOperation({ summary: 'Delete a student by ID' })
-	@UseGuards(JwtAccessTokenGuard, RolesGuard)
 	async remove(@Param('id') id: string): Promise<void> {
 		await this.studentsService.remove(id);
 	} 
 
   @Get('phone/:phone_number')
 	@ApiOperation({ summary: 'Retrieve a user by phone_number' })
-	async findOneByPhoneNumber(@Param('phone_number') phone_number: string): Promise<Student> {
-    console.log("hello" + " " +phone_number);
-		return await this.studentsService.findOneByCondition({ phone_number });
+	async findOneByPhoneNumber(@Param('phone_number') phone_number: string, action: string): Promise<Student> {
+    console.log(phone_number);
+		return await this.studentsService.findOneByCondition({ phone_number }, action);
 	}
 
 }

@@ -41,19 +41,6 @@ export class AuthService {
 		private readonly jwt_service: JwtService,
 	) {}
 
-	private async verifyPlainContentWithHashedContent(
-		plain_text: string,
-		hashed_text: string,
-	) {
-		const is_matching = await bcrypt.compare(plain_text, hashed_text);
-		if (!is_matching) {
-			throw new BadRequestException({
-				message: ERRORS_DICTIONARY.CONTENT_NOT_MATCH,
-				details: 'Content not match!!',
-			});
-		}
-	}
-
 	generateAccessToken(payload: TokenPayload) {
 		return this.jwt_service.sign(payload, {
 			algorithm: 'RS256',
@@ -120,8 +107,8 @@ export class AuthService {
 	async signIn(_id: string) {
 		try {
 			const [student, citizen] = await Promise.all([
-				await this.student_service.findOneByCondition({ _id }),
-				await this.citizen_service.findOneByCondition({ _id })
+				await this.student_service.findOneByCondition({ _id }, 'sign-in'),
+				await this.citizen_service.findOneByCondition({ _id }, 'sign-in')
 			]);
 
 			if (student) {
@@ -139,9 +126,7 @@ export class AuthService {
 					access_token,
 					refresh_token,
 				};
-			} 
-
-			if (citizen) {
+			} else if (citizen) {
 				const access_token = this.generateAccessToken({
 					userId: citizen._id.toString(),
 					role: 'Citizen',
@@ -155,31 +140,14 @@ export class AuthService {
 					access_token,
 					refresh_token,
 				};
+			} else {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.USER_NOT_FOUND,
+					details: 'User not found!!',
+				});
 			}
 		} catch (error) {
-			throw error;
-		}
-	}
-
-
-	async getAuthenticatedUser(phone_number: string, password: string): Promise<Student | Citizen> {
-		try {
-			const student = await this.student_service.findOneByCondition({ phone_number })
-			if (student) {
-				await this.verifyPlainContentWithHashedContent(password, student.password);
-				return student;
-			}
-			
-			const citizen = await this.citizen_service.findOneByCondition({ phone_number });
-			if (citizen) {
-				await this.verifyPlainContentWithHashedContent(password, citizen.password);
-				return citizen;
-			}
-		} catch (error) {
-			throw new BadRequestException({
-				message: ERRORS_DICTIONARY.WRONG_CREDENTIALS,
-				details: 'Wrong credentials!!',
-			});
+			throw error
 		}
 	}
 
@@ -187,26 +155,30 @@ export class AuthService {
 		try {
 			const { first_name, last_name, phone_number, organizationId } =
 				sign_up_with_std_dto;
-			const existed_student_phone_number =
-				await this.student_service.findOneByCondition({
-					phone_number: sign_up_with_std_dto.phone_number,
-				});
 
-			if (first_name == null || last_name == null) {
-				throw new ConflictException({
-					message: ERRORS_DICTIONARY.STUDENT_NAME_IS_NULL,
-					details: 'Name can not be null or empty!!',
+			const [existed_student_phone_number, existed_citizen_phone_number] = await Promise.all([
+				await this.student_service.findOneByCondition({ phone_number: sign_up_with_std_dto.phone_number }, 'sign-up'),
+				await this.citizen_service.findOneByCondition({ phone_number: sign_up_with_std_dto.phone_number }, 'sign-up')
+			]);
+
+			if (existed_student_phone_number) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
+					details: 'Phone number already exist',
 				});
 			}
-			const hashed_password = await bcrypt.hash(
-				sign_up_with_std_dto.password,
-				this.SALT_ROUND,
-			);
+
+			if (existed_citizen_phone_number) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
+					details: 'Phone number already exist',
+				});
+			}
+			
 			const student = await this.student_service.create({
 				first_name,
 				last_name,
 				phone_number,
-				password: hashed_password,
 				organizationId,
 			});
 
@@ -241,31 +213,36 @@ export class AuthService {
 		try {
 			const { first_name, last_name, phone_number } =
 			sign_up_with_citizen_dto;
-			const existed_student_phone_number =
-				await this.student_service.findOneByCondition({
-					phone_number: sign_up_with_citizen_dto.phone_number,
-				});
+			const [existed_student_phone_number, existed_citizen_phone_number] = await Promise.all([
+				await this.student_service.findOneByCondition({ phone_number: sign_up_with_citizen_dto.phone_number }, 'sign-up'),
+				await this.citizen_service.findOneByCondition({ phone_number: sign_up_with_citizen_dto.phone_number }, 'sign-up')
+			]);
+			
+			console.log(existed_citizen_phone_number, existed_student_phone_number)
 
-			if (first_name == null || last_name == null) {
-				throw new ConflictException({
-					message: ERRORS_DICTIONARY.STUDENT_NAME_IS_NULL,
-					details: 'Name can not be null or empty!!',
+			if (existed_student_phone_number) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
+					details: 'Phone number already exist',
 				});
 			}
-			const hashed_password = await bcrypt.hash(
-				sign_up_with_citizen_dto.password,
-				this.SALT_ROUND,
-			);
+
+			if (existed_citizen_phone_number) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
+					details: 'Phone number already exist',
+				});
+			}
+
 			const citizen = await this.citizen_service.create({
 				first_name,
 				last_name,
 				phone_number,
-				password: hashed_password,
 			});
 
 			const refresh_token = this.generateRefreshToken({
 				userId: citizen._id.toString(),
-				role: 'Student',
+				role: 'Citizen',
 			});
 			try {
 				await this.citizen_service.setCurrentRefreshToken(citizen._id.toString(), refresh_token);

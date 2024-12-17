@@ -14,5 +14,5 @@ export class CreateCategoryDto {
   description?: string;
 
   @IsOptional()
-  image?:  string
+  image?: string
 }

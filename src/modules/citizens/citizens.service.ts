@@ -1,17 +1,21 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCitizenDto } from './dto/create-Citizen.dto';
 import { UpdateCitizenDto } from './dto/update-Citizen.dto';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 import { FilterQuery } from 'mongoose';
 import { Citizen } from './entities/Citizen.entity';
 import { CitizensRepositoryInterface } from './interfaces/citizens.interfaces';
+import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
+import { StudentsRepositoryInterface } from '@modules/students/interfaces/students.interface';
 
 @Injectable()
 export class CitizensService {
 	constructor(
 		@Inject('CitizensRepositoryInterface')
 		private readonly CitizensRepository: CitizensRepositoryInterface,
-		private readonly organizationService: OrganizationsService, 
+		private readonly organizationService: OrganizationsService,
+		@Inject('StudentsRepositoryInterface')
+		private readonly studentsRepository: StudentsRepositoryInterface, 
 	  ) {}
 
 	async setCurrentRefreshToken(_id: string, refreshToken: string): Promise<void> {
@@ -29,14 +33,25 @@ export class CitizensService {
 		}
 	  }
 	  async create(createDto: CreateCitizenDto): Promise<Citizen> {
-		const { first_name, last_name, phone_number, password } = createDto;
-		const Citizen = await this.CitizensRepository.create({
+		const { first_name, last_name, phone_number} = createDto;
+		const [existed_phone_number_student, existed_phone_number_student_citizen] = await Promise.all([
+			await this.studentsRepository.findOneByCondition({ phone_number }),
+			await this.CitizensRepository.findOneByCondition({ phone_number })
+		]);
+
+		if (existed_phone_number_student || existed_phone_number_student_citizen) {
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.STUDENT_PHONE_NUMBER_EXISTS,
+				details: 'Phone number already exist',
+			});
+		}
+
+		const citizen = await this.CitizensRepository.create({
 			first_name,
 			last_name,
-			phone_number,
-			password,
+			phone: phone_number,
 		});
-		return Citizen;
+		return citizen;
 	  }
 
 	  async findAll() {
@@ -46,8 +61,19 @@ export class CitizensService {
 	async findOne(_id: string) {
 		return await this.CitizensRepository.findOneByCondition({_id});
 	}
-	async findOneByCondition(condition: FilterQuery<Citizen>): Promise<Citizen | null> {
-		return this.CitizensRepository.findOneByCondition(condition);
+	async findOneByCondition(condition: FilterQuery<Citizen>, action: string): Promise<Citizen | null> {
+		const citizen = await this.CitizensRepository.findOneByCondition(condition);
+		if (!citizen) {
+			if (action === 'sign-up' || action === 'sign-in') {
+				return citizen;
+			} else {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.CITIZEN_NOT_FOUND,
+					details: 'citizen not found!!',
+				});
+			}
+		}
+		return citizen;
 	}
 
 	async update(
@@ -56,7 +82,10 @@ export class CitizensService {
 	  ): Promise<Citizen> {
 		const updatedUser = await this.CitizensRepository.update(id,{...updateCitizenDto});
 		if (!updatedUser) {
-		  throw new NotFoundException(`Citizen with ID ${id} not found`);
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.CITIZEN_NOT_FOUND,
+				details: 'citizen not found!!',
+			});
 		}
 		return updatedUser;
 	  }

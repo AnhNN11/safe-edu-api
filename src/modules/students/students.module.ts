@@ -12,6 +12,8 @@ import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 import { StudentsRepository } from '@repositories/student.repository';
 import { AuthService } from '@modules/auth/auth.service';
+import { CitizensModule } from '@modules/citizens/citizens.module';
+import { CitizensService } from '@modules/citizens/Citizens.service';
 
 @Module({
 	imports: [
@@ -24,11 +26,13 @@ import { AuthService } from '@modules/auth/auth.service';
 			},
 		]),
 		OrganizationsModule,
+		CitizensModule,
 	],
 	controllers: [StudentsController],
 	providers: [
 		StudentsService,
 		{ provide: 'StudentsRepositoryInterface', useClass: StudentsRepository },
+		CitizensService
 	],
 	exports: [StudentsService,
 		'StudentsRepositoryInterface',

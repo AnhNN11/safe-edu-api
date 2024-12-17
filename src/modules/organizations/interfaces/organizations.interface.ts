@@ -10,4 +10,6 @@ export interface OrganizationsRepositoryInterface {
 	findById(id : string)
 	isNameExist(name: string, address: string);
 	findAllWithPaging(query: Record<string, any>, current: number, pageSize: number);
+	isNullOrEmpty(value: string);
+	findAllIsActive();
 }

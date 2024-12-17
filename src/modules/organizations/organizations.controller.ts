@@ -42,4 +42,10 @@ export class OrganizationsController {
   async remove(@Param('id') id: string): Promise<void> {
     await this.organizationsService.remove(id);
   }
+
+  @Get('active')
+  @ApiOperation({ summary: 'Retrive all organizations is active'})
+  async findAllIsActive() {
+    return await this.organizationsService.findAllIsActive();
+  }
 }

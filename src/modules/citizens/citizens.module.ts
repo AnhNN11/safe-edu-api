@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // INNER
@@ -12,6 +12,7 @@ import { CitizensController } from './Citizens.controller';
 import { CitizensService } from './Citizens.service';
 import { CitizensRepository } from '@repositories/Citizen.repository';
 import { AuthService } from '@modules/auth/auth.service';
+import { StudentsModule } from '@modules/students/students.module';
 
 @Module({
 	imports: [
@@ -24,6 +25,7 @@ import { AuthService } from '@modules/auth/auth.service';
 			},
 		]),
 		OrganizationsModule,
+		forwardRef(() => StudentsModule),
 	],
 	controllers: [CitizensController],
 	providers: [

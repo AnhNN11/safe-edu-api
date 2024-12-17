@@ -21,15 +21,14 @@ export class CitizensController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all Citizens' })
-  @UseGuards(JwtAccessTokenGuard, RolesGuard)
   async findAll() {
     return await this.CitizensService.findAll();
   }
 
   @Get(':id')
 	@ApiOperation({ summary: 'Retrieve a user by ID' })
-	async findOne(@Param('id') _id: string): Promise<Citizen> {
-  return await this.CitizensService.findOneByCondition({ _id });
+	async findOne(@Param('id') _id: string, action: string): Promise<Citizen> {
+  return await this.CitizensService.findOneByCondition({ _id }, action);
 	}
 
   @Patch(':id')
@@ -43,15 +42,14 @@ export class CitizensController {
 
   @Delete(':id')
 	@ApiOperation({ summary: 'Delete a Citizen by ID' })
-	@UseGuards(JwtAccessTokenGuard, RolesGuard)
 	async remove(@Param('id') id: string): Promise<void> {
 		await this.CitizensService.remove(id);
 	}
 
   @Get(':phone_number')
 	@ApiOperation({ summary: 'Retrieve a user by phone_number' })
-	async findOneByPhoneNumber(@Param('phone_number') phone_number: string): Promise<Citizen> {
-		return await this.CitizensService.findOneByCondition({ phone_number });
+	async findOneByPhoneNumber(@Param('phone_number') phone_number: string, action: string): Promise<Citizen> {
+		return await this.CitizensService.findOneByCondition({ phone_number }, action);
 	}
 
 }

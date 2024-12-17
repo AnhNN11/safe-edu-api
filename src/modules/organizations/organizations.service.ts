@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import { OrganizationsRepositoryInterface } from '@modules/organizations/interfaces/organizations.interface';
 import { log } from 'console';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
+import { measureMemory } from 'vm';
 
 @Injectable()
 export class OrganizationsService {
@@ -16,26 +17,27 @@ export class OrganizationsService {
 		private readonly organizations_repository: OrganizationsRepositoryInterface,
 	) {}
 
-  async create(create_dto: CreateOrganizationDto):Promise<Organization> {
+  async create(create_dto: CreateOrganizationDto): Promise<Organization> {
     try {
-      const {name, province} = create_dto;
-      const existed_organization = await this.organizations_repository.findOne({name, province});
-
-    //check if name exist
-      if(existed_organization) {
-        throw new ConflictException({
-					message: ERRORS_DICTIONARY.ORGANIZATION_NAME_EXISTS,
-					details: 'Organization already existed!!',
-				});
+      const { name, province } = create_dto;
+      const existed_organization = await this.organizations_repository.findOne({ name, province });
+  
+      if (existed_organization) {
+        throw new BadRequestException({
+          message: ERRORS_DICTIONARY.ORGANIZATION_NAME_EXISTS,
+          details: 'Organization already existed!!',
+        });
       }
+  
       const organization = await this.organizations_repository.create({
-        ...create_dto
-      })
+        ...create_dto,
+      });
       return organization;
     } catch (error) {
       throw error;
     }
   }
+  
 
   async findAll() {
     return await this.organizations_repository.findAll();
@@ -62,9 +64,24 @@ export class OrganizationsService {
 				details: 'Organization already existed!!',
 			});
     }
+
+    if (this.organizations_repository.isNullOrEmpty(name)) {
+      throw new ConflictException({
+        message: ERRORS_DICTIONARY.ORGANIZATION_NAME_CAN_NOT_BE_EMPTY,
+        details: "Organization name cannot be empty!!"
+      });
+    }
+    
+    if (this.organizations_repository.isNullOrEmpty(province)) {
+      throw new ConflictException({
+        message: ERRORS_DICTIONARY.ORGANIZATION_PROVINCE_CAN_NOT_BE_EMPTY,
+        details: "Organization province cannot be empty!!"
+      });
+    }
+
     const updatedOrganization = await this.organizations_repository.update(id, updateOrganizationDto);
     if (!updatedOrganization) {
-      throw new NotFoundException(`Organization with ID ${id} not found`);
+      throw new NotFoundException(`Trường cần tìm không tồn tại: ${id}`);
     }
     return updatedOrganization;
   }
@@ -75,5 +92,9 @@ export class OrganizationsService {
     } else {
       throw new BadRequestException("Invalid Id")
     }
+  }
+
+  async findAllIsActive() {
+    return await this.organizations_repository.findAllIsActive();
   }
 }

@@ -28,7 +28,6 @@ export class CitizensRepository implements CitizensRepositoryInterface {
     async findAll() {
         const Citizens = await this.Citizen_Model
           .find()
-          .populate('role')
           .exec(); 
       
         const total = await this.Citizen_Model.countDocuments().exec();
@@ -50,15 +49,20 @@ export class CitizensRepository implements CitizensRepositoryInterface {
 
     async findOneByCondition(condition: FilterQuery<Citizen>): Promise<Citizen | null> {
         try {
-            console.log('Condition:', condition);
-            const Citizen = await this.Citizen_Model.findOne(condition).exec();
-            
-            console.log('Found Citizen:', Citizen);
-            return Citizen;
-        } catch (error) {
-            console.error('Error finding Citizen:', error); 
-            throw error;
-        }
+			console.log('Condition:', condition);
+	
+			if ('phone_number' in condition) {
+				console.log('Searching by phone_number:', condition.phone_number);
+			} else if ('_id' in condition || 'id' in condition) {
+				console.log('Searching by ID:', condition._id || condition.id);
+			}
+			const citizen = await this.Citizen_Model.findOne(condition).exec();
+			console.log('Found citizen:', citizen);
+			return citizen;
+		} catch (error) {
+			console.error('Error finding student:', error);
+			throw error;
+		}
     }
 
     async delete(id: string | Types.ObjectId): Promise<Citizen | null> {
