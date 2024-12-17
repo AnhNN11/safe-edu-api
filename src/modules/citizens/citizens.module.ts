@@ -7,10 +7,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 import { OrganizationsRepository } from '@repositories/organizations.repository';
 import { OrganizationsModule } from '@modules/organizations/organizations.module';
-import { Citizen, CitizenSchemaFactory } from './entities/Citizen.entity';
-import { CitizensController } from './Citizens.controller';
-import { CitizensService } from './Citizens.service';
-import { CitizensRepository } from '@repositories/Citizen.repository';
+import { Citizen, CitizenSchemaFactory } from './entities/citizen.entity';
+import { CitizensController } from './citizens.controller';
+import { CitizensService } from './citizens.service';
+import { CitizensRepository } from '@repositories/citizen.repository';
 import { AuthService } from '@modules/auth/auth.service';
 import { StudentsModule } from '@modules/students/students.module';
 

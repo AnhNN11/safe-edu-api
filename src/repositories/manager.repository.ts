@@ -1,5 +1,5 @@
-import { Manager } from '@modules/Manager/entities/Manager.entity';
-import { ManagerRepositoryInterface } from '@modules/Manager/interfaces/Manager.interface';
+import { Manager } from '@modules/manager/entities/manager.entity';
+import { ManagerRepositoryInterface } from '@modules/manager/interfaces/manager.interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';

@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { CitizensService } from './Citizens.service';
-import { CreateCitizenDto } from './dto/create-Citizen.dto';
-import { UpdateCitizenDto } from './dto/update-Citizen.dto';
+import { CitizensService } from './citizens.service';
+import { CreateCitizenDto } from './dto/create-citizen.dto';
+import { UpdateCitizenDto } from './dto/update-citizen.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
-import { Citizen } from './entities/Citizen.entity';
+import { Citizen } from './entities/citizen.entity';
 
 @Controller('Citizens')
 @ApiTags('Citizens')
