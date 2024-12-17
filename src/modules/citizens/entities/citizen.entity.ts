@@ -101,13 +101,13 @@ export class Citizen extends BaseEntity {
 export const CitizenSchema = SchemaFactory.createForClass(Citizen);
 
 export const CitizenSchemaFactory = () => {
-	const Citizen_schema = CitizenSchema;
+	const citizen_schema = CitizenSchema;
 
-	Citizen_schema.pre('findOneAndDelete', async function (next: NextFunction) {
+	citizen_schema.pre('findOneAndDelete', async function (next: NextFunction) {
 		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
 		const Citizen = await this.model.findOne(this.getFilter());
 		await Promise.all([]);
 		return next();
 	});
-	return Citizen_schema;
+	return citizen_schema;
 };

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
-import { Student } from '@modules/Students/entities/Student.entity';
+import { Student } from '@modules/students/entities/student.entity';
 import { StudentsRepositoryInterface } from '@modules/students/interfaces/students.interface';
 
 @Injectable()

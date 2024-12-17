@@ -1,4 +1,4 @@
-import { Student } from '@modules/Students/entities/Student.entity';
+import { Student } from '@modules/students/entities/student.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -27,9 +27,11 @@ import { SignUpWithStudentDto } from './dto/sign-up-with-student.dto';
 import { AdminService } from '@modules/admin/admin.service';
 import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { RolesEnum } from 'src/enums/roles..enum';
-import { CitizensService } from '@modules/citizens/Citizens.service';
-import { Citizen } from '@modules/citizens/entities/Citizen.entity';
-import {MailerService} from '@nestjs-modules/mailer';
+import { CitizensService } from '@modules/citizens/citizens.service';
+import { Citizen } from '@modules/citizens/entities/citizen.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+
+
 @Injectable()
 export class AuthService {
 	private SALT_ROUND = 11;

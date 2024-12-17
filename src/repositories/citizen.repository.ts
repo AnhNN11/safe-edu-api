@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
-import { Citizen } from '@modules/Citizens/entities/Citizen.entity';
+import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { CitizensRepositoryInterface } from '@modules/citizens/interfaces/citizens.interfaces';
 
 @Injectable()
