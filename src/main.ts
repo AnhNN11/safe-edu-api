@@ -11,6 +11,11 @@ import { ERRORS_DICTIONARY } from './constraints/error-dictionary.constraint';
 async function bootstrap() {
 	const logger = new Logger(bootstrap.name);
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	app.enableCors({
+		origin: '*', 
+		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+		allowedHeaders: '*', 
+	});
 	configSwagger(app);
 	const config_service = app.get(ConfigService);
 	app.useStaticAssets(join(__dirname, './served'));
