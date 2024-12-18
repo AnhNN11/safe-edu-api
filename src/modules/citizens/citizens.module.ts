@@ -32,8 +32,6 @@ import { StudentsModule } from '@modules/students/students.module';
 		CitizensService,
 		{ provide: 'CitizensRepositoryInterface', useClass: CitizensRepository },
 	],
-	exports: [CitizensService,
-		'CitizensRepositoryInterface',
-	],
+	exports: [CitizensService, 'CitizensRepositoryInterface'],
 })
 export class CitizensModule {}
