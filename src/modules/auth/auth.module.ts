@@ -16,10 +16,18 @@ import { OrganizationsModule } from '@modules/organizations/organizations.module
 import { AdminModule } from '@modules/admin/admin.module';
 import { CitizensService } from '@modules/citizens/citizens.service';
 import { CitizensModule } from '@modules/citizens/citizens.module';
-import {  HttpModule } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
-	imports: [StudentsModule, AdminModule, PassportModule, JwtModule.register({}), OrganizationsModule, CitizensModule, HttpModule,
+	imports: [
+		StudentsModule,
+		AdminModule,
+		PassportModule,
+		CitizensModule,
+		JwtModule.register({}),
+		OrganizationsModule,
+		CitizensModule,
+		HttpModule,
 		MailerModule.forRoot({
 			transport: {
 				host: 'smtp.gmail.com',
@@ -33,13 +41,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
 	controllers: [AuthController],
 	providers: [
 		AuthService,
-        LocalStrategy,
-        JwtAccessTokenStrategy,
-        GoogleStrategy,
-        StudentsService,
-        AdminService,
-        SupervisorsService,
-        CitizensService,
+		LocalStrategy,
+		JwtAccessTokenStrategy,
+		GoogleStrategy,
+		StudentsService,
+		AdminService,
+		SupervisorsService,
+		CitizensService,
 	],
 })
 export class AuthModule {}
