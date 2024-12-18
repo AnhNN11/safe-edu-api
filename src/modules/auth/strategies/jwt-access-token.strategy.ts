@@ -40,6 +40,7 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 					throw new UnauthorizedException('Access Denied: Student not found.');
 				}
 				break;
+
 			default:
 				throw new UnauthorizedException('Access Denied: Invalid role.');
 		}

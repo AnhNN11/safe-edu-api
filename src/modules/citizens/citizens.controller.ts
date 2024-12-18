@@ -38,8 +38,11 @@ export class CitizensController {
 	}
 
 	@Get()
+	@Roles(RolesEnum.CITIZEN)
 	@ApiOperation({ summary: 'Retrieve all Citizens' })
-	async findAll() {
+	async findAll(@Request() req): Promise<Citizen[]> {
+		const userId = req.user.userId;
+		console.log('=======>UserId', userId);
 		return await this.CitizensService.findAll();
 	}
 
