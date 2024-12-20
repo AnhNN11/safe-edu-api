@@ -88,7 +88,10 @@ export class OrganizationsService {
 
   remove(_id: string) {
     if (mongoose.isValidObjectId(_id)){
-      return this.organizations_repository.remove(_id)  
+      return this.organizations_repository.update(_id, {
+        deleted_at: new Date, 
+        isActive: false
+      })  
     } else {
       throw new BadRequestException("Invalid Id")
     }

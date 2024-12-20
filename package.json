@@ -51,6 +51,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "safe-edu-api": "file:",
+    "stringee": "^2.9.3",
     "uuid": "^11.0.3"
   },
   "devDependencies": {

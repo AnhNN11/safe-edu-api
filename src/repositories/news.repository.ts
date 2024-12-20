@@ -15,8 +15,8 @@ export class NewsRepository implements NewsRepositoryInterface {
         return await this.newsModel.findOne(condition).exec();
     }
 
-    async create(data: Partial<News>): Promise<News> {
-        const newNews = new this.newsModel(data);
+    async create(createDto: any): Promise<News> {
+        const newNews = new this.newsModel(createDto);
         return await newNews.save();
     }
 

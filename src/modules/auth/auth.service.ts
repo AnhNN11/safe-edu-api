@@ -8,6 +8,7 @@ import {
 	ConsoleLogger,
 	HttpException,
 	HttpStatus,
+	Inject,
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -31,7 +32,11 @@ import { CitizensService } from '@modules/citizens/citizens.service';
 import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 
-
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { VerifiedOTPDto } from './dto/verified-otp';
+import { OtpsService } from '@modules/otps/otps.service';
+import { text } from 'stream/consumers';
 @Injectable()
 export class AuthService {
 	private SALT_ROUND = 11;
@@ -42,6 +47,8 @@ export class AuthService {
 		private readonly citizen_service: CitizensService,
 		private readonly jwt_service: JwtService,
 		private readonly mailer_service: MailerService,
+		private readonly http_Service: HttpService,
+		private readonly otp_service: OtpsService,
 	) {}
 
 	generateAccessToken(payload: TokenPayload) {
@@ -271,20 +278,26 @@ export class AuthService {
 	}
 	}
 
-	async verifyOTP(otp: string) {
-		if (otp == "000000") {
-			return { 
-				success: true, 
-				message: "OTP Verified Successfully"
+	async verifyOTP(verifiedOtpDto: VerifiedOTPDto) {
+		try {
+			const cacheOtp = await this.otp_service.findOne(verifiedOtpDto.phone_number);
+			console.log(cacheOtp);
+
+			if(!cacheOtp) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.OTP_IS_EXPIRED,
+					details: 'OTP is expired',
+				});
 			}
-		} else {
-			throw new HttpException(
-				{
-				  status: "error",
-				  message: "Invalid OTP",
-				},
-				HttpStatus.BAD_REQUEST, 
-			);
+
+			if (cacheOtp.otp !== verifiedOtpDto.otp) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.OTP_NOT_MATCH,
+					details: 'OTP does not match',
+				});
+			}
+		} catch(error) {
+			throw error
 		}
 	}
 
@@ -338,4 +351,48 @@ export class AuthService {
 				};
 			} 
 	}
+	async sendOtp(phone_number: string, otpCode: string) {
+		const apiKey = process.env.STRINGEE_API_KEY;
+		const apiSecret = process.env.STRINGEE_API_SECRET;
+		const url = 'https://api.stringee.com/v1/sms';
+
+		const requestBody = {
+			sms: [
+				{
+				  	from: '+842871056658',
+					to: phone_number,
+					text: `Mã xác minh của bạn: ${otpCode}`,
+				},
+			  ],
+			
+		};
+
+		const headers = {
+			'Content-Type': 'application/json',
+      		'Authorization': `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')}`,
+		}
+
+		try {
+			const response = await firstValueFrom(
+				this.http_Service.post(url, requestBody, { headers }),
+			);
+
+			await this.otp_service.create({
+				phone_number,
+				otp: otpCode
+			})
+
+			return response.data;
+		} catch (error) {
+			console.error('Error sending OTP:', error.response?.data || error.message);
+  			throw new Error(`Gửi OTP thất bại: ${error.response?.data?.message || error.message}`);
+		}
+	}
+
+	private formatPhoneNumber(phone: string): string {
+		if (phone.startsWith('0')) {
+		  return '+84' + phone.slice(1);
+		}
+		return phone;
+	  }
 }

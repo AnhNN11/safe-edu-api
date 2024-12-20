@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import { AwsS3Service } from 'src/services/aws-s3.service';
 import { TopicsRepository } from '@repositories/topic.repository';
 import { TopicsService } from '@modules/topic/topic.service';
+import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 
 @Injectable()
 export class NewService {
@@ -17,20 +18,8 @@ export class NewService {
     private readonly topic_service: TopicsService
   ) {}
 
-  async create(createNewDto: CreateNewDto){
-    try {
-      // const category = await this.topic_service.findOne(createNewDto.category_id);
-
-      // if(category) {
-      //   const news = await this.news_repository.create({
-      //     ...createNewDto,
-      //     // category_id: category.id.toString()
-      //   })
-        // return news;
-      }
-    catch (error) {
-      throw error;
-    }
+  async create(createNewDto: CreateNewDto): Promise<News>{
+    return this.news_repository.create(createNewDto)
   }
 
   async findAll() {
@@ -38,11 +27,14 @@ export class NewService {
   }
 
   async findOneById(id: string) {
-    //check id
-    if (mongoose.isValidObjectId(id)) {
-      return await this.news_repository.findById(id);
+    const news = await this.news_repository.findById(id);
+    if(news) {
+      return news;
     } else {
-      throw new BadRequestException("Invalid id");
+      throw new BadRequestException({
+        message: ERRORS_DICTIONARY.NEWS_NOT_FOUND,
+        details: 'News not found!!',
+    });
     }
   }
 
@@ -50,15 +42,21 @@ export class NewService {
     updateNewDto: UpdateNewDto
   ): Promise<News> {
     const updatedNews = await this.findOneById(id);
+    const {title, content, imageUrl, author} = updateNewDto;
 
-    let imageUrl = updateNewDto.imageUrl || updatedNews.image_Url;
+    let image_Url = updateNewDto.imageUrl || updatedNews.image_Url;
 
     // Handle image upload if a new file is provided
     if (typeof updateNewDto.imageUrl !== 'string' && updateNewDto.imageUrl) {
-      imageUrl = await this.awsS3Service.uploadImage(updateNewDto.imageUrl);
+      image_Url = await this.awsS3Service.uploadImage(updateNewDto.imageUrl);
     }
 
-    const updatedNewsData = await this.news_repository.update(id, {...updateNewDto})
+    const updatedNewsData = await this.news_repository.update(id, {
+      title,
+      content,
+      image_Url,
+      author
+    })
     if(!updatedNewsData) {
       throw new NotFoundException(`News with ID ${id} not found`);
     }
@@ -68,7 +66,11 @@ export class NewService {
   async remove(id: string) {
     //check id 
     if (mongoose.isValidObjectId(id)) {
-      return await this.news_repository.remove(id);
+      return await this.news_repository.update(id, 
+        { deleted_at: new Date(),
+          isActive: false, 
+        }
+      );
     } else {
       throw new BadRequestException("Invalid Id")
     }
