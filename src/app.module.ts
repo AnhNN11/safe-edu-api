@@ -27,6 +27,7 @@ import { SupervisorsModule } from '@modules/supervisors/supervisors.module';
 import { SupervisorsOrganizationsModule } from '@modules/supervisors-organizations/supervisors-organizations.module';
 import { UserAchievementsModule } from '@modules/user-achievements/user-achievements.module';
 import { AuthModule } from '@modules/auth/auth.module';
+import { OtpsModule } from './modules/otps/otps.module';
 
 @Module({
 	imports: [
@@ -83,6 +84,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 		SupervisorsOrganizationsModule,
 		UserAchievementsModule,
 		AuthModule,
+		OtpsModule,
 	],
 	controllers: [AppController],
 	providers: [

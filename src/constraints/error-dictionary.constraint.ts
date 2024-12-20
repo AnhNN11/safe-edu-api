@@ -8,6 +8,9 @@ export enum ERRORS_DICTIONARY {
   // TOPIC
   TOPIC_NOT_FOUND = 'TOP_0041',
 
+  //NEWS
+  NEWS_NOT_FOUND = 'Bài báo không tồn tại',
+
   // USER
   USER_NOT_FOUND = 'Người dùng không tồn tại',
   
@@ -30,4 +33,8 @@ export enum ERRORS_DICTIONARY {
 
   // CLASS VALIDATOR
   VALIDATION_ERROR = 'Lỗi Validate',
+
+  //OTP
+  OTP_NOT_MATCH = 'Mã OTP không chính xác',
+  OTP_IS_EXPIRED = 'Mã OTP đã hết hạn'
 }

@@ -20,6 +20,7 @@ import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { access_token_public_key } from 'src/constraints/jwt.constraint';
 import { SignInDto } from './dto/sign-in.dto';
 import { VerifiedOTPDto } from './dto/verified-otp';
+import { SendOTPDto } from './dto/send-otp';
 
 
 @Controller('auth')
@@ -105,7 +106,16 @@ export class AuthController {
 	@Post('verify-otp')
 	@ApiOperation({ summary: 'verify-otp'})
 	async verifiedOTP(@Body() verified_otp: VerifiedOTPDto) {
-		return await this.auth_service.verifyOTP(verified_otp.otp);
+		// return await this.auth_service.verifyOTP(verified_otp);
+	}
+
+	@Post('send')
+	@ApiOperation({ summary: 'send-otp'})
+	async sendOtp(@Body() send_otp: SendOTPDto) {
+		const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+		const response = await this.auth_service.sendOtp(send_otp.phone_number, otpCode);
+
+		return { success: true, message: 'OTP đã được gửi thành công', response };
 	}
 
 	

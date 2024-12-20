@@ -106,16 +106,13 @@ export class CitizensService {
 		return updatedUser;
 	}
 
-	async remove(id: string): Promise<void> {
-		const result = await this.citizensRepository.remove(id);
+	  async remove(id: string): Promise<void> {
+		const result = await this.citizensRepository.update(id, {
+			deleted_at: new Date,
+			isActive: false,
+		});
 		if (!result) {
 			throw new NotFoundException(`Citizen with ID ${id} not found`);
 		}
-	}
-
-	async delete(id: string): Promise<Citizen> {
-		return await this.citizensRepository.update(id, {
-			deleted_at: new Date(),
-		});
-	}
+	  }
 }

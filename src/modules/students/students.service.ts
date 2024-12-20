@@ -105,7 +105,12 @@ export class StudentsService {
 	  }
 
 	  async remove(id: string): Promise<void> {
-		const result = await this.studentsRepository.remove(id);
+		const result = await this.studentsRepository.update(id,
+			{
+				deleted_at: new Date,
+				isActive: false
+			}
+		);
 		if (!result) {
 		  throw new NotFoundException(`Student with ID ${id} not found`);
 		}
