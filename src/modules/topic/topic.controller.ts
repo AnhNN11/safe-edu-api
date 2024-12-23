@@ -34,43 +34,13 @@ export class TopicsController {
   ) {}
 
 
-  @Post('upload-image')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Image upload',
-    type: FileUploadDto,
-  })
-  @Public()
-  @UseGuards(JwtAccessTokenGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  async uploadImage(@UploadedFile() image: IFile) {
-    try {
-      const uploadResult = await this.imageUploadService.uploadImage(image);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Image uploaded successfully',
-        success: true,
-        data: uploadResult,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Image upload failed',
-          success: false,
-          error: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
+  
   @Post()
   @Public()
   @UseGuards(JwtAccessTokenGuard)
-  async create(@Body() { topic_name, description, image }: CreateTopicDto) {
+  async create(@Body() { topic_name, description }: CreateTopicDto) {
     try {
-      const createTopicDto: CreateTopicDto = { topic_name, description, image };
+      const createTopicDto: CreateTopicDto = { topic_name, description};
       const createdTopic = await this.topicsService.create(createTopicDto);
 
       return {
@@ -98,10 +68,10 @@ export class TopicsController {
   @UseGuards(JwtAccessTokenGuard)
   async update(
     @Param('id') id: string,
-    @Body() { topic_name, description, image }: UpdateTopicDto,
+    @Body() { topic_name, description }: UpdateTopicDto,
   ) {
     try {
-      const updateDto: UpdateTopicDto = { topic_name, description, image };
+      const updateDto: UpdateTopicDto = { topic_name, description };
       const updatedTopic = await this.topicsService.update(id, updateDto);
 
       return {

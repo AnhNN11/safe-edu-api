@@ -21,16 +21,10 @@ export class TopicsService {
   async update(id: string, updateDto: UpdateTopicDto): Promise<Topic> {
     const existingTopic = await this.findOne(id);
 
-    let imageUrl = updateDto.image || existingTopic.image_url;
-
-    if (typeof updateDto.image !== 'string' && updateDto.image) {
-      imageUrl = await this.awsS3Service.uploadImage(updateDto.image);
-    }
 
     const updatedTopicData = {
       ...updateDto,
-      image: imageUrl,
-    };
+      };
 
     return this.topicsRepository.update(id, updatedTopicData);
   }
