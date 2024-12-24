@@ -67,7 +67,7 @@ export class CategoriesController {
   
 
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  
   async create(
     @Body() {category_name,topic_id, description,image }: CreateCategoryDto,
   ) {

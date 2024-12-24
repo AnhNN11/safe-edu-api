@@ -42,6 +42,6 @@ export class TopicsService {
   }
 
   async delete(id: string): Promise<Topic> {
-    return await this.topicsRepository.update(id, { deleted_at: new Date() });
+    return await this.topicsRepository.update(id, { deleted_at: new Date(), isActive:'false' });
   }
 }
