@@ -20,13 +20,12 @@ export class Topic extends BaseEntity {
 	constructor(topic: {
 		topic_name?: string;
 		description?: string;
-        image_url?: string;
 		
 	}) {
 		super();
 		this.topic_name = topic?.topic_name;
         this.description = topic?.description;
-        this.image_url = topic?.image_url;
+       
 	}
 	
 	@Prop({
@@ -41,11 +40,6 @@ export class Topic extends BaseEntity {
 
     @Prop()
 	description: string;
-	@Prop({
-		required: false,
-		default: null,
-	})
-	image_url: string;
 
 	@Prop({
 		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],

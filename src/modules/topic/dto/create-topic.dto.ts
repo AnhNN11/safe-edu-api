@@ -10,6 +10,4 @@ export class CreateTopicDto {
   @MaxLength(255) 
   description?: string;
 
-  @IsOptional()
-  image?:  string;
 }

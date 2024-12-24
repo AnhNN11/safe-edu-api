@@ -1,66 +1,46 @@
-import { 
-  Body, 
-  Controller, 
-  Delete, 
-  Get, 
-  HttpException, 
-  HttpStatus, 
-  Param, 
-  Post, 
-  Put, 
-  UploadedFile, 
-  UseGuards, 
-  UseInterceptors 
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { TopicsService } from './topic.service';
-import { CreateTopicDto } from './dto/create-topic.dto';
-import { UpdateTopicDto } from './dto/update-topic.dto';
+
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IFile } from 'src/interfaces/file.interface';
-import { AwsS3Service } from 'src/services/aws-s3.service';
-import { Roles } from 'src/decorators/roles.decorator';
-;
-import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 
+import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 import { Public } from 'src/decorators/auth.decorator';
+import { TopicsService } from '@modules/topic/topic.service';
+import { CreateTopicDto } from '@modules/topic/dto/create-topic.dto';
+import { UpdateTopicDto } from '@modules/topic/dto/update-topic.dto';
+import { ImageUploadService } from 'src/services/image-upload.service';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { FileUploadDto } from '@modules/topic/dto/file-upload.dto';
 
 
 @Controller('topics')
 export class TopicsController {
   constructor(
     private readonly topicsService: TopicsService,
-    private readonly awsS3Service: AwsS3Service,
+    private readonly imageUploadService: ImageUploadService,
   ) {}
 
+
+  
   @Post()
   @Public()
-
-	@UseGuards(JwtAccessTokenGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  async uploadImage(
-    @UploadedFile() image: IFile,
-    @Body() { topic_name, description }: CreateTopicDto,
-  ) {
+  @UseGuards(JwtAccessTokenGuard)
+  async create(@Body() { topic_name, description }: CreateTopicDto) {
     try {
-      if (!image) {
-        throw new HttpException(
-          {
-            statusCode: HttpStatus.BAD_REQUEST,
-            message: 'File is required',
-            success: false,
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      const uploadResult = await this.awsS3Service.uploadImage(image);
-
-      const createTopicDto: CreateTopicDto = {
-        topic_name,
-        description,
-        image: uploadResult,
-      };
-
+      const createTopicDto: CreateTopicDto = { topic_name, description};
       const createdTopic = await this.topicsService.create(createTopicDto);
 
       return {
@@ -82,36 +62,57 @@ export class TopicsController {
     }
   }
 
+
   @Put(':id')
   @Public()
-  
-	@UseGuards(JwtAccessTokenGuard)
-  async update(@Param('id') id: string, @Body() updateDto: UpdateTopicDto) {
-    return this.topicsService.update(id, updateDto);
+  @UseGuards(JwtAccessTokenGuard)
+  async update(
+    @Param('id') id: string,
+    @Body() { topic_name, description }: UpdateTopicDto,
+  ) {
+    try {
+      const updateDto: UpdateTopicDto = { topic_name, description };
+      const updatedTopic = await this.topicsService.update(id, updateDto);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Topic updated successfully',
+        success: true,
+        data: updatedTopic,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Topic update failed',
+          success: false,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
+ 
   @Delete(':id')
   @Public()
-
-	@UseGuards(JwtAccessTokenGuard)
+  @UseGuards(JwtAccessTokenGuard)
   async delete(@Param('id') id: string) {
     return this.topicsService.delete(id);
   }
 
-
+ 
   @Get()
   @Public()
-
-	@UseGuards(JwtAccessTokenGuard)
+  @UseGuards(JwtAccessTokenGuard)
   async findAll() {
     return this.topicsService.findAll();
   }
 
-  @Get(':id')
-  @Get()
-  @Public()
 
-	@UseGuards(JwtAccessTokenGuard)
+  @Get(':id')
+  @Public()
+  @UseGuards(JwtAccessTokenGuard)
   async findOne(@Param('id') id: string) {
     return this.topicsService.findOne(id);
   }

@@ -6,6 +6,7 @@ import { Category, CategorySchemaFactory } from './entities/category.entity';
 import { CategoriesRepository } from 'src/repositories/category.repository';
 import { AwsS3Service } from 'src/services/aws-s3.service';
 import { GeneratorService } from 'src/services/generator.service';
+import { ImageUploadService } from 'src/services/image-upload.service';
 // Removed the interface import here
 
 @Module({
@@ -22,6 +23,7 @@ import { GeneratorService } from 'src/services/generator.service';
     CategoryService,
     AwsS3Service,
     GeneratorService,
+    ImageUploadService,
     { provide: 'CategoriesRepositoryInterface', useClass: CategoriesRepository },
   ],
   exports: [AwsS3Service],

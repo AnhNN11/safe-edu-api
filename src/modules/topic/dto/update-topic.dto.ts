@@ -14,8 +14,7 @@ export class UpdateTopicDto extends PartialType(
   @MaxLength(255) 
   description?: string;
 
-  @IsOptional()
-  image?:  string; // Same here
+
 
   
 }
