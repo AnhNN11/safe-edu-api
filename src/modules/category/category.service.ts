@@ -29,7 +29,7 @@ export class CategoryService {
   ): Promise<Category> {
     const existingCategory = await this.findOne(id);
 
-    let imageUrl = updateDto.image || existingCategory.image_url;
+    let imageUrl = updateDto.image || existingCategory.image;
 
     // Handle image upload if a new file is provided
     if (typeof updateDto.image !== 'string' && updateDto.image) {
@@ -59,6 +59,7 @@ export class CategoryService {
   }
 
   async delete(id: string): Promise<Category> {
-    return await this.categoriesRepository.update(id, { deleted_at: new Date(), isActive:'false' });
+    return await this.categoriesRepository.update(id,
+       { deleted_at: new Date(), isActive:'false' });
   }
 }

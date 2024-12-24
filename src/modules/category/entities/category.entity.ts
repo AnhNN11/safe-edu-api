@@ -22,14 +22,14 @@ export class Category extends BaseEntity {
 		category_name?: string;
         topic_id?: mongoose.Types.ObjectId;
 		description?: string;
-        image_url?: string;
+        image?: string;
 		
 	}) {
 		super();
 		this.category_name = Category?.category_name;
         this.topic_id = Category?.topic_id;
         this.description = Category?.description;
-        this.image_url = Category?.image_url;
+        this.image = Category?.image;
 	}
 	
 	@Prop({
@@ -56,7 +56,7 @@ export class Category extends BaseEntity {
 		required: false,
     	default: null,
 	})
-	image_url: string;
+	image: string;
 
 	@Prop({
 		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'News' }],
