@@ -59,6 +59,7 @@ export class CategoryService {
   }
 
   async delete(id: string): Promise<Category> {
-    return await this.categoriesRepository.update(id, { deleted_at: new Date(), isActive:'false' });
+    return await this.categoriesRepository.update(id,
+       { deleted_at: new Date(), isActive:'false' });
   }
 }
