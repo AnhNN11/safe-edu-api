@@ -35,7 +35,7 @@ export class Category extends BaseEntity {
 	@Prop({
 		required: true,
 		minlength: 2,
-		maxlength: 60,
+		maxlength: 256,
 		set: (category_name: string) => {
 			return category_name.trim();
 		},
