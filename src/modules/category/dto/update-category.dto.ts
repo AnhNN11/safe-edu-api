@@ -4,13 +4,13 @@ import { IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 
 export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
   @IsNotEmpty()
-  @MaxLength(60) 
+  @MaxLength(255) 
   category_name: string;
   
   @IsNotEmpty()
   topic_id: string;
 
-  @IsOptional()
+  @IsOptional()D
   @MaxLength(255) 
   description?: string;
 
