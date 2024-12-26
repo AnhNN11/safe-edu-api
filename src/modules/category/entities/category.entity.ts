@@ -32,14 +32,7 @@ export class Category extends BaseEntity {
         this.image = Category?.image;
 	}
 	
-	@Prop({
-		required: true,
-		minlength: 2,
-		maxlength: 256,
-		set: (category_name: string) => {
-			return category_name.trim();
-		},
-	})
+	@Prop()
 	category_name: string;
 
 	@Prop({
