@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, MaxLength } from "class-validator";
 
 export class CreateCategoryDto {
   @IsNotEmpty()
-  @MaxLength(60) 
+  @MaxLength(255) 
   category_name: string;
   
   @IsNotEmpty()
