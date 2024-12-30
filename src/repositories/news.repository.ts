@@ -2,7 +2,7 @@ import { News } from "@modules/news/entities/news.entity";
 import { NewsRepositoryInterface } from "@modules/news/interfaces/news.interfaces";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { FilterQuery, Model } from "mongoose";
+import { FilterQuery, Model, Types } from "mongoose";
 
 
 @Injectable()
@@ -29,8 +29,9 @@ export class NewsRepository implements NewsRepositoryInterface {
 		return { items: news, total };
     }
 
-    async update(id: string, data: Partial<News>): Promise<News | null> {
-        return await this.newsModel.findByIdAndUpdate(id, data, { new: true }).exec();
+    async update(id: string | Types.ObjectId, updateData: any): Promise<News | null> {
+        const stringId = id instanceof Types.ObjectId ? id.toString() : id;
+    return this.newsModel.findByIdAndUpdate(stringId, updateData, { new: true }).exec();
     }
 
     async remove(id: string): Promise<boolean> {

@@ -7,17 +7,17 @@ import mongoose from 'mongoose';
 import { AwsS3Service } from 'src/services/aws-s3.service';
 import { TopicsRepository } from '@repositories/topic.repository';
 import { TopicsService } from '@modules/topic/topic.service';
+import { NewsRepositoryInterface } from './interfaces/news.interfaces';
 
 @Injectable()
 export class NewService {
   constructor(
     @Inject('NewsRepositoryInterface')
-    private readonly news_repository: NewsRepository,
-    private readonly awsS3Service: AwsS3Service,
-    private readonly topic_service: TopicsService
+    private readonly news_repository: NewsRepositoryInterface,
+   
   ) {}
 
-  async create(createNewDto: CreateNewDto){
+  async create(createNewDto: CreateNewDto): Promise<News>{
     try {
       // const category = await this.topic_service.findOne(createNewDto.category_id);
 
@@ -31,6 +31,7 @@ export class NewService {
     catch (error) {
       throw error;
     }
+    return this.news_repository.create(createNewDto)
   }
 
   async findAll() {
@@ -47,22 +48,18 @@ export class NewService {
   }
 
   async update(id: string, 
-    updateNewDto: UpdateNewDto
+    updateDto: UpdateNewDto
   ): Promise<News> {
     const updatedNews = await this.findOneById(id);
 
-    let imageUrl = updateNewDto.imageUrl || updatedNews.image_Url;
 
-    // Handle image upload if a new file is provided
-    if (typeof updateNewDto.imageUrl !== 'string' && updateNewDto.imageUrl) {
-      imageUrl = await this.awsS3Service.uploadImage(updateNewDto.imageUrl);
-    }
 
-    const updatedNewsData = await this.news_repository.update(id, {...updateNewDto})
-    if(!updatedNewsData) {
-      throw new NotFoundException(`News with ID ${id} not found`);
-    }
-    return updatedNewsData;
+    // Handle image upload if 
+    // 
+    // a new file is provided
+   
+
+    return this.news_repository.update(id, {...updateDto});
   }
 
   async remove(id: string) {

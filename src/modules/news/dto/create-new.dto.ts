@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export class CreateNewDto {
 	@IsNotEmpty()
-	category_id?: mongoose.Schema.Types.ObjectId;
+	topic_id: string;
   
     @IsNotEmpty()
 	title: string;
@@ -12,7 +12,7 @@ export class CreateNewDto {
 	content: string;
     
 	@IsOptional()
-	imageUrl: string;
+	image: string;
 
     @IsNotEmpty()
 	author: string;
