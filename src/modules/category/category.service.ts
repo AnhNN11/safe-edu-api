@@ -29,25 +29,14 @@ export class CategoryService {
   ): Promise<Category> {
     const existingCategory = await this.findOne(id);
 
-    let imageUrl = updateDto.image || existingCategory.image;
 
-    // Handle image upload if a new file is provided
-    if (typeof updateDto.image !== 'string' && updateDto.image) {
-      imageUrl = await this.awsS3Service.uploadImage(updateDto.image);
-    }
-
-    const updatedCategoryData = {
-      ...updateDto,
-      image: imageUrl,
-    };
-
-    return this.categoriesRepository.update(id, updatedCategoryData);
+    return this.categoriesRepository.update(id, {...updateDto});
   }
 
   async findAll() {
     return this.categoriesRepository.findAll();
   }
-
+  
   async findOne(id: string): Promise<Category> {
     const category = await this.categoriesRepository.findOneByCondition({
       _id: id,

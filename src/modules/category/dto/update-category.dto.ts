@@ -3,11 +3,10 @@ import { CreateCategoryDto } from './create-category.dto';
 import { IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 
 export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
-  @IsNotEmpty()
-
+  @IsOptional()
   category_name: string;
   
-  @IsNotEmpty()
+  @IsOptional()
   topic_id: string;
   
   @IsOptional()

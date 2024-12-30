@@ -18,55 +18,23 @@ export class NewController {
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(
-    @UploadedFile() image: IFile,
-    @Body() {category_id, title, content, author}: CreateNewDto,
+  
+    @Body() {topic_id, title, content, author, image}: CreateNewDto,
   ) {
-    try {
-      if (!image) {
-        throw new HttpException(
-          {
-            statusCode: HttpStatus.BAD_REQUEST,
-            message: 'File is required',
-            success: false,
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      // Upload the image to AWS S3
-      const uploadResult = await this.awsS3Service.uploadImage(image);
-
-      console.log('Image uploaded:', uploadResult);
+   
 
       // Construct the DTO with the image URL from AWS S3
       const createNewsDto: CreateNewDto = {
-        category_id,
+        topic_id,
         title,
         content,
         author,
-        imageUrl: uploadResult, // Assuming `Location` contains the uploaded image URL
+        image, // Assuming `Location` contains the uploaded image URL
       };
 
       // Call the service to create the category
       const createdNews = await this.newsService.create(createNewsDto);
 
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'News created successfully',
-        success: true,
-        data: createdNews,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'News creation failed',
-          success: false,
-          error: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 
   @Get()
