@@ -65,8 +65,8 @@ export class Student extends BaseEntity {
 	last_name: string;
 
 	@Prop({
-		match: /^([+]\d{2})?\d{10}$/,
-		unique: true,
+		match: /^\+84\d{9}$/,
+		required: true,
 	})
 	phone_number: string;
 

@@ -39,33 +39,7 @@ export class AdminController {
 	@Post()
 	@ApiOperation({ summary: 'Create a new admin' })
 	async create(@Body() createAdminDto: CreateAdminDto): Promise<Admin> {
-		try {
-			// Validate required fields
-			if (!createAdminDto.first_name || !createAdminDto.last_name || !createAdminDto.email || !createAdminDto.phone_number || !createAdminDto.password) {
-				throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
-			}
-
-			// Check if an admin already exists with the same email or phone number
-			const existingAdmin = await this.adminService.findOneByCondition({
-				$or: [{ email: createAdminDto.email }, { phone_number: createAdminDto.phone_number }],
-			});
-
-			if (existingAdmin) {
-				throw new HttpException('Admin with this email or phone number already exists', HttpStatus.BAD_REQUEST);
-			}
-
-			// Create new admin if validation passes and no existing admin is found
-			return await this.adminService.create(createAdminDto);
-		} catch (error) {
-			// Handle error by throwing HttpException with message and status code
-			throw new HttpException(
-				{
-					statusCode: HttpStatus.BAD_REQUEST,
-					message: error.message || 'Something went wrong while creating the admin',
-				},
-				HttpStatus.BAD_REQUEST,
-			);
-		}
+		return await this.adminService.create(createAdminDto);
 	}
 
 	@Get()

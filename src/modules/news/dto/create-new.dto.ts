@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export class CreateNewDto {
 	@IsNotEmpty()
-	topic_id: string;
+	topic_id: mongoose.Types.ObjectId;
   
     @IsNotEmpty()
 	title: string;

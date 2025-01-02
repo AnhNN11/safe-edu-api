@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -27,9 +27,21 @@ export class CreateAdminDto {
 
   @IsOptional()
   @IsPhoneNumber('VN', { message: 'Invalid phone number format for Vietnam' })
+  @Transform(({ value }) => formatPhoneNumber(value))
   phone_number?: string;
 
   @IsNotEmpty({ message: 'Password is required' })
   @IsStrongPassword({}, { message: 'Password must be strong (at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 symbol)' })
   password: string;
+}
+
+function formatPhoneNumber(phone: string): string {
+  if (!phone) return phone;
+  if (phone.startsWith('+84')) {
+    return phone;
+  }
+  if (phone.startsWith('0')) {
+    return `+84${phone.slice(1)}`;
+  }
+  return phone;
 }
