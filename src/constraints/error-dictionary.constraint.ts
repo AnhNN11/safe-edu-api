@@ -8,6 +8,10 @@ export enum ERRORS_DICTIONARY {
   // TOPIC
   TOPIC_NOT_FOUND = 'TOP_0041',
 
+  //ADMin
+  ADMIN_EMAIL_IS_EXIST = 'Email đã tồn tại',
+  ADMIN_PHONE_NUMBER_IS_EXIST = 'SĐT đã tồn tại',
+
   // USER
   USER_NOT_FOUND = 'Người dùng không tồn tại',
   

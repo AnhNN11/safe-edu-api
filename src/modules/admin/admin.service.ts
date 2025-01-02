@@ -13,6 +13,7 @@ import { Admin } from './entities/admin.entity';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { AdminRepositoryInterface } from './interfaces/admin.interface';
+import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 
 @Injectable()
 export class AdminService {
@@ -67,6 +68,24 @@ export class AdminService {
 
 	async create(createDto: CreateAdminDto): Promise<Admin> {
 		console.log('service');
+		const {email, phone_number} = createDto;
+		const exsited_email = await this.adminRepository.findOne({ email });
+		const existed_phone_number = await this.adminRepository.findOne({ phone_number })
+		if(existed_phone_number) {
+			console.log("123" + existed_phone_number);
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.ADMIN_PHONE_NUMBER_IS_EXIST,
+				details: 'Phone number already exist',
+			});
+		}
+
+		if(exsited_email) {
+			console.log(exsited_email);
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.ADMIN_EMAIL_IS_EXIST,
+				details: 'Email already exist',
+			});
+		}
 
 		const admin = await this.adminRepository.create({
 			...createDto,

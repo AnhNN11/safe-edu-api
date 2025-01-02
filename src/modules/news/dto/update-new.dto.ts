@@ -1,13 +1,14 @@
 import { PartialType } from "@nestjs/swagger";
 import { IsNotEmpty, IsOptional } from "class-validator";
 import { CreateNewDto } from "./create-new.dto";
+import mongoose from "mongoose";
 
 export class UpdateNewDto extends PartialType(CreateNewDto) {
     @IsOptional()
 	title: string;
 
     @IsOptional()
-    topic_id: string;
+    topic_id: mongoose.Types.ObjectId;
 
     @IsOptional()
 	content: string;

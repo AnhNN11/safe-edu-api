@@ -68,9 +68,9 @@ export class Citizen extends BaseEntity {
   avatar: string;
 
   @Prop({
-    required: true,
-    match: /^[0-9]{10}$/,
-  })
+		match: /^\+84\d{9}$/,
+		required: true,
+	})
   phone: string;
 
   @Prop({
