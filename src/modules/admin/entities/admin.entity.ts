@@ -22,7 +22,6 @@ export class Admin extends BaseEntity {
 		first_name?: string;
 		last_name?: string;
 		email?: string;
-		password?: string;
 		phone_number?: string;
 		avatar_url?: string;
 	}) {
@@ -30,7 +29,6 @@ export class Admin extends BaseEntity {
 		this.first_name = admin?.first_name;
 		this.last_name = admin?.last_name;
 		this.email = admin?.email;
-		this.password = admin?.password;
 		this.phone_number = admin?.phone_number;
 		this.avatar_url = admin?.avatar_url;
 	}
@@ -68,10 +66,6 @@ export class Admin extends BaseEntity {
 		required: true,
 	})
 	phone_number?: string;
-
-	@Exclude()
-	@Prop()
-	password?: string;
 
 	@Prop({
 		default:

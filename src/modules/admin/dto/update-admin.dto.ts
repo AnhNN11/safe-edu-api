@@ -11,7 +11,7 @@ import {
 import { CreateAdminDto } from './create-admin.dto';
 
 export class UpdateAdminDto extends PartialType(
-	OmitType(CreateAdminDto, ['email', 'password'] as const),
+	OmitType(CreateAdminDto, ['email'] as const),
 ) {
 	@IsOptional()
 	@IsPhoneNumber()

@@ -29,10 +29,6 @@ export class CreateAdminDto {
   @IsPhoneNumber('VN', { message: 'Invalid phone number format for Vietnam' })
   @Transform(({ value }) => formatPhoneNumber(value))
   phone_number?: string;
-
-  @IsNotEmpty({ message: 'Password is required' })
-  @IsStrongPassword({}, { message: 'Password must be strong (at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 symbol)' })
-  password: string;
 }
 
 function formatPhoneNumber(phone: string): string {
