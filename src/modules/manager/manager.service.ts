@@ -43,25 +43,16 @@ import { ManagerRepositoryInterface } from './interfaces/manager.interface';
           throw new Error('Failed to set refresh token');
         }
       }
-    // Method to find a user by condition
+
     async findOneByCondition(condition: FilterQuery<Manager>): Promise<Manager | null> {
       return this.ManagerRepository.findOne(condition);
     }
   
-    //
-  
     
     async create(createDto: CreateManagerDto): Promise<Manager> {
-        console.log('service');
+
+         return this.ManagerRepository.create(createDto);
         
-        
-    
-    
-         const Manager = await this.ManagerRepository.create({
-           ...createDto
-         });
-      
-         return Manager;
       }
  
     async findAll() {

@@ -29,9 +29,5 @@ export class CreateManagerDto {
   phone_number?: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
-  password?: string;
-
-  @IsNotEmpty()
-  organization: Organization;
+	organization_id: string;
 }

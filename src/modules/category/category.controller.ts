@@ -67,26 +67,10 @@ export class CategoriesController {
   
 
   @Post()
-  
   async create(
-    @Body() {category_name,topic_id, description,image }: CreateCategoryDto,
+    @Body() createCategoryDto: CreateCategoryDto,
   ) {
-    
-      // Upload the image to AWS S3
-      
-
-      // Construct the DTO with the image URL from AWS S3
-      const createCategoryDto: CreateCategoryDto = {
-        category_name,
-        topic_id,
-        description,
-        image, // Assuming `Location` contains the uploaded image URL
-      };
-
-      // Call the service to create the category
-      const createdCategory = await this.categoryService.create(createCategoryDto);
-
-      
+      const createdCategory = await this.categoryService.create(createCategoryDto);      
   }
 
   @Get()

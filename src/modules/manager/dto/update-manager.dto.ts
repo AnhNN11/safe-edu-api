@@ -15,11 +15,8 @@ import { Organization } from '@modules/organizations/entities/organization.entit
 import { GENDER } from '../entities/manager.entity';
 
 export class UpdateManagerDto extends PartialType(
-	OmitType(CreateManagerDto, ['email', 'password'] as const),
+	OmitType(CreateManagerDto, ['email'] as const),
 ) {
-	@IsOptional()
-	@IsPhoneNumber()
-	phone_number?: string;
 
 	@IsOptional()
 	@IsDateString()
@@ -34,5 +31,5 @@ export class UpdateManagerDto extends PartialType(
 	headline?: string;
 
 	@IsNotEmpty()
-	organization: Organization;
+	organization_id: string;
 }
