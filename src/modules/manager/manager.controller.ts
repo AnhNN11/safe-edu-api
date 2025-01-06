@@ -35,8 +35,7 @@ export class ManagerController {
 
 	@Post()
 	@ApiOperation({ summary: 'Create a new Manager' })
-	async create(@Body() createManagerDto: CreateManagerDto): Promise<Manager> {
-		console.log('controller');
+	async create(@Body() createManagerDto: CreateManagerDto){
 		return await this.ManagerService.create(createManagerDto);
 	}
 
