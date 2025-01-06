@@ -30,7 +30,7 @@ import { RolesEnum } from 'src/enums/roles..enum';
 import { CitizensService } from '@modules/citizens/citizens.service';
 import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { MailerService } from '@nestjs-modules/mailer';
-
+import { SignInTokenDto } from './dto/sign-in-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -62,6 +62,46 @@ export class AuthService {
 				'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
 			)}s`,
 		});
+	}
+
+	async authenticateWithGoogle(sign_in_token: SignInTokenDto) {
+		// 1. Giải mã token để lấy email
+		const {token} = sign_in_token; 
+		const decodedToken = this.jwt_service.decode(token) as { email: string };
+		if (!decodedToken || !decodedToken.email) {
+			throw new HttpException(
+				{ message: 'Invalid token', error: 'Bad Request' },
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+	
+		const email = decodedToken.email;
+	
+		// 2. Kiểm tra email trong cơ sở dữ liệu
+		const admin = await this.admin_service.getAdminByEmail(email);
+		if (!admin) {
+			throw new HttpException(
+				{ message: 'User not found', error: 'Unauthorized' },
+				HttpStatus.UNAUTHORIZED,
+			);
+		}
+	
+		// 3. Sử dụng hàm generateAccessToken và generateRefreshToken
+		const accessToken = this.generateAccessToken({
+			userId: admin.id,
+			role: 'Admin',
+		});
+	
+		const refreshToken = this.generateRefreshToken({
+			userId: admin.id,
+			role: 'Admin',
+		});
+	
+		// 4. Trả về hai token
+		return {
+			accessToken,
+			refreshToken,
+		};
 	}
 
 	// async getUserIfRefreshTokenMatched(
