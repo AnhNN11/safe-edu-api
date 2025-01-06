@@ -20,31 +20,19 @@ import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { access_token_public_key } from 'src/constraints/jwt.constraint';
 import { SignInDto } from './dto/sign-in.dto';
 import { VerifiedOTPDto } from './dto/verified-otp';
+import { SignInTokenDto } from './dto/sign-in-token.dto';
 
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
 	constructor(private readonly auth_service: AuthService) {}
-
-	@UseGuards(GoogleAuthGuard)
-	@Get('google')
-	@ApiResponse({
-		status: 401,
-		description: 'Unauthorized',
-		content: {
-			'application/json': {
-				example: {
-					statusCode: 400,
-					message: 'Wrong credentials!!',
-					error: 'Bad Request',
-				},
-			},
-		},
-	})
-	async authWithGoogle() {
-		return;
+	
+	@Post('google')
+	async authWithGoogle(@Body() sign_in_token: SignInTokenDto) {
+		return this.auth_service.authenticateWithGoogle(sign_in_token);
 	}
+
 
 	@UseGuards(GoogleAuthGuard)
 	@Get('google/callback')
