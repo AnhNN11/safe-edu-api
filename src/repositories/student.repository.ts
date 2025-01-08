@@ -10,7 +10,9 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 		@InjectModel(Student.name) private readonly student_Model: Model<Student>,
 	) {}
 	async findOne(condition: FilterQuery<Student>): Promise<Student | null> {
-		return await this.student_Model.findOne(condition).exec(); 
+		return await this.student_Model.findOne(condition)
+			.populate('UserAchievement', 'RegistrationWithStudent', 'Organization')
+			.exec(); 
 	}
 
 	async create(data: Partial<Student>): Promise<Student> {

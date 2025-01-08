@@ -18,6 +18,8 @@ import { CitizensService } from '@modules/citizens/citizens.service';
 import { CitizensModule } from '@modules/citizens/citizens.module';
 import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { SupervisorsModule } from '@modules/supervisors/supervisors.module';
+import { ProvincesModule } from 'src/provinces/provinces.module';
 @Module({
 	imports: [
 		StudentsModule,
@@ -28,6 +30,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 		OrganizationsModule,
 		CitizensModule,
 		HttpModule,
+		SupervisorsModule,
+		ProvincesModule,
 		MailerModule.forRoot({
 			transport: {
 				host: 'smtp.gmail.com',

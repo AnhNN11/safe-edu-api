@@ -24,10 +24,10 @@ import { NotificationsModule } from '@modules/notifications/notifications.module
 import { RegistrationWithCitizenModule } from '@modules/registration-with-citizen/registration-with-citizen.module';
 import { RegistrationWithStudentModule } from '@modules/registration-with-student/registration-with-student.module';
 import { SupervisorsModule } from '@modules/supervisors/supervisors.module';
-import { SupervisorsOrganizationsModule } from '@modules/supervisors-organizations/supervisors-organizations.module';
 import { UserAchievementsModule } from '@modules/user-achievements/user-achievements.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { OtpModule } from '@modules/otp/otp.module';
+import { ProvincesModule } from './provinces/provinces.module';
 
 @Module({
 	imports: [
@@ -81,10 +81,10 @@ import { OtpModule } from '@modules/otp/otp.module';
 		RegistrationWithCitizenModule,
 		RegistrationWithStudentModule,
 		SupervisorsModule,
-		SupervisorsOrganizationsModule,
 		UserAchievementsModule,
 		AuthModule,
 		OtpModule,
+		ProvincesModule,
 	],
 	controllers: [AppController],
 	providers: [

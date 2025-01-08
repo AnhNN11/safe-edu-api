@@ -3,7 +3,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsRepositoryInterface } from './interfaces/students.interface';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
-import { FilterQuery } from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { Student } from './entities/student.entity';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { CitizensRepositoryInterface } from '@modules/citizens/interfaces/citizens.interfaces';
@@ -60,9 +60,9 @@ export class StudentsService {
 			last_name,
 			date_of_birth,
 			phone_number,
-			organizationId
+			organizationId: new mongoose.Types.ObjectId(organizationId),
 		});
-		return student;
+		return this.studentsRepository.findOne(student);
 	  }
 
 	  async findAll() {
@@ -94,7 +94,20 @@ export class StudentsService {
 		id: string,
 		updateStudentDto: UpdateStudentDto,
 	  ): Promise<Student> {
-		const updatedUser = await this.studentsRepository.update(id,{...updateStudentDto});
+		if (updateStudentDto.organizationId) {
+			if (!mongoose.Types.ObjectId.isValid(updateStudentDto.organizationId)) {
+				throw new BadRequestException({
+				message: 'Invalid organization ID format',
+				details: 'Organization ID must be a valid ObjectId',
+				});
+			}
+			updateStudentDto.organizationId = new mongoose.Types.ObjectId(updateStudentDto.organizationId) as any;
+		}
+		const updatedUser = await this.studentsRepository.update(id, {
+			...updateStudentDto,
+			organizationId: updateStudentDto.organizationId
+			? new mongoose.Types.ObjectId(updateStudentDto.organizationId)
+		});
 		if (!updatedUser) {
 			throw new BadRequestException({
 				message: ERRORS_DICTIONARY.STUDENT_NOT_FOUND,
@@ -104,16 +117,16 @@ export class StudentsService {
 		return updatedUser;
 	  }
 
-	  async remove(id: string): Promise<void> {
+	async remove(id: string): Promise<void> {
 		const result = await this.studentsRepository.remove(id);
 		if (!result) {
 		  throw new NotFoundException(`Student with ID ${id} not found`);
 		}
-	  }
+	}
 
 	async delete(id: string): Promise<Student> {
 		return await this.studentsRepository.update(id, {
-		  deleted_at: new Date(),
+			deleted_at: new Date(),
 		});
 	}
 

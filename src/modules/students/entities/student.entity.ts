@@ -35,6 +35,7 @@ export class Student extends BaseEntity {
 		gender?: GENDER;
 		phone_number?: string;
 		date_of_birth?: Date;
+		organizationId?: mongoose.Types.ObjectId;
 	}) {
 		super();
 		this.first_name = Student?.first_name;
@@ -42,6 +43,7 @@ export class Student extends BaseEntity {
 		this.gender = Student?.gender;
 		this.phone_number = Student?.phone_number;
 		this.date_of_birth = Student?.date_of_birth;
+		this.organizationId = Student?.organizationId;
 	}
 	
 	@Prop({
@@ -70,10 +72,10 @@ export class Student extends BaseEntity {
 	})
 	phone_number: string;
 
-	@Prop({ type: Types.ObjectId, 
+	@Prop({ type: mongoose.Schema.Types.ObjectId, 
 			ref: 'Organization', 
 			required: false})
-	organizationId: string
+	organizationId: mongoose.Types.ObjectId
 
 	@Prop({
 		default:

@@ -2,33 +2,39 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SupervisorsService } from './supervisors.service';
 import { CreateSupervisorDto } from './dto/create-supervisor.dto';
 import { UpdateSupervisorDto } from './dto/update-supervisor.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('supervisors')
 export class SupervisorsController {
   constructor(private readonly supervisorsService: SupervisorsService) {}
 
   @Post()
-  create(@Body() createSupervisorDto: CreateSupervisorDto) {
+  @ApiOperation({ summary: 'Create a new supervisor' })
+  async create(@Body() createSupervisorDto: CreateSupervisorDto) {
     return this.supervisorsService.create(createSupervisorDto);
   }
 
   @Get()
-  findAll() {
+  @ApiOperation({ summary: 'Retrieve all supervisor' })
+  async findAll() {
     return this.supervisorsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Retrieve supervisor by condition' })
+  async findOne(@Param('id') id: string) {
     return this.supervisorsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSupervisorDto: UpdateSupervisorDto) {
-    return this.supervisorsService.update(+id, updateSupervisorDto);
+  @ApiOperation({ summary: 'Update a supervisor' })
+  async update(@Param('id') id: string, @Body() updateSupervisorDto: UpdateSupervisorDto) {
+    return this.supervisorsService.update(id, updateSupervisorDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.supervisorsService.remove(+id);
+  @ApiOperation({ summary: 'Delete a supervisor' })
+  async remove(@Param('id') id: string) {
+    return this.supervisorsService.delete(id);
   }
 }
