@@ -107,6 +107,7 @@ export class StudentsService {
 			...updateStudentDto,
 			organizationId: updateStudentDto.organizationId
 			? new mongoose.Types.ObjectId(updateStudentDto.organizationId)
+			: undefined,
 		});
 		if (!updatedUser) {
 			throw new BadRequestException({
