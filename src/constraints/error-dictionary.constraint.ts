@@ -34,4 +34,13 @@ export enum ERRORS_DICTIONARY {
 
   // CLASS VALIDATOR
   VALIDATION_ERROR = 'Lỗi Validate',
+
+  //SUPERVISOR
+  SUPERVISOR_EMAIL_EXIST = 'Email đã tồn tại',
+  SUPERVISOR_NOT_EXIST = 'Supervisor không tồn tại',
+  SUPERVISOR_ALREADY_ASSIGN = 'Supervisor đã được đăng kí quản lí trường này',
+  SUPERVISOR_NAME_IS_NULL = 'Tên không được để trống',
+
+  //PROVINCE
+  PROVINCE_NOT_FOUND = 'Tên tỉnh thành không tồn tại'
 }

@@ -2,6 +2,7 @@ import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { NextFunction } from 'express';
+import { Province } from 'src/provinces/entities/province.entity';
 
 export type SupervisorDocument = HydratedDocument<Supervisor>;
 
@@ -17,26 +18,19 @@ export type SupervisorDocument = HydratedDocument<Supervisor>;
 })
 export class Supervisor extends BaseEntity {
   constructor(supervisor: {
-    password?: string;
     first_name?: string;
     last_name?: string;
     email?: string;
     avatar?: string;
+    province_id?: mongoose.Types.ObjectId[];
   }) {
     super();
-    this.password = supervisor?.password;
     this.first_name = supervisor?.first_name;
     this.last_name = supervisor?.last_name;
     this.email = supervisor?.email;
     this.avatar = supervisor?.avatar;
+    this.province_id = supervisor?.province_id;
   }
-
-  @Prop({
-    required: true,
-    minlength: 6,
-    set: (password: string) => password.trim(),
-  })
-  password: string;
 
   @Prop({
     required: true,
@@ -68,10 +62,10 @@ export class Supervisor extends BaseEntity {
   avatar?: string;
 
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SupervisorOrganization' }],
-    default: [],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Province' }],
+    default: [], 
   })
-  supervisorOrganizations: mongoose.Types.ObjectId[]; 
+  province_id: mongoose.Types.ObjectId[];
 }
 
 export const SupervisorSchema = SchemaFactory.createForClass(Supervisor);

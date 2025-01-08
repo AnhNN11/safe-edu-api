@@ -21,6 +21,9 @@ import { OrganizationsRepository } from '@repositories/organizations.repository'
 		OrganizationsService,
 		{ provide: 'OrganizationsRepositoryInterface', useClass: OrganizationsRepository },
 	],
-	exports: [OrganizationsService],
+	exports: [
+		OrganizationsService,
+		'OrganizationsRepositoryInterface', 
+	],
 })
 export class OrganizationsModule {}
