@@ -37,7 +37,7 @@ export class News extends BaseEntity {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Topic',
 		})
-		topic_id: mongoose.Types.ObjectId;
+	topic_id: mongoose.Types.ObjectId;
 
 	@Prop({
 		required: true,

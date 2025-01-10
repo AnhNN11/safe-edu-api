@@ -14,6 +14,12 @@ export class ProvinceController {
   @Post()
   @ApiOperation({summary: 'Add province into database'})
   async saveProvinceIntoDatabase() {
-    return this.provinceService.addProvinceIntoDatabase();
+    return await this.provinceService.addProvinceIntoDatabase();
+  }
+
+  @Get('provinces')
+  @ApiOperation({summary: 'Retrive all province'})
+  async getAllProvince() {
+    return await this.provinceService.findAll();
   }
 }

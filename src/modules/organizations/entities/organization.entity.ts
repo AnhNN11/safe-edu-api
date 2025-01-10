@@ -20,24 +20,21 @@ export type OrganizationDocument = HydratedDocument<Organization>;
 export class Organization extends BaseEntity {
     constructor(organization: {
         name: string;
-        province: string;
+        province_id: mongoose.Types.ObjectId;
     }) {
         super();
         this.name = organization?.name;
-        this.province = organization.province;
+        this.province_id = organization.province_id;
     }
 
     @Prop()
     name: string;
 
-    @Prop()
-    province: string;
-
-	@Prop({
-		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SupervisorOrganization' }],
+    @Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Province' }],
 		default: [],
 	})
-	supervisorOrganizations: mongoose.Types.ObjectId[];
+    province_id: mongoose.Types.ObjectId;
 }
 
 export const OrganizationsSchema = SchemaFactory.createForClass(Organization);

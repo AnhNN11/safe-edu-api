@@ -44,4 +44,8 @@ export class ProvinceService {
   async findOne(_id: string): Promise<Province> {
     return await this.provinceRepository.findOne({_id});
   }
+
+  async findAll() {
+    return await this.provinceRepository.findAll()
+  }
 }

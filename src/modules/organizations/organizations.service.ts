@@ -19,8 +19,8 @@ export class OrganizationsService {
 
   async create(create_dto: CreateOrganizationDto): Promise<Organization> {
     try {
-      const { name, province } = create_dto;
-      const existed_organization = await this.organizations_repository.findOne({ name, province });
+      const { name, province_id } = create_dto;
+      const existed_organization = await this.organizations_repository.findOne({ name, province_id });
   
       if (existed_organization) {
         throw new BadRequestException({
@@ -31,8 +31,9 @@ export class OrganizationsService {
   
       const organization = await this.organizations_repository.create({
         ...create_dto,
+        province_id: new mongoose.Types.ObjectId(province_id),
       });
-      return organization;
+      return this.organizations_repository.findOne(organization);
     } catch (error) {
       throw error;
     }
@@ -54,8 +55,8 @@ export class OrganizationsService {
     id: string,
     updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<Organization> {
-    const {name, province} = updateOrganizationDto;
-    const existed_organization = await this.organizations_repository.findOne({name, province});
+    const {name, province_id} = updateOrganizationDto;
+    const existed_organization = await this.organizations_repository.findOne({name, province_id});
 
     //check if name exist
     if(existed_organization) {
@@ -72,14 +73,17 @@ export class OrganizationsService {
       });
     }
     
-    if (this.organizations_repository.isNullOrEmpty(province)) {
+    if (this.organizations_repository.isNullOrEmpty(province_id)) {
       throw new ConflictException({
         message: ERRORS_DICTIONARY.ORGANIZATION_PROVINCE_CAN_NOT_BE_EMPTY,
         details: "Organization province cannot be empty!!"
       });
     }
 
-    const updatedOrganization = await this.organizations_repository.update(id, updateOrganizationDto);
+    const updatedOrganization = await this.organizations_repository.update(id, {
+      ...updateOrganizationDto,
+      province_id: new mongoose.Types.ObjectId(updateOrganizationDto.province_id)
+    });
     if (!updatedOrganization) {
       throw new NotFoundException(`Trường cần tìm không tồn tại: ${id}`);
     }

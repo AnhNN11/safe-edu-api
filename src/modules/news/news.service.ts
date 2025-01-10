@@ -18,20 +18,8 @@ export class NewService {
   ) {}
 
   async create(createNewDto: CreateNewDto): Promise<News>{
-    try {
-      // const category = await this.topic_service.findOne(createNewDto.category_id);
-
-      // if(category) {
-      //   const news = await this.news_repository.create({
-      //     ...createNewDto,
-      //     // category_id: category.id.toString()
-      //   })
-        // return news;
-      }
-    catch (error) {
-      throw error;
-    }
-    return this.news_repository.create(createNewDto)
+    const news = this.news_repository.create(createNewDto);
+    return await this.news_repository.findOne(news);
   }
 
   async findAll() {

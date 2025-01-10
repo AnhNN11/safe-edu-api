@@ -10,7 +10,9 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		@InjectModel(Organization.name) private readonly organizationModel: Model<Organization>,
 	) {}
 	async findOne(condition: FilterQuery<Organization>): Promise<Organization | null> {
-		return await this.organizationModel.findOne(condition).exec(); 
+		return await this.organizationModel.findOne(condition)
+			.populate('province_id')
+			.exec(); 
 	  }
 	async create(data: Partial<Organization>): Promise<Organization> {
 		const newOrganization = new this.organizationModel(data);
@@ -19,6 +21,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	async findAll() {
 		const organizations = await this.organizationModel
 		  .find({ isActive: true, deleted_at: null, deleted_by: null})
+		  .populate('province_id')
 		  .exec(); 
 	  
 		const total = await this.organizationModel.countDocuments().exec();

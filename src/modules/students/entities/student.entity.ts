@@ -72,9 +72,7 @@ export class Student extends BaseEntity {
 	})
 	phone_number: string;
 
-	@Prop({ type: mongoose.Schema.Types.ObjectId, 
-			ref: 'Organization', 
-			required: false})
+	@Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }] })
 	organizationId: mongoose.Types.ObjectId
 
 	@Prop({
