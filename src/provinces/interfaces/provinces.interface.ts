@@ -6,4 +6,5 @@ export interface ProvinceRepositoryInterface {
     update(id: string, data: Partial<Province>): Promise<Province | null>;
     remove(id: string): Promise<Province>;
     findOne(condition: FilterQuery<Province>):Promise<Province | null>;
+    findAll();
 }

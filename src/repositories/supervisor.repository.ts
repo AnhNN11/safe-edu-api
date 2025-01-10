@@ -30,6 +30,7 @@ export class SupervisorRepository implements SupervisorRepositoryInterface {
     async findAll() {
         const Supervisors = await this.supervisor_Model
           .find()
+          .populate('province_id')
           .exec(); 
       
         const total = await this.supervisor_Model.countDocuments().exec();

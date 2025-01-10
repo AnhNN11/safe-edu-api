@@ -11,7 +11,7 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	) {}
 	async findOne(condition: FilterQuery<Student>): Promise<Student | null> {
 		return await this.student_Model.findOne(condition)
-			.populate('UserAchievement', 'RegistrationWithStudent', 'Organization')
+			.populate('achievements', 'registration_competition', 'organizationId')
 			.exec(); 
 	}
 
@@ -30,6 +30,11 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	async findAll() {
 		const Students = await this.student_Model
 		  .find()
+		  .populate([
+			{ path: 'achievements'},
+			{ path: 'registration_competition'},
+			{ path: 'organizationId'},
+		  ])
 		  .exec(); 
 	  
 		const total = await this.student_Model.countDocuments().exec();

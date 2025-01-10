@@ -12,7 +12,9 @@ export class NewsRepository implements NewsRepositoryInterface {
     ) {}
 
     async findOne(condition: FilterQuery<News>): Promise<News | null> {
-        return await this.newsModel.findOne(condition).exec();
+        return await this.newsModel.findOne(condition)
+            .populate('topic_id')
+            .exec();
     }
 
     async create(data: Partial<News>): Promise<News> {
@@ -23,6 +25,7 @@ export class NewsRepository implements NewsRepositoryInterface {
     async findAll() {
         const news = await this.newsModel
 		  .find()
+          .populate('topic_id')
 		  .exec(); 
 	  
 		const total = await this.newsModel.countDocuments().exec();

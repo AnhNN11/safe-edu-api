@@ -11,10 +11,10 @@ import { OrganizationsRepository } from '@repositories/organizations.repository'
       {
         name: Organization.name,
         useFactory: OrganizationSchemaFactory,
-				inject: [],
-				imports: [MongooseModule.forFeature([])],
+		inject: [],
+		imports: [MongooseModule.forFeature([])],
       }
-    ])
+	])
 	],
 	controllers: [OrganizationsController],
 	providers: [

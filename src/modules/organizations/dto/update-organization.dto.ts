@@ -6,5 +6,5 @@ export class UpdateOrganizationDto {
     name: string;
 
     @IsOptional()
-    province: string
+    province_id: string
 }
