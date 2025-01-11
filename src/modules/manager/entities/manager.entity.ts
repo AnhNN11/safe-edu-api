@@ -1,7 +1,7 @@
 import { Organization } from './../../organizations/entities/organization.entity';
 import { BaseEntity } from '@modules/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, Model } from 'mongoose';
+import mongoose, { HydratedDocument, Model, Types } from 'mongoose';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { NextFunction } from 'express';
 
@@ -32,19 +32,18 @@ export class Manager extends BaseEntity {
 		first_name?: string;
 		last_name?: string;
 		email?: string;
-		password?: string;
+	
 		gender?: GENDER;
 		phone_number?: string;
-		organization_id: mongoose.Types.ObjectId;
 	}) {
 		super();
 		this.first_name = Manager?.first_name;
 		this.last_name = Manager?.last_name;
 		this.email = Manager?.email;
-		this.password = Manager?.password;
+	
 		this.gender = Manager?.gender;
 		this.phone_number = Manager?.phone_number;
-		this.organization_id = Manager?.organization_id;
+	
 	}
 
 	@Prop({
@@ -101,12 +100,10 @@ export class Manager extends BaseEntity {
 	gender: GENDER;
 
 
-	@Prop({
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Organization',
-		required: true, 
-	  })
-	organization_id: mongoose.Types.ObjectId;
+	@Prop({ type: Types.ObjectId, 
+			ref: 'Organization', 
+			required: false})
+	organization_id: string
 
 	@Prop()
 	@Exclude()
