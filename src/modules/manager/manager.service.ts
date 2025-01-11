@@ -13,6 +13,8 @@ import { Manager } from './entities/manager.entity';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { UpdateManagerDto } from './dto/update-manager.dto';
 import { ManagerRepositoryInterface } from './interfaces/manager.interface';
+import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
+import { OrganizationsService } from '@modules/organizations/organizations.service';
 
   
   @Injectable()
@@ -21,6 +23,7 @@ import { ManagerRepositoryInterface } from './interfaces/manager.interface';
       @Inject('ManagerRepositoryInterface')
       private readonly ManagerRepository: ManagerRepositoryInterface,
       private readonly configService: ConfigService,
+      private readonly organizationService: OrganizationsService,
     ) {}
 
       
@@ -50,9 +53,16 @@ import { ManagerRepositoryInterface } from './interfaces/manager.interface';
   
     
     async create(createDto: CreateManagerDto): Promise<Manager> {
+    const { first_name, last_name,email, phone_number, organization_id } = createDto;
 
-         return this.ManagerRepository.create(createDto);
-        
+    const manager = await this.ManagerRepository.create({
+      first_name,
+      last_name,
+      email,
+      phone_number,
+      organization_id
+    });
+    return manager;
       }
  
     async findAll() {
