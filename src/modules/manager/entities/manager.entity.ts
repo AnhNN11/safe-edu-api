@@ -77,10 +77,10 @@ export class Manager extends BaseEntity {
 	email: string;
 
 	@Prop({
-		match: /^([+]\d{2})?\d{10}$/,
-		
+		match: /^\+84\d{9}$/,
+		required: true,
 	})
-	phone_number?: string;
+	phone_number: string;
 
 	@Exclude()
 	@Prop()

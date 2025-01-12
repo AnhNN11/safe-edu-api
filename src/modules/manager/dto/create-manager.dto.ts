@@ -1,5 +1,5 @@
 import { Organization } from './../../organizations/entities/organization.entity';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -24,10 +24,25 @@ export class CreateManagerDto {
   @IsEmail()
   email: string;
 
-  @IsOptional()
-  @IsPhoneNumber('VN')
-  phone_number?: string;
-
+  @IsNotEmpty({ message: 'Số điện thoại không được để trống'})
+  @IsPhoneNumber('VN', { message: 'Số điện thoại không thuộc vùng Việt Nam' })
+  @Transform(({ value }) => formatPhoneNumber(value))
+  phone_number: string;
+  
   @IsNotEmpty()
 	organizationId: string;
+
+
+  
+}
+
+function formatPhoneNumber(phone: string): string {
+  if (!phone) return phone;
+  if (phone.startsWith('+84')) {
+          return phone;
+  }
+  if (phone.startsWith('0')) {
+          return `+84${phone.slice(1)}`;
+  }
+  return phone;
 }
