@@ -1,5 +1,5 @@
 import { Organization } from './../../organizations/entities/organization.entity';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -24,10 +24,13 @@ export class CreateManagerDto {
   @IsEmail()
   email: string;
 
-  @IsOptional()
-  @IsPhoneNumber('VN')
-  phone_number?: string;
+  @IsNotEmpty({ message: 'Số điện thoại không được để trống'})
+  phone_number: string;
 
   @IsNotEmpty()
 	organizationId: string;
+
+
+  
 }
+
