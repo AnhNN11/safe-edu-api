@@ -25,10 +25,10 @@ export class CreateManagerDto {
   email: string;
 
   @IsNotEmpty({ message: 'Số điện thoại không được để trống'})
-  @IsPhoneNumber('VN', { message: 'Số điện thoại không thuộc vùng Việt Nam' })
-  @Transform(({ value }) => formatPhoneNumber(value))
+  @IsPhoneNumber('VN', { message: 'Số điện thoại không thuộc Việt Nam' })
+  @Transform(({ value }) => formatPhoneNumber(value)) 
   phone_number: string;
-  
+
   @IsNotEmpty()
 	organizationId: string;
 
