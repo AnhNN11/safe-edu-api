@@ -7,7 +7,7 @@ import {
   import { ConfigService } from '@nestjs/config';
 
   import { FindAllResponse, QueryParams } from 'src/types/common.type';
-  import { FilterQuery } from 'mongoose';
+  import mongoose, { FilterQuery } from 'mongoose';
 import { log } from 'console';
 import { Manager } from './entities/manager.entity';
 import { CreateManagerDto } from './dto/create-manager.dto';
@@ -51,18 +51,28 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
       return this.ManagerRepository.findOne(condition);
     }
   
+    async findOneById(
+        managerId: string,
+      ): Promise<Manager | null> {
     
+        const manager = await this.ManagerRepository.findById(managerId);
+        if (!manager) {
+          throw new NotFoundException(`Admin with ID ${managerId} not found`);
+        }
+        return manager;
+      }
+
     async create(createDto: CreateManagerDto): Promise<Manager> {
-    const { first_name, last_name,email, phone_number, organization_id } = createDto;
+    const { first_name, last_name,email, phone_number, organizationId } = createDto;
 
     const manager = await this.ManagerRepository.create({
       first_name,
       last_name,
       email,
       phone_number,
-      organization_id
+      organizationId: new mongoose.Types.ObjectId(organizationId)
     });
-    return manager;
+    return this.ManagerRepository.findOne(manager);;
       }
  
     async findAll() {
@@ -74,7 +84,10 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
       id: string,
       updateUserDto: UpdateManagerDto,
     ): Promise<Manager> {
-      const updatedManager = await this.ManagerRepository.update(id,{...updateUserDto});
+      const updatedManager = await this.ManagerRepository.update(id,{
+        ...updateUserDto, organizationId: updateUserDto.organizationId
+        ? new mongoose.Types.ObjectId(updateUserDto.organizationId)
+        : undefined,});
       if (!updatedManager) {
         throw new NotFoundException(`Manager with ID ${id} not found`);
       }

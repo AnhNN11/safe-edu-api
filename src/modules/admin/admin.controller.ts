@@ -49,10 +49,10 @@ export class AdminController {
 
 	@Get(':id')
 	@ApiOperation({ summary: 'Retrieve a admin by ID' })
-	async findOne(@Param('id') _id: string): Promise<Admin> {
-		console.log("controller:" + this.adminService.findOneById(_id));
+	async findOne(@Param('id') id: string): Promise<Admin> {
+		console.log("controller:" + this.adminService.findOneById(id));
 
-		return await this.adminService.findOneByCondition({ _id });
+		return await this.adminService.findOneById(id);
 	}
 
 	@Patch(':id')

@@ -47,7 +47,7 @@ export class ManagerController {
 	@Get(':id')
 	@ApiOperation({ summary: 'Retrieve a Manager by ID' })
 	async findOne(@Param('id') id: string): Promise<Manager> {
-		return await this.ManagerService.findOneByCondition({ id });
+		return await this.ManagerService.findOneById(id);
 	}
 
 	@Patch(':id')
