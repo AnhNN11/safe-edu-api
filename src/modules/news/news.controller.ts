@@ -58,6 +58,6 @@ export class NewController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a news by ID' })
   remove(@Param('id') id: string) {
-    return this.newsService.remove(id);
+    return this.newsService.delete(id);
   }
 }

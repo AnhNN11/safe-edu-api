@@ -34,15 +34,28 @@ export class NewsRepository implements NewsRepositoryInterface {
 
     async update(id: string | Types.ObjectId, updateData: any): Promise<News | null> {
         const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-    return this.newsModel.findByIdAndUpdate(stringId, updateData, { new: true }).exec();
+        return this.newsModel.findByIdAndUpdate(stringId, updateData, { new: true })
+            .populate('topic_id')
+            .exec();
     }
 
     async remove(id: string): Promise<boolean> {
-        const result = await this.newsModel.findByIdAndDelete(id).exec();
+        const result = await this.newsModel.findByIdAndDelete(id)
+            .populate('topic_id')
+            .exec();
 		return !!result;
     }
 
     async findById(id: string): Promise<News | null> {
-        return await this.newsModel.findById(id).exec();
+        return await this.newsModel.findById(id)
+            .populate('topic_id')
+            .exec();
+    }
+
+    async delete(id: string | Types.ObjectId): Promise<News | null> {
+            const stringId = id instanceof Types.ObjectId ? id.toString() : id;
+            return this.newsModel.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false } ,{ new: true })
+                .populate('topic_id')
+                .exec();
     }
 }

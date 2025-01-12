@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, Delete } from '@nestjs/common';
 import { CreateNewDto } from './dto/create-new.dto';
 import { UpdateNewDto } from './dto/update-new.dto';
 import { NewsRepository } from '@repositories/news.repository';
@@ -58,4 +58,11 @@ export class NewService {
       throw new BadRequestException("Invalid Id")
     }
   }
+
+  async delete(id: string): Promise<News> {
+      return await this.news_repository.update(id, {
+        deleted_at: new Date(),
+        isActive: false
+      });
+    }
 }

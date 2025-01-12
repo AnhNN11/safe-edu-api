@@ -42,7 +42,9 @@ export class SupervisorRepository implements SupervisorRepositoryInterface {
     }
 
     async update(id: string, data: Partial<Supervisor>): Promise<Supervisor | null> {
-        return await this.supervisor_Model.findByIdAndUpdate(id, data, { new: true }).exec();
+        return await this.supervisor_Model.findByIdAndUpdate(id, data, { new: true })
+            .populate('province_id')
+            .exec();
     }
 
     async remove(id: string): Promise<boolean> {
@@ -70,7 +72,9 @@ export class SupervisorRepository implements SupervisorRepositoryInterface {
 
     async delete(id: string | Types.ObjectId): Promise<Supervisor | null> {
         const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-        return this.supervisor_Model.findByIdAndUpdate(stringId, { deleted_at: new Date() }, { new: true }).exec();
+        return this.supervisor_Model.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false } ,{ new: true })
+            .populate('province_id')
+            .exec();
     }
 
 }

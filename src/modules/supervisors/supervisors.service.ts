@@ -47,8 +47,8 @@ export class SupervisorsService {
 		return await this.supervisorRepository.findAll();
 	}
 
-	async findOne(id: string) {
-		return await this.supervisorRepository.findOne({id});
+	async findOne(_id: string) {
+		return await this.supervisorRepository.findOne({_id});
 	}
 
 	async update(id: string,
@@ -71,6 +71,7 @@ export class SupervisorsService {
 	async delete(id: string): Promise<Supervisor> {
 		return await this.supervisorRepository.update(id, {
 			deleted_at: new Date(),
+			isActive: false
 		});
 	}
 }
