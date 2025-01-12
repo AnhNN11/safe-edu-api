@@ -25,6 +25,8 @@ export class CreateManagerDto {
   email: string;
 
   @IsNotEmpty({ message: 'Số điện thoại không được để trống'})
+  @IsPhoneNumber('VN', { message: 'Số điện thoại không thuộc Việt Nam' })
+  @Transform(({ value }) => formatPhoneNumber(value)) 
   phone_number: string;
 
   @IsNotEmpty()
@@ -34,3 +36,13 @@ export class CreateManagerDto {
   
 }
 
+function formatPhoneNumber(phone: string): string {
+  if (!phone) return phone;
+  if (phone.startsWith('+84')) {
+          return phone;
+  }
+  if (phone.startsWith('0')) {
+          return `+84${phone.slice(1)}`;
+  }
+  return phone;
+}
