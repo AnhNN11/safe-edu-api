@@ -29,5 +29,5 @@ export class CreateManagerDto {
   phone_number?: string;
 
   @IsNotEmpty()
-	organization_id: string;
+	organizationId: string;
 }

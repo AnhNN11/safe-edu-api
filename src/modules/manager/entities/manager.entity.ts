@@ -35,6 +35,7 @@ export class Manager extends BaseEntity {
 	
 		gender?: GENDER;
 		phone_number?: string;
+		organizationId?: mongoose.Types.ObjectId;
 	}) {
 		super();
 		this.first_name = Manager?.first_name;
@@ -43,6 +44,7 @@ export class Manager extends BaseEntity {
 	
 		this.gender = Manager?.gender;
 		this.phone_number = Manager?.phone_number;
+		this.organizationId = Manager?.organizationId;
 	
 	}
 
@@ -100,10 +102,8 @@ export class Manager extends BaseEntity {
 	gender: GENDER;
 
 
-	@Prop({ type: Types.ObjectId, 
-			ref: 'Organization', 
-			required: false})
-	organization_id: string
+	@Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }] })
+	organizationId: mongoose.Types.ObjectId
 
 	@Prop()
 	@Exclude()

@@ -11,7 +11,9 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 		@InjectModel(Manager.name) private readonly ManagerModel: Model<Manager>,
 	) {}
 	async findOne(condition: FilterQuery<Manager>): Promise<Manager | null> {
-		return await this.ManagerModel.findOne(condition).exec(); 
+		return await this.ManagerModel.findOne(condition).populate([
+			{ path: 'organizationId'},
+		  ]).exec(); 
 	  }
 	async create(data: Partial<Manager>): Promise<Manager> {
 		console.log('data:', JSON.stringify(data, null, 2));
@@ -30,6 +32,9 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 	async findAll() {
 		const Managers = await this.ManagerModel
 		  .find()
+		  .populate([
+			{ path: 'organizationId'},
+		  ])
 		  .exec(); 
 	  
 		const total = await this.ManagerModel.countDocuments().exec();
@@ -52,6 +57,8 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 	}
 
 	async findById(id: string): Promise<Manager | null> {
-		return await this.ManagerModel.findById(id).exec(); // Using Mongoose's findById method
+		return await this.ManagerModel.findById(id).populate([
+			{ path: 'organizationId'},
+		  ]).exec(); // Using Mongoose's findById method
 	  }
 }

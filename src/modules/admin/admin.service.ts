@@ -52,6 +52,9 @@ export class AdminService {
 		console.log('Condition:', condition);
 		const result = await this.adminRepository.findOne(condition);
 		console.log('Result:', result);
+		if (!result) {
+			throw new NotFoundException(`Admin with ID ${condition} not found`);
+		}
 		return result;
 	}
 
@@ -62,6 +65,9 @@ export class AdminService {
 
 		const admin = await this.adminRepository.findById(adminId);
 		console.log('Result:', admin);
+		if (!admin) {
+			throw new NotFoundException(`Admin with ID ${adminId} not found`);
+		}
 		return admin;
 	}
 	//

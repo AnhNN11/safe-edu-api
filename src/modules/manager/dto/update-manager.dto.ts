@@ -31,5 +31,5 @@ export class UpdateManagerDto extends PartialType(
 	headline?: string;
 
 	@IsNotEmpty()
-	organization_id: string;
+	organizationId: string;
 }
