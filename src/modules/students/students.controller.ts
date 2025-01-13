@@ -43,7 +43,7 @@ export class StudentsController {
   @Delete(':id')
 	@ApiOperation({ summary: 'Delete a student by ID' })
 	async remove(@Param('id') id: string): Promise<void> {
-		await this.studentsService.remove(id);
+		await this.studentsService.delete(id);
 	} 
 
   @Get('phone/:phone_number')
@@ -53,4 +53,9 @@ export class StudentsController {
 		return await this.studentsService.findOneByCondition({ phone_number }, action);
 	}
 
+  @Patch(':id/isActive')
+  @ApiOperation({summary: 'Update isActive true'})
+  async setIsActiveTrue(@Param('id') id: string) {
+    return await this.studentsService.setIsActiveTrue(id);
+  }
 }

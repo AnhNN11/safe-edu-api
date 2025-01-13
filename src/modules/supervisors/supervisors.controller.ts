@@ -3,6 +3,7 @@ import { SupervisorsService } from './supervisors.service';
 import { CreateSupervisorDto } from './dto/create-supervisor.dto';
 import { UpdateSupervisorDto } from './dto/update-supervisor.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { Supervisor } from './entities/supervisor.entity';
 
 @Controller('supervisors')
 export class SupervisorsController {
@@ -36,5 +37,11 @@ export class SupervisorsController {
   @ApiOperation({ summary: 'Delete a supervisor' })
   async remove(@Param('id') id: string) {
     return this.supervisorsService.delete(id);
+  }
+
+  @Patch(':id/setIsActive')
+  @ApiOperation({summary: 'Update isActive true'})
+  async setIsActiveTrue(@Param('id') id: string): Promise<Supervisor> {
+    return this.supervisorsService.setIsActiveTrue(id);
   }
 }

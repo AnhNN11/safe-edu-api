@@ -101,4 +101,10 @@ export class OrganizationsService {
   async findAllIsActive() {
     return await this.organizations_repository.findAllIsActive();
   }
+
+  async setIsActiveTrue(id: string): Promise<Organization> {
+    return await this.organizations_repository.update(id, {
+      isActive: true
+    })
+  }
 }

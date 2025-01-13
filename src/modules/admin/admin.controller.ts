@@ -67,7 +67,13 @@ export class AdminController {
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a user by ID' })
 	@UseGuards(JwtAccessTokenGuard)
-	async remove(@Param('id') id: string): Promise<void> {
-		await this.adminService.remove(id);
+	async remove(@Param('id') id: string){
+		await this.adminService.delete(id);
+	}
+
+	@Patch(':id')
+	@ApiOperation({ summary: 'Set isActive true'})
+	async setIsActiveTrue(@Param('id') id: string) {
+		return await this.adminService.setIsActiveTrue(id);
 	}
 }

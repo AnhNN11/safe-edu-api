@@ -48,4 +48,10 @@ export class OrganizationsController {
   async findAllIsActive() {
     return await this.organizationsService.findAllIsActive();
   }
+
+  @Patch(':id/isActive')
+  @ApiOperation({ summary: 'Update isActive true' })
+  async setIsActiveTrue(@Param('id') id: string) {
+    return await this.organizationsService.setIsActiveTrue(id);
+  }
 }

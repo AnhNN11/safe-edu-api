@@ -64,5 +64,11 @@ export class NewService {
         deleted_at: new Date(),
         isActive: false
       });
-    }
+  }
+
+  async setIsActiveTrue(id: string):Promise<News> {
+    return await this.news_repository.update(id, {
+        isActive: true,
+    })
+  }
 }
