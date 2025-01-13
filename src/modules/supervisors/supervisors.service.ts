@@ -74,4 +74,10 @@ export class SupervisorsService {
 			isActive: false
 		});
 	}
+
+	async setIsActiveTrue(id: string): Promise<Supervisor> {
+		return await this.supervisorRepository.update(id, {
+			isActive: true
+		})
+	}
 }

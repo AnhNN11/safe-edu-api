@@ -60,4 +60,10 @@ export class NewController {
   remove(@Param('id') id: string) {
     return this.newsService.delete(id);
   }
+
+  @Patch(':id/isActive')
+  @ApiOperation({ summary: 'Set isActive true' })
+  async setIsActiveTrue(@Param('id') id: string) {
+    return await this.newsService.setIsActiveTrue(id);
+  }
 }

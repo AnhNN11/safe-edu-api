@@ -131,4 +131,17 @@ export class AdminService {
 
 		return admin;
 	}
+
+	async delete(id: string): Promise<Admin> {
+		return this.adminRepository.update(id, {
+			deleted_at: new Date,
+			isActive: false
+		})
+	}
+
+	async setIsActiveTrue(id: string): Promise<Admin> {
+		return this.adminRepository.update(id, {
+			isActive: true,
+		})
+	}
 }

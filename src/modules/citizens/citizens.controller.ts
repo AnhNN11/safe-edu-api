@@ -61,7 +61,7 @@ export class CitizensController {
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a Citizen by ID' })
 	async remove(@Param('id') id: string): Promise<void> {
-		await this.CitizensService.remove(id);
+		await this.CitizensService.delete(id);
 	}
 
 	@Get(':phone_number')
@@ -74,5 +74,11 @@ export class CitizensController {
 			{ phone_number },
 			action,
 		);
+	}
+
+	@Patch(':id/isActive')
+	@ApiOperation({summary: 'Set isAcitive: true'})
+	async setIsActiveTrue(@Param('id') id: string): Promise<Citizen> {
+		return await this.CitizensService.setIsActiveTrue(id);
 	}
 }

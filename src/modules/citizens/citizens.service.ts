@@ -116,6 +116,13 @@ export class CitizensService {
 	async delete(id: string): Promise<Citizen> {
 		return await this.citizensRepository.update(id, {
 			deleted_at: new Date(),
+			isActive: false
+		});
+	}
+
+	async setIsActiveTrue(id: string): Promise<Citizen> {
+		return await this.citizensRepository.update(id, {
+			isActive: true
 		});
 	}
 }

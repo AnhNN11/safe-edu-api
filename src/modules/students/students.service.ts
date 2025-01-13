@@ -128,7 +128,13 @@ export class StudentsService {
 	async delete(id: string): Promise<Student> {
 		return await this.studentsRepository.update(id, {
 			deleted_at: new Date(),
+			isActive: false
 		});
 	}
 
+	async setIsActiveTrue(id: string): Promise<Student> {
+		return await this.studentsRepository.update(id, {
+			isActive: true
+		})
+	}
 }
