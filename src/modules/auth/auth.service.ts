@@ -67,7 +67,9 @@ export class AuthService {
 	async authenticateWithGoogle(sign_in_token: SignInTokenDto) {
 		// 1. Giải mã token để lấy email
 		const {token} = sign_in_token; 
+		console.log("token:"+token);
 		const decodedToken = this.jwt_service.decode(token) as { email: string };
+		console.log("decodedToken:"+decodedToken);
 		if (!decodedToken || !decodedToken.email) {
 			throw new HttpException(
 				{ message: 'Invalid token', error: 'Bad Request' },
