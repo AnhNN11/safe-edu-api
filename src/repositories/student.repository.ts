@@ -11,8 +11,12 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	) {}
 	async findOne(condition: FilterQuery<Student>): Promise<Student | null> {
 		return await this.student_Model.findOne(condition)
-			.populate('achievements', 'registration_competition', 'organizationId')
-			.exec(); 
+		.populate([
+			{ path: 'achievements'},
+			{ path: 'registration_competition'},
+			{ path: 'organizationId'},
+		  ])
+		.exec(); 
 	}
 
 	async create(data: Partial<Student>): Promise<Student> {
