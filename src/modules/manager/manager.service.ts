@@ -95,11 +95,17 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
     }
   
     // Remove user
-    async remove(id: string): Promise<void> {
-      const result = await this.ManagerRepository.remove(id);
-      if (!result) {
-        throw new NotFoundException(`User with ID ${id} not found`);
-      }
+    async remove(id: string): Promise<Manager> {
+      return this.ManagerRepository.update(id, {
+        deleted_at: new Date,
+        isActive: false
+      })
+    }
+
+    async setActiveIsTrue(id: string): Promise<Manager> {
+      return this.ManagerRepository.update(id, {
+        isActive: true
+      })
     }
 
     async getManagerByEmail(email: string): Promise<Manager> {

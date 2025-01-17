@@ -114,14 +114,6 @@ export class AdminService {
 		return updatedAdmin;
 	}
 
-	// Remove user
-	async remove(id: string): Promise<void> {
-		const result = await this.adminRepository.remove(id);
-		if (!result) {
-			throw new NotFoundException(`User with ID ${id} not found`);
-		}
-	}
-
 	async getAdminByEmail(email: string): Promise<Admin> {
 		const admin = await this.adminRepository.findOne({ email });
 
@@ -133,15 +125,24 @@ export class AdminService {
 	}
 
 	async delete(id: string): Promise<Admin> {
-		return this.adminRepository.update(id, {
-			deleted_at: new Date,
-			isActive: false
-		})
+		await this.adminRepository.update(id, {
+			deleted_at: new Date(),
+			isActive: false,
+		});
+	
+		// Truy vấn lại để lấy bản ghi đã cập nhật
+		const admin = await this.adminRepository.findOne({ id });
+		
+	
+		return admin;
 	}
+	
 
-	async setIsActiveTrue(id: string): Promise<Admin> {
-		return this.adminRepository.update(id, {
-			isActive: true,
-		})
-	}
+	async setActiveIsTrue(id: string): Promise<Admin> {
+		// Cập nhật trường isActive thành true
+		const admin = await this.adminRepository.update(id,
+			{ isActive: true }, 
+		);
+		return admin;
+	  }
 }

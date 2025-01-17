@@ -25,5 +25,9 @@ export class UpdateAdminDto extends PartialType(
 	@MaxLength(200)
 	headline?: string;
 
+	@IsOptional()
+	@MaxLength(200)
+	isActive?: boolean;
+
 
 }
