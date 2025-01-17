@@ -81,6 +81,11 @@ export class Admin extends BaseEntity {
 	get fullName(): string {
 		return `${this.first_name} ${this.last_name}`;
 	}
+
+	@Prop({
+		default: true, // Đặt giá trị mặc định là true
+	})
+	isActive?: boolean;
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);
@@ -88,11 +93,11 @@ export const AdminSchema = SchemaFactory.createForClass(Admin);
 export const AdminSchemaFactory = () => {
 	const admin_schema = AdminSchema;
 
-	admin_schema.pre('findOneAndDelete', async function (next: NextFunction) {
-		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
-		const admin = await this.model.findOne(this.getFilter());
-		await Promise.all([]);
-		return next();
-	});
+	// admin_schema.pre('findOneAndDelete', async function (next: NextFunction) {
+	// 	// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
+	// 	const admin = await this.model.findOne(this.getFilter());
+	// 	await Promise.all([]);
+	// 	return next();
+	// });
 	return admin_schema;
 };

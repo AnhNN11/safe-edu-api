@@ -8,6 +8,7 @@ import {
 	Delete,
 	UseInterceptors,
 	UseGuards,
+	Put,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
@@ -31,11 +32,11 @@ import { RolesEnum } from 'src/enums/roles..enum';
 @ApiBearerAuth('token')
 @Roles(RolesEnum.ADMIN)
 export class ManagerController {
-	constructor(private readonly ManagerService: ManagerService) {}
+	constructor(private readonly ManagerService: ManagerService) { }
 
 	@Post()
 	@ApiOperation({ summary: 'Create a new Manager' })
-	async create(@Body() createManagerDto: CreateManagerDto){
+	async create(@Body() createManagerDto: CreateManagerDto) {
 		return await this.ManagerService.create(createManagerDto);
 	}
 
@@ -61,8 +62,15 @@ export class ManagerController {
 
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a user by ID' })
-	@UseGuards(JwtAccessTokenGuard)
-	async remove(@Param('id') id: string): Promise<void> {
-		await this.ManagerService.remove(id);
+	// @UseGuards(JwtAccessTokenGuard)
+	async Delete(@Param('id') id: string): Promise<Manager> {
+		return await this.ManagerService.remove(id);
+	}
+
+
+	@Put(':id')
+	@ApiOperation({ summary: 'Set isActive true' })
+	async setIsActiveTrue(@Param('id') id: string) {
+		return await this.ManagerService.setActiveIsTrue(id);
 	}
 }

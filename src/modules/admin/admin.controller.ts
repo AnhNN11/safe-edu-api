@@ -10,6 +10,7 @@ import {
 	UseGuards,
 	HttpException,
 	HttpStatus,
+	Put,
 } from '@nestjs/common';
 import {
 	ApiTags,
@@ -66,14 +67,14 @@ export class AdminController {
 
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a user by ID' })
-	@UseGuards(JwtAccessTokenGuard)
+	// @UseGuards(JwtAccessTokenGuard)
 	async remove(@Param('id') id: string){
 		await this.adminService.delete(id);
 	}
 
-	@Patch(':id')
+	@Put(':id')
 	@ApiOperation({ summary: 'Set isActive true'})
 	async setIsActiveTrue(@Param('id') id: string) {
-		return await this.adminService.setIsActiveTrue(id);
+		return await this.adminService.setActiveIsTrue(id);
 	}
 }

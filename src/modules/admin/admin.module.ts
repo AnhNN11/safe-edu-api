@@ -17,7 +17,7 @@ import { Admin, AdminSchemaFactory } from './entities/admin.entity';
     MongooseModule.forFeatureAsync([
       {
         name: Admin.name,
-        useFactory: AdminSchemaFactory,
+       useFactory: AdminSchemaFactory,
       },
     ]),
     
