@@ -6,6 +6,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IFile } from 'src/interfaces/file.interface';
 import { AwsS3Service } from 'src/services/aws-s3.service';
+import { News } from './entities/news.entity';
 
 @Controller('news')
 @ApiTags('news')
@@ -16,25 +17,10 @@ export class NewController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new news'})
   @UseInterceptors(FileInterceptor('image'))
-  async uploadImage(
-  
-    @Body() {topic_id, title, content, author, image}: CreateNewDto,
-  ) {
-   
-
-      // Construct the DTO with the image URL from AWS S3
-      const createNewsDto: CreateNewDto = {
-        topic_id,
-        title,
-        content,
-        author,
-        image, // Assuming `Location` contains the uploaded image URL
-      };
-
-      // Call the service to create the category
-      const createdNews = await this.newsService.create(createNewsDto);
-
+  async uploadImage(@Body() createNewsDto: CreateNewDto): Promise<News> {
+    return await this.newsService.create(createNewsDto);
   }
 
   @Get()
