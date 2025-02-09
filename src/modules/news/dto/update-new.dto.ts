@@ -8,7 +8,7 @@ export class UpdateNewDto extends PartialType(CreateNewDto) {
 	title: string;
 
     @IsOptional()
-    topic_id: mongoose.Types.ObjectId;
+    topic_id: string;
 
     @IsOptional()
 	content: string;

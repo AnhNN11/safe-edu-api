@@ -8,6 +8,7 @@ import { AwsS3Service } from 'src/services/aws-s3.service';
 import { GeneratorService } from 'src/services/generator.service';
 import { TopicsModule } from '@modules/topic/topic.module';
 import { TopicsService } from '@modules/topic/topic.service';
+import { TopicsRepository } from '@repositories/topic.repository';
 
 @Module({
   imports: [
@@ -23,9 +24,10 @@ import { TopicsService } from '@modules/topic/topic.service';
   controllers: [NewController],
   providers: [
     NewService,
+    { provide: 'NewsRepositoryInterface', useClass: NewsRepository},
     AwsS3Service,
     GeneratorService,
-    { provide: 'NewsRepositoryInterface', useClass: NewsRepository}
+    TopicsService,
   ],
   exports: [AwsS3Service],
 })

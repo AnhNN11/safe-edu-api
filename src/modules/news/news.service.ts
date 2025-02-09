@@ -8,18 +8,38 @@ import { AwsS3Service } from 'src/services/aws-s3.service';
 import { TopicsRepository } from '@repositories/topic.repository';
 import { TopicsService } from '@modules/topic/topic.service';
 import { NewsRepositoryInterface } from './interfaces/news.interfaces';
+import { TopicsRepositoryInterface } from '@modules/topic/interfaces/topic.interface';
+import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 
 @Injectable()
 export class NewService {
   constructor(
     @Inject('NewsRepositoryInterface')
     private readonly news_repository: NewsRepositoryInterface,
+    @Inject('TopicsRepositoryInterface')
+    private readonly topics_repository: TopicsRepositoryInterface,
    
   ) {}
 
   async create(createNewDto: CreateNewDto): Promise<News>{
-    const news = this.news_repository.create(createNewDto);
-    return await this.news_repository.findOne(news);
+    const {topic_id, title, content, image, author} = createNewDto;
+    const existed_topic = await this.topics_repository.findOneByCondition({_id: topic_id});
+    
+    if (existed_topic == null) {
+      throw new BadRequestException({
+        message: ERRORS_DICTIONARY.TOPIC_NOT_FOUND,
+        details: "Topic not found"       
+      })
+    }
+
+    const news = await this.news_repository.create({
+      topic_id: new mongoose.Types.ObjectId(topic_id),
+      title,
+      content, 
+      image,
+      author
+    });
+    return this.news_repository.findOne(news);
   }
 
   async findAll() {
@@ -27,7 +47,6 @@ export class NewService {
   }
 
   async findOneById(id: string) {
-    //check id
     if (mongoose.isValidObjectId(id)) {
       return await this.news_repository.findById(id);
     } else {
@@ -39,14 +58,9 @@ export class NewService {
     updateDto: UpdateNewDto
   ): Promise<News> {
     const updatedNews = await this.findOneById(id);
-
-
-
     // Handle image upload if 
     // 
     // a new file is provided
-   
-
     return this.news_repository.update(id, {...updateDto});
   }
 

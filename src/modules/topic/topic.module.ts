@@ -16,6 +16,8 @@ import { ImageUploadService } from 'src/services/image-upload.service';
       {
         name: Topic.name,
         useFactory: TopicSchemaFactory,
+        inject:[],
+        imports: [MongooseModule.forFeature([])],
       },
     ]),
      // Import UserRolesModule để sử dụng UserRolesService và UserRolesRepositoryInterface
@@ -28,7 +30,10 @@ import { ImageUploadService } from 'src/services/image-upload.service';
     ImageUploadService,
     { provide: 'TopicsRepositoryInterface', useClass: TopicsRepository },
   ],
-  exports: [TopicsService],
+  exports: [
+    TopicsService,
+    'TopicsRepositoryInterface',
+  ],
 
 })
 export class TopicsModule {}

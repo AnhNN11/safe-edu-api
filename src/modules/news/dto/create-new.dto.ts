@@ -2,19 +2,19 @@ import { IsNotEmpty, IsOptional } from "class-validator";
 import mongoose from "mongoose";
 
 export class CreateNewDto {
-	@IsNotEmpty()
-	topic_id: mongoose.Types.ObjectId;
+	@IsNotEmpty({message: "Chủ đề không được bỏ trống"})
+	topic_id: string;
   
-    @IsNotEmpty()
+    @IsNotEmpty({message: "Tiêu đề không được bỏ trống"})
 	title: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message: "Nội dung không được bỏ trống"})
 	content: string;
     
 	@IsOptional()
 	image: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({message: "Tác giả không được bỏ trống"})
 	author: string;
 
 }

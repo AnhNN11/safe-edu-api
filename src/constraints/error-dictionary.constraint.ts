@@ -6,7 +6,8 @@ export enum ERRORS_DICTIONARY {
   UNAUTHORIZED_EXCEPTION = 'ATH_0011',
 
   // TOPIC
-  TOPIC_NOT_FOUND = 'TOP_0041',
+  TOPIC_NOT_FOUND = 'Topic không tồn tại',
+
 
   //ADMin
   ADMIN_EMAIL_IS_EXIST = 'Email đã tồn tại',
