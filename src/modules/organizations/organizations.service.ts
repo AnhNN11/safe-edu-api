@@ -51,38 +51,12 @@ export class OrganizationsService {
     } 
   }
 
-  async update(
-    id: string,
-    updateOrganizationDto: UpdateOrganizationDto,
-  ): Promise<Organization> {
-    const {name, province_id} = updateOrganizationDto;
-    const existed_organization = await this.organizations_repository.findOne({name, province_id});
-
-    //check if name exist
-    if(existed_organization) {
-      throw new ConflictException({
-				message: ERRORS_DICTIONARY.ORGANIZATION_NAME_EXISTS,
-				details: 'Organization already existed!!',
-			});
-    }
-
-    if (this.organizations_repository.isNullOrEmpty(name)) {
-      throw new ConflictException({
-        message: ERRORS_DICTIONARY.ORGANIZATION_NAME_CAN_NOT_BE_EMPTY,
-        details: "Organization name cannot be empty!!"
-      });
-    }
-    
-    if (this.organizations_repository.isNullOrEmpty(province_id)) {
-      throw new ConflictException({
-        message: ERRORS_DICTIONARY.ORGANIZATION_PROVINCE_CAN_NOT_BE_EMPTY,
-        details: "Organization province cannot be empty!!"
-      });
-    }
-
+  async update(id: string, updateOrganizationDto: UpdateOrganizationDto): Promise<Organization> {
     const updatedOrganization = await this.organizations_repository.update(id, {
       ...updateOrganizationDto,
-      province_id: new mongoose.Types.ObjectId(updateOrganizationDto.province_id)
+      province_id: updateOrganizationDto.province_id
+            ? new mongoose.Types.ObjectId(updateOrganizationDto.province_id)
+            : undefined,
     });
     if (!updatedOrganization) {
       throw new NotFoundException(`Trường cần tìm không tồn tại: ${id}`);
