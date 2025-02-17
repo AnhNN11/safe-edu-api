@@ -42,6 +42,6 @@ export class CategoriesRepository implements CategoriesRepositoryInterface {
   // Soft delete category by ID (mark as deleted)
   async delete(id: string | Types.ObjectId): Promise<Category | null> {
     const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-    return this.category_model.findByIdAndUpdate(stringId, { deleted_at: new Date() }, { new: true }).exec();
+    return this.category_model.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false }, { new: true }).exec();
   }
 }

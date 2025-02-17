@@ -78,6 +78,6 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 
 	async delete(id: string | Types.ObjectId): Promise<Student | null> {
 		const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-		return this.student_Model.findByIdAndUpdate(stringId, { deleted_at: new Date() }, { new: true }).exec();
+		return this.student_Model.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false }, { new: true }).exec();
 	}
 }

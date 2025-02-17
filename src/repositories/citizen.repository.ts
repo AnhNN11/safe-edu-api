@@ -67,6 +67,6 @@ export class CitizensRepository implements CitizensRepositoryInterface {
 
     async delete(id: string | Types.ObjectId): Promise<Citizen | null> {
         const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-        return this.Citizen_Model.findByIdAndUpdate(stringId, { deleted_at: new Date() }, { new: true }).exec();
+        return this.Citizen_Model.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false }, { new: true }).exec();
     }
 }

@@ -9,7 +9,7 @@ export enum ERRORS_DICTIONARY {
   TOPIC_NOT_FOUND = 'Topic không tồn tại',
 
 
-  //ADMin
+  //ADMIN
   ADMIN_EMAIL_IS_EXIST = 'Email đã tồn tại',
   ADMIN_PHONE_NUMBER_IS_EXIST = 'SĐT đã tồn tại',
 
@@ -43,5 +43,9 @@ export enum ERRORS_DICTIONARY {
   SUPERVISOR_NAME_IS_NULL = 'Tên không được để trống',
 
   //PROVINCE
-  PROVINCE_NOT_FOUND = 'Tên tỉnh thành không tồn tại'
+  PROVINCE_NOT_FOUND = 'Tên tỉnh thành không tồn tại',
+
+  //COMPETITION
+  COMPETITION_IS_EXIST = 'Tên cuộc thi đã tồn tại',
+  INVALID_END_DATE = 'Ngày kết thúc cuộc thi không hợp lệ'
 }
