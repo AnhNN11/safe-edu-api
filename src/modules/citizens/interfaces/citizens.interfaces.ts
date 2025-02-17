@@ -1,6 +1,5 @@
 import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { FilterQuery } from 'mongoose';
-import { FindAllResponse, QueryParams } from 'src/types/common.type';
 
 export interface CitizensRepositoryInterface {
     create(data: Partial<Citizen>): Promise<Citizen>;

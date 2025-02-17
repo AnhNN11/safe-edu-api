@@ -24,8 +24,8 @@ export class OrganizationsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Retrive a organization by id'})
-  findOne(@Param('id') id: string): Promise<Organization> {
-    return this.organizationsService.findOneById(id);
+  async findOne(@Param('id') id: string): Promise<Organization> {
+    return await this.organizationsService.findOneById(id);
   }
 
   @Patch(':id')

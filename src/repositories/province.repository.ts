@@ -37,7 +37,7 @@ export class ProvinceRepository implements ProvinceRepositoryInterface {
 
   async remove(id: string | Types.ObjectId): Promise<Province> {
       const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-      return this.provinceModel.findByIdAndUpdate(stringId, { deleted_at: new Date() }, { new: true }).exec();
+      return this.provinceModel.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false }, { new: true }).exec();
   }
 
   async findOne(condition: FilterQuery<Province>): Promise<Province | null> {
