@@ -38,7 +38,9 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	}
 
 	async findById(id: string): Promise<Organization | null> {
-		return await this.organizationModel.findById(id).exec(); // Using Mongoose's findById method
+		return await this.organizationModel.findById(id)
+		.populate('province_id')
+		.exec(); // Using Mongoose's findById method
 	}
 
 	async isNameExist(name: string, province: string) {
