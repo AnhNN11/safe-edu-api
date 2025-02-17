@@ -29,7 +29,9 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	  }
 
 	async update(id: string, data: Partial<Organization>): Promise<Organization | null> {
-		return await this.organizationModel.findByIdAndUpdate(id, data, { new: true }).exec();
+		return await this.organizationModel.findByIdAndUpdate(id, data, { new: true })
+		.populate('province_id')
+		.exec();
 	}
 
 	async remove(id: string): Promise<boolean> {
@@ -70,9 +72,9 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		return { items: result, totalPages }
 	}
 
-	async isNullOrEmpty(value: string) {
-		return value == null || value.trim() === "";	
-	}
+	async isNullOrEmpty(value: string | null | undefined): Promise<boolean> {
+		return !value || (typeof value === 'string' && value.trim() === '');
+	  }
 
 	async findAllIsActive() {
 		const organizations = await this.organizationModel
