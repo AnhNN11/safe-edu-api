@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, ObjectId, Types } from 'mongoose';
 import { OrganizationsRepositoryInterface } from '@modules/organizations/interfaces/organizations.interface';
 import { Organization } from '@modules/organizations/entities/organization.entity';
 
@@ -20,7 +20,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	}
 	async findAll() {
 		const organizations = await this.organizationModel
-		  .find({ isActive: true, deleted_at: null, deleted_by: null})
+		  .find()
 		  .populate('province_id')
 		  .exec(); 
 	  
@@ -34,9 +34,14 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		.exec();
 	}
 
-	async remove(id: string): Promise<boolean> {
-		const result = await this.organizationModel.findByIdAndDelete(id).exec();
-		return !!result;
+	async remove(id: string | Types.ObjectId): Promise<Organization | null> {
+        const stringId = id instanceof Types.ObjectId ? id.toString() : id;
+        return this.organizationModel.findByIdAndUpdate(stringId, { 
+				deleted_at: new Date(), 
+				isActive: false 
+			}, 
+			{ new: true }
+		).exec();
 	}
 
 	async findById(id: string): Promise<Organization | null> {
@@ -85,5 +90,10 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 			.countDocuments({ isActive: true, deleted_at: null, deleted_by: null })
 			.exec();
 		return { items: organizations, total };
+	}
+
+	async setIsActive(id: string | Types.ObjectId): Promise<Organization | null> {
+		const stringId = id instanceof Types.ObjectId ? id.toString() : id;
+		return this.organizationModel.findByIdAndUpdate(stringId,{isActive: true}, {new: true})
 	}
 }
