@@ -64,21 +64,15 @@ export class OrganizationsService {
     return updatedOrganization;
   }
 
-  remove(_id: string) {
+  async remove(_id: string) {
     if (mongoose.isValidObjectId(_id)){
-      return this.organizations_repository.remove(_id)  
+      return await this.organizations_repository.remove(_id)  
     } else {
       throw new BadRequestException("Invalid Id")
     }
   }
 
-  async findAllIsActive() {
-    return await this.organizations_repository.findAllIsActive();
-  }
-
-  async setIsActiveTrue(id: string): Promise<Organization> {
-    return await this.organizations_repository.update(id, {
-      isActive: true
-    })
+  async setIsActiveTrue(id: string) {
+    return await this.organizations_repository.setIsActive(id);
   }
 }

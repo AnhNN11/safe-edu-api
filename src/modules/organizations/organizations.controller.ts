@@ -43,12 +43,6 @@ export class OrganizationsController {
     await this.organizationsService.remove(id);
   }
 
-  @Get('active')
-  @ApiOperation({ summary: 'Retrive all organizations is active'})
-  async findAllIsActive() {
-    return await this.organizationsService.findAllIsActive();
-  }
-
   @Patch(':id/isActive')
   @ApiOperation({ summary: 'Update isActive true' })
   async setIsActiveTrue(@Param('id') id: string) {
