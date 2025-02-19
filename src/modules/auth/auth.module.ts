@@ -32,6 +32,7 @@ import { ProvincesModule } from 'src/provinces/provinces.module';
 		HttpModule,
 		SupervisorsModule,
 		ProvincesModule,
+		SupervisorsModule,
 		MailerModule.forRoot({
 			transport: {
 				host: 'smtp.gmail.com',
@@ -52,6 +53,7 @@ import { ProvincesModule } from 'src/provinces/provinces.module';
 		AdminService,
 		SupervisorsService,
 		CitizensService,
+		SupervisorsService,
 	],
 })
 export class AuthModule {}
