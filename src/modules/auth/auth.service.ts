@@ -1,3 +1,4 @@
+import { Supervisor } from './../supervisors/entities/supervisor.entity';
 import { Student } from '@modules/students/entities/student.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
@@ -31,6 +32,7 @@ import { CitizensService } from '@modules/citizens/citizens.service';
 import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { SignInTokenDto } from './dto/sign-in-token.dto';
+import { SupervisorsService } from '@modules/supervisors/supervisors.service';
 
 @Injectable()
 export class AuthService {
@@ -42,6 +44,7 @@ export class AuthService {
 		private readonly citizen_service: CitizensService,
 		private readonly jwt_service: JwtService,
 		private readonly mailer_service: MailerService,
+		private readonly supervisor_service: SupervisorsService,
 	) {}
 
 	generateAccessToken(payload: TokenPayload) {
@@ -342,23 +345,31 @@ export class AuthService {
 
 	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
 		console.log('auth');
-		
+	
 		try {
-			let admin = await this.admin_service.findOneByCondition({
-				email: sign_up_dto.email,
-			});
-			// kiem tra neu admin da co duoc dang ky trong db
+			const results = await Promise.allSettled([
+				this.admin_service.findOneByCondition({ email: sign_up_dto.email }),
+				this.supervisor_service.findOneByCondition({ email: sign_up_dto.email })
+			]);
+	
+			const admin = results[0].status === "fulfilled" ? results[0].value : null;
+			const supervisor = results[1].status === "fulfilled" ? results[1].value : null;
+	
 			if (admin) {
-			
 				return await this.signInAdmin(admin._id.toString());
 			}
-			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
-			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
-			
+			if (supervisor) {
+				return await this.signInSupervisor(supervisor._id.toString());
+			}
+	
+			throw new Error("User is not an admin or supervisor");
 		} catch (error) {
+			console.error("Auth error:", error);
 			throw error;
 		}
 	}
+	
+
 
 	async signInAdmin(_id:string){
 		const admin =await this.admin_service.findOneByCondition({ _id })
@@ -372,6 +383,27 @@ export class AuthService {
 				const refresh_token = this.generateRefreshToken({
 					userId: admin._id.toString(),
 					role: 'admin',
+				});
+				
+				return {
+					access_token,
+					refresh_token,
+				};
+			} 
+	}
+
+	async signInSupervisor(_id:string){
+		const supervisor =await this.supervisor_service.findOneByCondition({ _id })
+		if(supervisor)
+			{
+				console.log("hello" + supervisor)
+				const access_token = this.generateAccessToken({
+					userId: supervisor._id.toString(),
+					role: 'supervisor',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: supervisor._id.toString(),
+					role: 'supervisor',
 				});
 				
 				return {

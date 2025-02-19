@@ -53,6 +53,25 @@ export class AuthController {
 		return request.user;
 	}
 
+	@UseGuards(GoogleAuthGuard)
+	@Get('google/SupervisorCallback')
+	@ApiResponse({
+		status: 401,
+		description: 'Unauthorized',
+		content: {
+			'application/json': {
+				example: {
+					statusCode: 400,
+					message: 'Wrong credentials!!',
+					error: 'Bad Request!',
+				},
+			},
+		},
+	})
+	async authSupervisorWithGoogleCallback(@Req() request) {
+		return request.user;
+	}
+
 	// @UseGuards(JwtRefreshTokenGuard)
 	// @Post('refresh')
 	// async refreshAccessToken(@Req() request) {

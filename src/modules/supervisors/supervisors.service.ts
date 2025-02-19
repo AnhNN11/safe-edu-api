@@ -1,11 +1,11 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSupervisorDto } from './dto/create-supervisor.dto';
 import { UpdateSupervisorDto } from './dto/update-supervisor.dto';
 import { SupervisorRepositoryInterface } from './interfaces/supervisors.interface';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { Supervisor } from './entities/supervisor.entity';
 import { ProvinceService } from 'src/provinces/provinces.service';
-import mongoose from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 
 @Injectable()
 export class SupervisorsService {
@@ -50,6 +50,17 @@ export class SupervisorsService {
 	async findOne(_id: string) {
 		return await this.supervisorRepository.findOne({_id});
 	}
+	async findOneByCondition(
+			condition: FilterQuery<Supervisor>,
+		): Promise<Supervisor | null> {
+			console.log('Condition:', condition);
+			const result = await this.supervisorRepository.findOne(condition);
+			console.log('Result:', result);
+			if (!result) {
+				throw new NotFoundException(`Supervisor with ID ${condition} not found`);
+			}
+			return result;
+		}
 
 	async update(id: string,
 		updateSupervisorDto: UpdateSupervisorDto
