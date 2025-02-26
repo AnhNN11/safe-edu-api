@@ -102,7 +102,10 @@ export class Manager extends BaseEntity {
 	gender: GENDER;
 
 
-	@Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }] })
+	@Prop({ 
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }],
+		default: [], 
+	})
 	organizationId: mongoose.Types.ObjectId
 
 	@Prop()

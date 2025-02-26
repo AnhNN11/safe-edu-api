@@ -20,7 +20,6 @@ export class CreateManagerDto {
   last_name: string;
 
   @IsNotEmpty()
-  @MaxLength(50)
   @IsEmail()
   email: string;
 
@@ -29,11 +28,7 @@ export class CreateManagerDto {
   @Transform(({ value }) => formatPhoneNumber(value)) 
   phone_number: string;
 
-  @IsNotEmpty()
-	organizationId: string;
-
-
-  
+	organizationId: string;  
 }
 
 function formatPhoneNumber(phone: string): string {

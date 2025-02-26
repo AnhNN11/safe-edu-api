@@ -18,7 +18,6 @@ import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Citizen } from './entities/citizen.entity';
 import { RolesEnum } from 'src/enums/roles..enum';
 import { Roles } from 'src/decorators/roles.decorator';
-
 @Controller('Citizens')
 @ApiTags('Citizens')
 @ApiBearerAuth('token')
@@ -27,7 +26,7 @@ export class CitizensController {
 	constructor(private readonly CitizensService: CitizensService) {}
 
 	@Post()
-	@Roles(RolesEnum.CITIZEN)
+	@Roles(RolesEnum.ADMIN)
 	@ApiOperation({ summary: 'Create a new Citizen' })
 	async create(
 		@Body() createCitizenDto: CreateCitizenDto,

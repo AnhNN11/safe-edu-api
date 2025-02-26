@@ -13,7 +13,7 @@ export class CompetitionsService {
     private readonly competition_repository: CompetitionsRepository
   ) {}
 
-  async create(createCompetitionDto: CreateCompetitionDto): Promise<Competition> {
+  async create(createCompetitionDto: CreateCompetitionDto, requestId: string): Promise<Competition> {
     const { title, description, startDate, endDate} = createCompetitionDto;
     const existed_competition = await this.competition_repository.findOne({title});
 
@@ -35,7 +35,8 @@ export class CompetitionsService {
       title,
       description,
       startDate,
-      endDate
+      endDate,
+      created_by: requestId,
     });
 
     return this.competition_repository.findOne(competition);
@@ -50,7 +51,6 @@ export class CompetitionsService {
   }
 
   async update(id: string, updateCompetitionDto: UpdateCompetitionDto): Promise<Competition> {
-    console.log("123123123123123123"  + updateCompetitionDto);
     const updated_competition = await this.competition_repository.update(id, {...updateCompetitionDto})
 
     return await this.competition_repository.findOne(updated_competition);

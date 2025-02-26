@@ -9,18 +9,25 @@ import { OrganizationsRepositoryInterface } from '@modules/organizations/interfa
 import { log } from 'console';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { measureMemory } from 'vm';
+import { ManagerRepository } from '@repositories/manager.repository';
+import { ManagerRepositoryInterface } from '@modules/manager/interfaces/manager.interface';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
 		@Inject('OrganizationsRepositoryInterface')
 		private readonly organizations_repository: OrganizationsRepositoryInterface,
+    @Inject('ManagerRepositoryInterface')
+    private readonly manager_repository: ManagerRepositoryInterface,
 	) {}
 
   async create(create_dto: CreateOrganizationDto): Promise<Organization> {
     try {
-      const { name, province_id } = create_dto;
+      const { name, province_id, slug, email} = create_dto;
       const existed_organization = await this.organizations_repository.findOne({ name, province_id });
+      const existed_slug = await this.organizations_repository.findOne({slug});
+      const existed_manager = await this.manager_repository.findOneByCondition({email});
+      console.log(existed_manager)
   
       if (existed_organization) {
         throw new BadRequestException({
@@ -28,10 +35,25 @@ export class OrganizationsService {
           details: 'Organization already existed!!',
         });
       }
+
+      if (existed_slug) {
+        throw new BadRequestException({
+          message: ERRORS_DICTIONARY.ORGANIZATION_SLUG_ALREADY_EXIST,
+          details: 'Slug already existed!!', 
+        });
+      }
+
+      if (!existed_manager) {
+        throw new BadRequestException({
+          message: ERRORS_DICTIONARY.MANAGER_NOT_FOUND,
+          details: 'Manager does not existed'
+        })
+      }
   
       const organization = await this.organizations_repository.create({
         ...create_dto,
         province_id: new mongoose.Types.ObjectId(province_id),
+        manager_email: new mongoose.Types.ObjectId(existed_manager.id),
       });
       return this.organizations_repository.findOne(organization);
     } catch (error) {
@@ -52,11 +74,15 @@ export class OrganizationsService {
   }
 
   async update(id: string, updateOrganizationDto: UpdateOrganizationDto): Promise<Organization> {
+    const {email} = updateOrganizationDto;
+    const manager = await this.manager_repository.findOneByCondition({email});
     const updatedOrganization = await this.organizations_repository.update(id, {
       ...updateOrganizationDto,
       province_id: updateOrganizationDto.province_id
             ? new mongoose.Types.ObjectId(updateOrganizationDto.province_id)
             : undefined,
+      manager_email: updateOrganizationDto.email
+            ? new mongoose.Types.ObjectId(manager.id) : undefined,
     });
     if (!updatedOrganization) {
       throw new NotFoundException(`Trường cần tìm không tồn tại: ${id}`);

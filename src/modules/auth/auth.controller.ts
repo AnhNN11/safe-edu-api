@@ -1,11 +1,12 @@
 
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
 import { SignUpDto, SignUpGoogleDto } from './dto/sign-up.dto';
 import {
 	ApiBadRequestResponse,
+	ApiBearerAuth,
 	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
@@ -21,6 +22,10 @@ import { access_token_public_key } from 'src/constraints/jwt.constraint';
 import { SignInDto } from './dto/sign-in.dto';
 import { VerifiedOTPDto } from './dto/verified-otp';
 import { SignInTokenDto } from './dto/sign-in-token.dto';
+import { JwtAccessTokenGuard } from './guards/jwt-access-token.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesEnum } from 'src/enums/roles..enum';
 
 
 @Controller('auth')
