@@ -33,6 +33,7 @@ import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { SignInTokenDto } from './dto/sign-in-token.dto';
 import { SupervisorsService } from '@modules/supervisors/supervisors.service';
+import * as request from 'supertest';
 
 @Injectable()
 export class AuthService {
@@ -160,7 +161,6 @@ export class AuthService {
 			]);
 
 			if (student) {
-				console.log("hello" + student)
 				const access_token = this.generateAccessToken({
 					userId: student._id.toString(),
 					role: 'Student',

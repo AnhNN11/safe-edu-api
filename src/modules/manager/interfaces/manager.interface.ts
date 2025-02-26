@@ -8,4 +8,5 @@ export interface ManagerRepositoryInterface {
 	remove(id: string): Promise<boolean>;
 	findOne(condition: FilterQuery<Manager>): Promise<Manager | null>;  
 	findById(id : string)
+	findOneByCondition(condition: FilterQuery<Manager>): Promise<Manager | null>;  
 }

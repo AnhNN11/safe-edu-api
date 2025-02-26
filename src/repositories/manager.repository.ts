@@ -12,9 +12,9 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 		@InjectModel(Manager.name) private readonly ManagerModel: Model<Manager>,
 	) { }
 	async findOne(condition: FilterQuery<Manager>): Promise<Manager | null> {
-		return await this.ManagerModel.findOne(condition).populate([
-			{ path: 'organizationId' },
-		]).exec();
+		return await this.ManagerModel.findOne(condition)
+			.populate('organizationId')
+			.exec();
 	}
 	async create(data: Partial<Manager>): Promise<Manager> {
 		console.log('data:', JSON.stringify(data, null, 2));
@@ -33,9 +33,7 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 	async findAll() {
 		const Managers = await this.ManagerModel
 			.find()
-			.populate([
-				{ path: 'organizationId' },
-			])
+			.populate('organizationId')
 			.exec();
 
 		const total = await this.ManagerModel.countDocuments().exec();
@@ -65,8 +63,21 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 	}
 
 	async findById(id: string): Promise<Manager | null> {
-		return await this.ManagerModel.findById(id).populate([
-			{ path: 'organizationId' },
-		]).exec(); // Using Mongoose's findById method
+		return await this.ManagerModel.findById(id)
+		.populate('organizationId')
+		.exec(); // Using Mongoose's findById method
+	}
+
+	async findOneByCondition(condition: FilterQuery<Manager>): Promise<Manager | null> {
+		try {
+			console.log('condition:', JSON.stringify(condition));
+
+			const manager = await this.ManagerModel.findOne(condition).exec();
+			console.log('Found Manager', manager)
+			return manager;
+		} catch (error) {
+			console.error('Error finding manager:', error)
+			throw error;
+		}	
 	}
 }

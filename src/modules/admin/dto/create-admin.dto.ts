@@ -21,7 +21,6 @@ export class CreateAdminDto {
   last_name: string;
 
   @IsNotEmpty({ message: 'Email is required' })
-  @MaxLength(50, { message: 'Email cannot exceed 50 characters' })
   @IsEmail({}, { message: 'Invalid email address' })
   email: string;
 

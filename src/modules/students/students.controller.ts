@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -6,6 +6,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Student } from './entities/student.entity';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesEnum } from 'src/enums/roles..enum';
 
 @Controller('students')
 @ApiTags('students')
@@ -15,7 +17,7 @@ export class StudentsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new student' })
-  async create(@Body() createStudentDto: CreateStudentDto) {
+  async create(@Body() createStudentDto: CreateStudentDto, @Request() req) {
     return await this.studentsService.create(createStudentDto);
   }
 

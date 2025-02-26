@@ -32,7 +32,7 @@ export class Citizen extends BaseEntity {
     first_name?: string;
     last_name?: string;
     avatar?: string;
-    phone?: string;
+    phone_number?: string;
     gender?: GENDER;
     date_of_birth?: Date;
   }) {
@@ -40,7 +40,7 @@ export class Citizen extends BaseEntity {
     this.first_name = citizen?.first_name;
     this.last_name = citizen?.last_name;
     this.avatar = citizen?.avatar;
-    this.phone = citizen?.phone;
+    this.phone_number = citizen?.phone_number;
     this.gender = citizen?.gender;
     this.date_of_birth = citizen?.date_of_birth;
   }
@@ -68,10 +68,9 @@ export class Citizen extends BaseEntity {
   avatar: string;
 
   @Prop({
-		match: /^\+84\d{9}$/,
 		required: true,
 	})
-  phone: string;
+  phone_number: string;
 
   @Prop({
       enum: GENDER,

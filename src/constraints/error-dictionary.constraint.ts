@@ -32,6 +32,7 @@ export enum ERRORS_DICTIONARY {
   ORGANIZATION_NAME_CAN_NOT_BE_EMPTY = 'Tên trường không được để trống',
   ORGANIZATION_PROVINCE_CAN_NOT_BE_EMPTY = 'Tên tình/ thành phố không được để trống',
   ORGANIZATION_NOT_FOUND = 'Trường không tồn tại',
+  ORGANIZATION_SLUG_ALREADY_EXIST = 'Tên slug đã tồn tại',
 
   // CLASS VALIDATOR
   VALIDATION_ERROR = 'Lỗi Validate',
@@ -47,5 +48,8 @@ export enum ERRORS_DICTIONARY {
 
   //COMPETITION
   COMPETITION_IS_EXIST = 'Tên cuộc thi đã tồn tại',
-  INVALID_END_DATE = 'Ngày kết thúc cuộc thi không hợp lệ'
+  INVALID_END_DATE = 'Ngày kết thúc cuộc thi không hợp lệ',
+
+  //MANAGER
+  MANAGER_NOT_FOUND = 'Email người quản lí không tồn tại',
 }

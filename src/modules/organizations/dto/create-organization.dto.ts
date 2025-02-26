@@ -6,6 +6,11 @@ export class CreateOrganizationDto {
     name: string;
 
     @IsNotEmpty({ message: 'Id tỉnh thành không được để trống' })
-    @IsMongoId({ message: 'id phải là ObjectId hợp lệ' })
     province_id: string
+
+    @IsNotEmpty({message: 'Email của quản lí không được để trống'})
+    email: string
+
+    @IsNotEmpty({message: 'Slug không được bỏ trống'})
+    slug: string
 }

@@ -48,7 +48,7 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
       }
 
     async findOneByCondition(condition: FilterQuery<Manager>): Promise<Manager | null> {
-      return this.ManagerRepository.findOne(condition);
+      return await this.ManagerRepository.findOne(condition);
     }
   
     async findOneById(

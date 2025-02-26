@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // INNER
@@ -24,7 +24,7 @@ import { OrganizationsModule } from '@modules/organizations/organizations.module
 				imports: [MongooseModule.forFeature([])],
       },
     ]),
-    OrganizationsModule,
+    forwardRef(() => OrganizationsModule),
     
   ],
   controllers: [ManagerController],

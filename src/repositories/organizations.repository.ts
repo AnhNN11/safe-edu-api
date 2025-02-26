@@ -31,6 +31,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	async update(id: string, data: Partial<Organization>): Promise<Organization | null> {
 		return await this.organizationModel.findByIdAndUpdate(id, data, { new: true })
 		.populate('province_id')
+		.populate('manager_email')
 		.exec();
 	}
 
@@ -47,6 +48,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	async findById(id: string): Promise<Organization | null> {
 		return await this.organizationModel.findById(id)
 		.populate('province_id')
+		.populate('manager_email')
 		.exec(); // Using Mongoose's findById method
 	}
 

@@ -44,6 +44,8 @@ export class CitizensService {
 	}
 	async create(createDto: CreateCitizenDto): Promise<Citizen> {
 		const { first_name, last_name, phone_number } = createDto;
+
+
 		const [existed_phone_number_student, existed_phone_number_student_citizen] =
 			await Promise.all([
 				await this.studentsRepository.findOneByCondition({ phone_number }),
@@ -52,7 +54,7 @@ export class CitizensService {
 
 		if (existed_phone_number_student || existed_phone_number_student_citizen) {
 			throw new BadRequestException({
-				message: ERRORS_DICTIONARY.STUDENT_PHONE_NUMBER_EXISTS,
+				message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
 				details: 'Phone number already exist',
 			});
 		}
@@ -60,7 +62,7 @@ export class CitizensService {
 		const citizen = await this.citizensRepository.create({
 			first_name,
 			last_name,
-			phone: phone_number,
+			phone_number,
 		});
 		return citizen;
 	}
