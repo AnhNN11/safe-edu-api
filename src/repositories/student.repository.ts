@@ -20,8 +20,6 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	}
 
 	async create(data: Partial<Student>): Promise<Student> {
-		console.log('data:', JSON.stringify(data, null, 2));
-		
 		try {
 			const newStudent = new this.student_Model(data);
 			const savedStudent = await newStudent.save();

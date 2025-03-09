@@ -80,4 +80,21 @@ export class CitizensController {
 	async setIsActiveTrue(@Param('id') id: string): Promise<Citizen> {
 		return await this.CitizensService.setIsActiveTrue(id);
 	}
+
+	@Post(':id/status/:status')
+	@ApiOperation({ summary: 'like status' })
+	async updateLikeStatus(
+			@Param('id') id: string,
+			@Param('status') status: 'like' | 'dislike',
+		): Promise<{ id: string; status: string }> {
+			return { id, status };
+	}
+
+	@Post(':id/option/:option')
+	@ApiOperation({summary: 'report chat'})
+	async reportChat(
+		@Param('id') id: string,
+		@Param('option') option: string,): Promise<{ id: string; option: string }> {
+		return { id, option };
+	}
 }

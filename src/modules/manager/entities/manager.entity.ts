@@ -41,7 +41,6 @@ export class Manager extends BaseEntity {
 		this.first_name = Manager?.first_name;
 		this.last_name = Manager?.last_name;
 		this.email = Manager?.email;
-	
 		this.gender = Manager?.gender;
 		this.phone_number = Manager?.phone_number;
 		this.organizationId = Manager?.organizationId;
@@ -103,8 +102,8 @@ export class Manager extends BaseEntity {
 
 
 	@Prop({ 
-		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }],
-		default: [], 
+		type: mongoose.Schema.Types.ObjectId, 
+		ref: 'Organization' 
 	})
 	organizationId: mongoose.Types.ObjectId
 

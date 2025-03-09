@@ -1,3 +1,4 @@
+import { ManagerSchema } from "@modules/manager/entities/manager.entity";
 import { BaseEntity } from "@modules/shared/base/base.entity";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Exclude } from "class-transformer";
@@ -22,27 +23,28 @@ export class Organization extends BaseEntity {
     constructor(organization: {
         name: string;
         province_id: mongoose.Types.ObjectId;
-		manager_email: mongoose.Types.ObjectId;
+		manager_id: mongoose.Types.ObjectId[];
     }) {
         super();
         this.name = organization?.name;
         this.province_id = organization.province_id;
-		this.manager_email = organization.manager_email;
+		this.manager_id = organization.manager_id;
     }
 
     @Prop()
     name: string;
 
     @Prop({
-		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Province' }],
-		default: [],
+		type: mongoose.Schema.Types.ObjectId, ref: 'Province' 
 	})
     province_id: mongoose.Types.ObjectId;
 
 	@Prop({
-		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Manager'}],
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Manager' }],
+		default: [],
 	})
-	manager_email: mongoose.Types.ObjectId;
+	manager_id: mongoose.Types.ObjectId[];
+	
 
 	@Prop()
 	slug: string;
@@ -50,14 +52,27 @@ export class Organization extends BaseEntity {
 
 export const OrganizationsSchema = SchemaFactory.createForClass(Organization);
 
+const ManagerModel = mongoose.model('Manager', ManagerSchema);
 export const OrganizationSchemaFactory = () => {
 	const organization_schema = OrganizationsSchema;
+	
 
-	organization_schema.pre('findOneAndDelete', async function (next: NextFunction) {
-		// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
-		const organization = await this.model.findOne(this.getFilter());
-		await Promise.all([]);
-		return next();
-	});
+	// organization_schema.pre('findOneAndDelete', async function (next: NextFunction) {
+	// 	// OTHER USEFUL METHOD: getOptions, getPopulatedPaths, getQuery = getFilter, getUpdate
+	// 	const organization = await this.model.findOne(this.getFilter());
+	// 	await Promise.all([]);
+	// 	return next();
+	// });
+
+	organization_schema.post('save', async function (doc, next) {
+        if (doc.manager_id && doc.manager_id.length > 0) {
+            await ManagerModel.updateOne(
+                { _id: { $in: doc.manager_id } }, 
+                { $set: { organizationId: doc._id } }
+            );
+        }
+        next();
+    });
+
 	return organization_schema;
 };

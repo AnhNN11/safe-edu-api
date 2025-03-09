@@ -35,7 +35,6 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 			.find()
 			.populate('organizationId')
 			.exec();
-
 		const total = await this.ManagerModel.countDocuments().exec();
 		return { items: Managers, total };
 	}
