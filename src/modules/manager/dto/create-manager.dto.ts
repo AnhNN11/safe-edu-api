@@ -5,8 +5,6 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsEmail,
-  IsString,
-  IsStrongPassword,
   MaxLength,
 } from 'class-validator';
 
@@ -28,6 +26,7 @@ export class CreateManagerDto {
   @Transform(({ value }) => formatPhoneNumber(value)) 
   phone_number: string;
 
+  @IsOptional()
 	organizationId: string;  
 }
 

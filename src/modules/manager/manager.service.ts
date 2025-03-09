@@ -64,6 +64,8 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
 
     async create(createDto: CreateManagerDto): Promise<Manager> {
     const { first_name, last_name,email, phone_number, organizationId } = createDto;
+    const existed_organization = await this.organizationService.findOneById(organizationId)
+    console.log(existed_organization);
 
     const manager = await this.ManagerRepository.create({
       first_name,
@@ -72,8 +74,8 @@ import { OrganizationsService } from '@modules/organizations/organizations.servi
       phone_number,
       organizationId: new mongoose.Types.ObjectId(organizationId)
     });
-    return this.ManagerRepository.findOne(manager);;
-      }
+      return this.ManagerRepository.findOne(manager);
+    }
  
     async findAll() {
       return await this.ManagerRepository.findAll();
