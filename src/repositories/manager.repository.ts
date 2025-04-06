@@ -17,8 +17,6 @@ export class ManagerRepository implements ManagerRepositoryInterface {
 			.exec();
 	}
 	async create(data: Partial<Manager>): Promise<Manager> {
-		console.log('data:', JSON.stringify(data, null, 2));
-
 		try {
 			const newManager = new this.ManagerModel(data);
 			const savedManager = await newManager.save();
