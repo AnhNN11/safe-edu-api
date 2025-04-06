@@ -1,11 +1,12 @@
-import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { Organization } from './entities/organization.entity';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { OrganizationsRepositoryInterface } from '@modules/organizations/interfaces/organizations.interface';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { ManagerRepositoryInterface } from '@modules/manager/interfaces/manager.interface';
+import { stat } from 'fs';
 
 @Injectable()
 export class OrganizationsService {
@@ -21,6 +22,16 @@ export class OrganizationsService {
       const { name, province_id, slug, email} = create_dto;
       const existed_organization = await this.organizations_repository.findOne({ name, province_id });
       const existed_slug = await this.organizations_repository.findOne({slug});
+      const existed_manager = await this.manager_repository.findOne({email});
+      
+      
+      if (!existed_manager) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Không tìm thấy quản lí tổ chức',
+          details: 'Manager not found!!',
+        });
+      }
   
       if (existed_organization) {
         throw new BadRequestException({
@@ -39,11 +50,17 @@ export class OrganizationsService {
       const organization = await this.organizations_repository.create({
         ...create_dto,
         province_id: new mongoose.Types.ObjectId(province_id),
-        manager_id: [new mongoose.Types.ObjectId(email)],
+        manager_id: [new Types.ObjectId(existed_manager.id)]
       });
+      console.log('🔧 Updating manager with ID:', existed_manager._id);
       return this.organizations_repository.findOne(organization);
     } catch (error) {
-      throw error;
+      console.error('Update failed:', error);
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+        details: 'Đã có lỗi xảy ra trong quá trình tạo tổ chức, vui lòng thử lại sau!',
+      });
     }
   }
   

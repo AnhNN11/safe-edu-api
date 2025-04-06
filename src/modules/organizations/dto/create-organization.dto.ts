@@ -1,10 +1,11 @@
-import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
+import { IsMongoId, IsNotEmpty, IsObject, MaxLength } from "class-validator";
 
 export class CreateOrganizationDto {
 
     @IsNotEmpty({ message: 'Tên trường không được để trống' })
     name: string;
 
+    @IsMongoId({ message: 'Id tỉnh thành không hợp lệ' })
     @IsNotEmpty({ message: 'Id tỉnh thành không được để trống' })
     province_id: string
 

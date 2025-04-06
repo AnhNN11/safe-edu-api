@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ObjectId, Types } from 'mongoose';
 import { OrganizationsRepositoryInterface } from '@modules/organizations/interfaces/organizations.interface';
 import { Organization } from '@modules/organizations/entities/organization.entity';
+import { stat } from 'node:fs';
 
 @Injectable()
 export class OrganizationsRepository implements OrganizationsRepositoryInterface {
@@ -15,8 +16,16 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 			.exec(); 
 	  }
 	async create(data: Partial<Organization>): Promise<Organization> {
-		const newOrganization = new this.organizationModel(data);
-		return await newOrganization.save();
+		try {
+			const newOrganization = new this.organizationModel(data);
+			return await newOrganization.save();	
+		} catch (error) {
+			throw new BadRequestException({
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: 'Error creating organization',
+				details: error.message,
+			})
+		}
 	}
 	async findAll() {
 		const organizations = await this.organizationModel
@@ -31,7 +40,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	async update(id: string, data: Partial<Organization>): Promise<Organization | null> {
 		return await this.organizationModel.findByIdAndUpdate(id, data, { new: true })
 		.populate('province_id')
-		.populate('manager_email')
+		.populate('manager_id')
 		.exec();
 	}
 
@@ -48,7 +57,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 	async findById(id: string): Promise<Organization | null> {
 		return await this.organizationModel.findById(id)
 		.populate('province_id')
-		.populate('manager_email')
+		.populate('manager_id')
 		.exec(); // Using Mongoose's findById method
 	}
 
