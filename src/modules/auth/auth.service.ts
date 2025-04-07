@@ -316,21 +316,36 @@ export class AuthService {
 	}
 	}
 
-	async verifyOTP(otp: string) {
-		if (otp == "000000") {
-			return { 
-				success: true, 
-				message: "OTP Verified Successfully"
-			}
-		} else {
-			throw new HttpException(
-				{
-				  status: "error",
-				  message: "Invalid OTP",
-				},
-				HttpStatus.BAD_REQUEST, 
-			);
+	async sendOtp(phone_number: string): Promise<any> {
+		return {
+			statusCode: HttpStatus.OK,
+			message: `OTP đã được gửi tới sđt ${phone_number} thành công`
 		}
+	}
+	async verifyOTP(otp: string) {
+		try {
+			if (otp == "000000") {
+				return { 
+					success: true, 
+					message: "OTP Verified Successfully"
+				}
+			} else {
+				throw new HttpException(
+					{
+					  status: "error",
+					  message: "Invalid OTP",
+					},
+					HttpStatus.BAD_REQUEST, 
+				)
+			}
+		} catch (error) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: "Có lỗi xảy ra khi xác nhận OTP, vui lòng thử lại sau",
+				details: `Có lỗi xảy ra ${error.message}`
+			})
+		}
+		
 	}
 
 	sendMail(): void{

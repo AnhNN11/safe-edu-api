@@ -26,6 +26,7 @@ import { JwtAccessTokenGuard } from './guards/jwt-access-token.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { RolesEnum } from 'src/enums/roles..enum';
+import { SendOTPDto } from './dto/send-otp';
 
 
 @Controller('auth')
@@ -120,7 +121,11 @@ export class AuthController {
 		return await this.auth_service.verifyOTP(verified_otp.otp);
 	}
 
-	
+	@Post('send-otp')
+	@ApiOperation({summary: 'send otp to phone number'})
+	async sendOTP(@Body() sendOTPDto: SendOTPDto) {
+		return await this.auth_service.sendOtp(sendOTPDto.phone_number);
+	}
 
 	@Get()
 	sendMail(): void{
