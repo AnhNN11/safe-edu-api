@@ -15,4 +15,7 @@ export class SignUpWithCitizenDto {
     @IsNotEmpty({ message: 'Số điện thoại không được để trống'})
     @MaxLength(50)
     phone_number: string;
+
+    @IsNotEmpty({message: 'OTP không được để trống'})
+    otp: string
 }

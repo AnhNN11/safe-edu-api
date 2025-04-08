@@ -28,6 +28,8 @@ import { UserAchievementsModule } from '@modules/user-achievements/user-achievem
 import { AuthModule } from '@modules/auth/auth.module';
 import { OtpModule } from '@modules/otp/otp.module';
 import { ProvincesModule } from './provinces/provinces.module';
+import { QuestionsModule } from '@modules/questions/questions.module';
+import { QuizModule } from '@modules/quiz/quiz.module';
 
 @Module({
 	imports: [
@@ -85,6 +87,8 @@ import { ProvincesModule } from './provinces/provinces.module';
 		AuthModule,
 		OtpModule,
 		ProvincesModule,
+		QuizModule,
+		QuestionsModule,
 	],
 	controllers: [AppController],
 	providers: [

@@ -2,11 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Organization } from './entities/organization.entity';
 
 @Controller('organizations')
 @ApiTags('organizations')
+@ApiBearerAuth('token')
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 

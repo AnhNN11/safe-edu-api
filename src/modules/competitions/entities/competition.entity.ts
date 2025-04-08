@@ -6,16 +6,16 @@ import { NextFunction } from 'express';
 
 export type CompetitionDocument = HydratedDocument<Competition>;
 
-@Schema({
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-  },
-  toJSON: {
-    getters: true,
-    virtuals: true,
-  },
-})
+  @Schema({
+    timestamps: {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+    toJSON: {
+      getters: true,
+      virtuals: true,
+    },
+  })
 export class Competition extends BaseEntity {
   constructor(competition: {
     title?: string;
@@ -23,8 +23,6 @@ export class Competition extends BaseEntity {
     startDate?: Date;
     endDate?: Date;
     image_url?: string;
-    video?: string;
-    status?: 'Upcoming' | 'Ongoing' | 'Completed';
   }) {
     super();
     this.title = competition?.title;
@@ -32,8 +30,6 @@ export class Competition extends BaseEntity {
     this.startDate = competition?.startDate;
     this.endDate = competition?.endDate;
     this.image_url = competition?.image_url;
-    this.video = competition?.video;
-    this.status = competition?.status || 'Upcoming';
   }
 
   @Prop({
@@ -69,16 +65,9 @@ export class Competition extends BaseEntity {
   image_url: string;
 
   @Prop({
-    type: String,
+    required: true
   })
-  video?: string;
-
-  @Prop({
-    required: true,
-    enum: ['Upcoming', 'Ongoing', 'Completed'],
-    default: 'Upcoming',
-  })
-  status: 'Upcoming' | 'Ongoing' | 'Completed';
+  slug: string
 }
 
 export const CompetitionSchema = SchemaFactory.createForClass(Competition);

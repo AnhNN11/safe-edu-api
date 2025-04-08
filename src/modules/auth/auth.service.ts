@@ -201,7 +201,7 @@ export class AuthService {
 
 	async signUpWithStudent(sign_up_with_std_dto: SignUpWithStudentDto) {
 		try {
-			const { first_name, last_name, phone_number, organizationId } =
+			const { first_name, last_name, phone_number, organizationId, otp } =
 				sign_up_with_std_dto;
 
 			const [existed_student_phone_number, existed_citizen_phone_number] = await Promise.all([
@@ -220,6 +220,12 @@ export class AuthService {
 				throw new BadRequestException({
 					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
 					details: 'Phone number already exist',
+				});
+			}
+
+			if (otp != "000000") {
+				throw new BadRequestException({
+					message: 'OTP không đúng',
 				});
 			}
 			
@@ -259,7 +265,7 @@ export class AuthService {
 
 	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
 		try {
-			const { first_name, last_name, phone_number } =
+			const { first_name, last_name, phone_number, otp } =
 			sign_up_with_citizen_dto;
 			const [existed_student_phone_number, existed_citizen_phone_number] = await Promise.all([
 				await this.student_service.findOneByCondition({ phone_number: sign_up_with_citizen_dto.phone_number }, 'sign-up'),
@@ -279,6 +285,12 @@ export class AuthService {
 				throw new BadRequestException({
 					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
 					details: 'Phone number already exist',
+				});
+			}
+
+			if (otp != "000000") {
+				throw new BadRequestException({
+					message: 'OTP không đúng',
 				});
 			}
 

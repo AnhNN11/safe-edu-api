@@ -20,6 +20,9 @@ export class SignUpWithStudentDto {
 
     @IsNotEmpty({ message: 'Trường không được để trống'})
     organizationId: string;
+
+    @IsNotEmpty({message: 'otp không được để trống'})
+    otp: string
 }
 
 

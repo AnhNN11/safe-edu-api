@@ -1,12 +1,10 @@
-import { IsEnum, IsNotEmpty, MaxLength } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, MaxLength } from "class-validator";
 
 export class CreateCompetitionDto {
     @IsNotEmpty({message: 'Tên cuộc thi không được để trống'})
-    @MaxLength(50)
     title: string;
 
     @IsNotEmpty({message: 'Mô tả cuộc thi không được bỏ trống'})
-    @MaxLength(50)
     description: string;
 
     @IsNotEmpty({message: 'Trường này là bắt buộc'})
@@ -15,11 +13,9 @@ export class CreateCompetitionDto {
     @IsNotEmpty({message: 'Trường này là bắt buộc'})
     endDate: Date;
 
+    @IsOptional()
     image_url: string;
-    video: string;
 
-    @IsNotEmpty({message: 'Trạng thái là bắt buộc'})
-    @IsEnum(['Upcoming', 'Ongoing', 'Completed'], { message: 'Trạng thái không hợp lệ' })
-    status: 'Upcoming' | 'Ongoing' | 'Completed';
-
+    @IsNotEmpty({message: "Mã định danh không được để trống"})
+    slug: string;
 }
