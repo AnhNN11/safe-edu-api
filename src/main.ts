@@ -7,6 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { ValidationError } from 'class-validator';
 import { ERRORS_DICTIONARY } from './constraints/error-dictionary.constraint';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
 
 async function bootstrap() {
 	const logger = new Logger(bootstrap.name);
@@ -32,6 +33,7 @@ async function bootstrap() {
 		}),
 	);
 	const port = process.env.PORT || config_service.get('PORT') || 4000;
+	app.useGlobalInterceptors(new ResponseInterceptor());
 
 	await app.listen(port, () =>
 		logger.log(`🚀 Server running on: http://localhost:${port}/api-docs`),

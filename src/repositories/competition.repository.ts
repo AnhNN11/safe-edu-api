@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
 import { Competition } from '../modules/competitions/entities/competition.entity';
@@ -15,24 +15,68 @@ export class CompetitionsRepository implements CompetitionsRepositoryInterface {
     }
 
     async create(data: Partial<Competition>): Promise<Competition> {
-        
         try {
             const newCompetition = new this.competition_model(data);
             const savedCompetition = await newCompetition.save();
             return savedCompetition;
           } catch (error) {
-            console.error('Error saving new Competition:', error.message);
-            throw new BadRequestException('Failed to create Competition. Please try again.');
-          }
+            throw new BadRequestException({
+                status: HttpStatus.BAD_REQUEST,
+                message: "Đã có lỗi xảy ra khi tạo cuộc thi, vui lòng thử lại sau",
+                details: `Có lỗi xảy ra khi tạo cuộc thi: ${error.message}`
+            });
+        }
     }
-    async findAll() {
-        const Competitions = await this.competition_model
-          .find()
-          .exec(); 
-      
-        const total = await this.competition_model.countDocuments().exec();
-        return { items: Competitions, total };
-      }
+    async findAll(
+        searchPhase: string = '',
+        page: number = 1,
+        limit: number = 10,
+        sortBy: string = 'createdAt',
+        sortOrder: 'asc' | 'desc' = 'asc'
+    ): Promise<any> {
+    try {
+        const filter: any = {};
+        if (searchPhase) {
+            filter.$or = [
+                { name: new RegExp(searchPhase, 'i') },
+                { description: new RegExp(searchPhase, 'i') }
+            ];
+        }
+
+        const validPage = Number(page) > 0 ? Number(page) : 1;
+        const validLimit = Number(limit) > 0 ? Number(limit) : 10;
+        const skip = (validPage - 1) * validLimit;
+        const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
+        const users = await this.competition_model.find(filter)
+            .skip(skip)
+            .limit(limit)
+            .sort({ [sortBy]: sortDirection })
+            .exec();
+
+        const totalItemCount = await this.competition_model.countDocuments(filter).exec();
+        const totalPages = totalItemCount > 0 ? Math.ceil(totalItemCount / validLimit) : 1;
+        const itemFrom = totalItemCount === 0 ? 0 : skip + 1;
+        const itemTo = Math.min(skip + validLimit, totalItemCount);
+        
+        const response = {
+            items: users,
+            totalItemCount: totalItemCount,
+            totalPages: totalPages,
+            itemFrom: itemFrom,
+            itemTo: itemTo
+            };
+        
+            return response;
+    } catch (error) {
+        throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        message: "Đã có lỗi xảy ra trong quá trình xem cuộc thi, vui lòng thử lại sau",
+        details: `Đã có lỗi xảy ra: ${error.message}`
+        })
+    }
+    }
+    
 
     async update(id: string, data: Partial<Competition>): Promise<Competition | null> {
         return await this.competition_model.findByIdAndUpdate(id, data, { new: true }).exec();
@@ -49,5 +93,16 @@ export class CompetitionsRepository implements CompetitionsRepositoryInterface {
                 { new: true },
             )
             .exec();
+    }
+
+    async findBySlug(slug: string): Promise<Competition> {
+        const competition = await this.competition_model.findOne({slug})
+        if (!competition) {
+            throw new BadRequestException({
+                status: HttpStatus.BAD_REQUEST,
+                message: "Đã có lỗi xảy ra trong lúc tìm kiếm, vui lòng thử lại sau",
+            })
+        }
+        return competition;
     }
 }
