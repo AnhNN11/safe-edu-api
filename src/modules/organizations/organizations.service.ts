@@ -19,19 +19,9 @@ export class OrganizationsService {
 
   async create(create_dto: CreateOrganizationDto): Promise<Organization> {
     try {
-      const { name, province_id, slug, email} = create_dto;
+      const { name, province_id, slug} = create_dto;
       const existed_organization = await this.organizations_repository.findOne({ name, province_id });
       const existed_slug = await this.organizations_repository.findOne({slug});
-      const existed_manager = await this.manager_repository.findOne({email});
-      
-      
-      if (!existed_manager) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Không tìm thấy quản lí tổ chức',
-          details: 'Manager not found!!',
-        });
-      }
   
       if (existed_organization) {
         throw new BadRequestException({
@@ -49,13 +39,11 @@ export class OrganizationsService {
   
       const organization = await this.organizations_repository.create({
         ...create_dto,
-        province_id: new mongoose.Types.ObjectId(province_id),
-        manager_id: [new Types.ObjectId(existed_manager.id)]
+        province_id: new mongoose.Types.ObjectId(province_id)
       });
-      console.log('🔧 Updating manager with ID:', existed_manager._id);
+
       return this.organizations_repository.findOne(organization);
     } catch (error) {
-      console.error('Update failed:', error);
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         message: error.message,
@@ -99,5 +87,46 @@ export class OrganizationsService {
 
   async setIsActiveTrue(id: string) {
     return await this.organizations_repository.setIsActive(id);
+  }
+
+  async assignOneManager(managerId: string, organizationId: string) {
+    try {
+      const existed_manager = await this.manager_repository.findById(managerId);
+      const existed_organization = await this.organizations_repository.findById(organizationId);
+      if (!existed_manager) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Quản lí với ID: ${managerId} không tồn tại`
+        })
+      }
+
+      if (!existed_organization) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Tổ chức với ID: ${organizationId} không tồn tại`
+        })
+      }
+
+      await this.organizations_repository.update(
+        organizationId, 
+        {
+          manager_id: existed_manager
+        })
+
+      await this.manager_repository.update(
+        managerId,
+        {
+          organizationId: existed_organization
+        }
+      )
+
+      return await this.organizations_repository.findOne({organizationId});
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        message: "Đã có lỗi xảy ra khi cập nhật quản lí cho tổ chức, vui lòng thử lại sau",
+        details: `Đã có lỗi xảy ra: ${error.message}`
+      })
+    }
   }
 }

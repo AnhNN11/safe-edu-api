@@ -103,10 +103,14 @@ export class QuestionsService {
         })
       }
 
-      const update_question =  await this.questionModel.findByIdAndUpdate(
+      await this.questionModel.findByIdAndUpdate(
         _id, 
         {...updateQuestionDto}
       )
+      
+      const updated_question = await this.questionModel.findOne({_id})
+      return updated_question
+
     } catch (error) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
@@ -128,4 +132,25 @@ export class QuestionsService {
       })
     }
   }
+
+  async getAllByQuizId(quizId: string) {
+    try {
+      const questions = await this.questionModel.find({ quiz_id: quizId })
+        .populate('quiz_id')
+        .exec();
+  
+      return {
+        status: HttpStatus.OK,
+        message: 'Lấy danh sách câu hỏi theo quiz thành công',
+        data: questions,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Đã có lỗi xảy ra khi lấy câu hỏi theo quiz',
+        details: `Lỗi: ${error.message}`,
+      });
+    }
+  }
+
 }

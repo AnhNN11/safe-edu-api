@@ -50,6 +50,7 @@ export class QuizService {
 			.skip(skip)
 			.limit(limit)
 			.sort({ [sortBy]: sortDirection })
+      .populate('competitionId')
 			.exec();
 
 		const totalItemCount = await this.quizModel.countDocuments(filter).exec();
@@ -77,7 +78,9 @@ export class QuizService {
 
   async findOneById(_id: string): Promise<any>  {
     try {
-      const quiz = await this.quizModel.findById(_id).exec();
+      const quiz = await this.quizModel.findById(_id)
+        .populate('organizationId')
+        .exec();
 
       return quiz;
     } catch (error) {
@@ -129,6 +132,24 @@ export class QuizService {
         message: "Đã có lỗi xảy ra trong lúc xóa, vui lòng thử lại sau",
         details: `Đã có lỗi xảy ra: ${error.message}`
       })
+    }
+  }
+
+  async getAllByCompetitionId(competitionId: string) {
+    try {
+      const quiz = await this.quizModel.find({ competitionId: competitionId })
+        .populate('competitionId')
+        .exec();
+  
+      return {
+        data: quiz,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Đã có lỗi xảy ra khi lấy câu hỏi theo cuộc thi',
+        details: `Lỗi: ${error.message}`,
+      });
     }
   }
 }
