@@ -37,19 +37,26 @@ export class QuestionsController {
 
   @Get(':id')
   @ApiOperation({summary: "Get question by Id"})
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.questionsService.findOneById(id);
   }
 
   @Patch(':id')
   @ApiOperation({summary: "Update question"})
-  update(@Param('id') id: string, @Body() updateQuestionDto: UpdateQuestionDto) {
+  async update(@Param('id') id: string, @Body() updateQuestionDto: UpdateQuestionDto) {
     return this.questionsService.update(id, updateQuestionDto);
   }
 
   @Delete(':id')
   @ApiOperation({summary: "Hard delete question by id"})
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.questionsService.remove(id);
   }
+
+  @Get('get-all-by-quizId/:quizId')
+  @ApiOperation({summary: "get all by quiz id"})
+  async getAllByQuizId(@Param('quizId') quizId: string) {
+    return this.questionsService.getAllByQuizId(quizId)
+  }
+  
 }

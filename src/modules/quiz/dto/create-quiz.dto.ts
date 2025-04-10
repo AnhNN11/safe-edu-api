@@ -7,4 +7,7 @@ export class CreateQuizDto {
 
     @IsOptional()
     type?: QuizType;
+
+    @IsNotEmpty({message: "Id cuộc thi là bắt buộc"})
+    competitionId: string;
 }

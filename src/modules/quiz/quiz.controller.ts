@@ -52,4 +52,10 @@ export class QuizController {
   async remove(@Param('id') id: string) {
     return this.quizService.remove(id);
   }
+
+  @Get('get-all-by-quizId/:competitionId')
+  @ApiOperation({summary: "get all by competition id"})
+  async getAllByQuizId(@Param('competitionId') competitionId: string) {
+    return this.quizService.getAllByCompetitionId(competitionId)
+  }
 }

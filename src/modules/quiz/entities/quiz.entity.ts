@@ -1,6 +1,7 @@
 import { BaseEntity } from "@modules/shared/base/base.entity";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { NextFunction } from "express";
+import mongoose from "mongoose";
 
 export enum QuizType {
 	MultipleChoice = "Phần thi lý thuyết",
@@ -24,11 +25,13 @@ export class Quiz extends BaseEntity {
   constructor(quiz: {
     title: string;
     type?: QuizType;
+    competitionId: mongoose.Types.ObjectId;
   }
   ){
     super()
     this.title = quiz?.title;
     this.type = quiz?.type;
+    this.competitionId = quiz?.competitionId;
   }
 
   @Prop({
@@ -41,6 +44,11 @@ export class Quiz extends BaseEntity {
     default: QuizType.MultipleChoice
   })
   type: QuizType;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Competition' }],
+  })
+  competitionId: mongoose.Types.ObjectId;
 }
 
 export const QuizSchema = SchemaFactory.createForClass(Quiz);

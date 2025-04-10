@@ -44,9 +44,17 @@ export class OrganizationsController {
     await this.organizationsService.remove(id);
   }
 
-  @Patch(':id/isActive')
+  @Patch('isActive/:id')
   @ApiOperation({ summary: 'Update isActive true' })
   async setIsActiveTrue(@Param('id') id: string) {
     return await this.organizationsService.setIsActiveTrue(id);
   }
+
+  @Patch('assign-manager/:id')
+  @ApiOperation({ summary: 'Assign manager to organization'})
+  async assignManager(
+    @Param('id') organizationId: string, 
+    @Body('managerId') managerId: string) {
+      return await this.organizationsService.assignOneManager(managerId, organizationId);
+    }
 }
