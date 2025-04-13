@@ -22,8 +22,7 @@ export class CompetitionsRepository implements CompetitionsRepositoryInterface {
           } catch (error) {
             throw new BadRequestException({
                 status: HttpStatus.BAD_REQUEST,
-                message: "Đã có lỗi xảy ra khi tạo cuộc thi, vui lòng thử lại sau",
-                details: `Có lỗi xảy ra khi tạo cuộc thi: ${error.message}`
+                message: `Đã có lỗi xảy ra ${error}`,
             });
         }
     }
@@ -71,8 +70,7 @@ export class CompetitionsRepository implements CompetitionsRepositoryInterface {
     } catch (error) {
         throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
-        message: "Đã có lỗi xảy ra trong quá trình xem cuộc thi, vui lòng thử lại sau",
-        details: `Đã có lỗi xảy ra: ${error.message}`
+        message: `Đã có lỗi xảy ra ${error}`,
         })
     }
     }

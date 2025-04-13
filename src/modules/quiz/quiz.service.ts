@@ -1,8 +1,8 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { Quiz } from './entities/quiz.entity';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
@@ -152,4 +152,16 @@ export class QuizService {
       });
     }
   }
+
+    async findOneByCondition(
+      condition: FilterQuery<Quiz>,
+    ): Promise<Quiz | null> {
+      console.log('Condition:', condition);
+      const result = await this.quizModel.findOne(condition);
+      console.log('Result:', result);
+      if (!result) {
+        throw new NotFoundException(`Quiz with ID ${condition} not found`);
+      }
+      return result;
+    }
 }

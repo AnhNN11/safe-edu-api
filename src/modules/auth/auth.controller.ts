@@ -112,7 +112,7 @@ export class AuthController {
 	@Post('sign-in')
 	@ApiOperation({ summary: 'sign in'})
 	async signIn(@Body() sign_in_dto: SignInDto){
-		return await this.auth_service.signIn(sign_in_dto.id);
+		return await this.auth_service.signIn(sign_in_dto.phone_number);
 	}
 
 	@Post('verify-otp')
