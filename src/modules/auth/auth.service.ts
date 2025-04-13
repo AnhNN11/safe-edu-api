@@ -156,6 +156,10 @@ export class AuthService {
 	async signIn(phone_number: string) {
 		try {
 			await this.sendOtp(phone_number);
+			return {
+				statusCode: HttpStatus.OK,
+				message: `OTP đã được gửi tới sđt ${phone_number} thành công`
+			}
 		} catch (error) {
 			throw error
 		}

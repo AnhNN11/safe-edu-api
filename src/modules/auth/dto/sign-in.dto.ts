@@ -6,9 +6,6 @@ export class SignInDto {
     @IsPhoneNumber('VN', { message: 'Số điện thoại không thuộc vùng Việt Nam' })
     @Transform(({ value }) => formatPhoneNumber(value))
     phone_number: string;
-
-    @IsNotEmpty({message: "OTP không được để trống"})
-    otp: string
 }
 
 function formatPhoneNumber(phone: string): string {
