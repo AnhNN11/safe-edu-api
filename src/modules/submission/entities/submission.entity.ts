@@ -1,7 +1,6 @@
 import { BaseEntity } from "@modules/shared/base/base.entity";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { NextFunction } from "express";
-import { required } from "joi";
 import mongoose from "mongoose";
 
 @Schema({
@@ -17,13 +16,11 @@ import mongoose from "mongoose";
 export class Submission extends BaseEntity {
     constructor(submission: {
         user_id: mongoose.Types.ObjectId;
-        quiz_id: mongoose.Types.ObjectId;
         question_id: mongoose.Types.ObjectId;
         result: boolean
     }) {
         super();
         this.user_id = submission.user_id;
-        this.quiz_id = submission.quiz_id;
         this.question_id = submission.question_id;
         this.result = submission.result;
     }
@@ -32,11 +29,6 @@ export class Submission extends BaseEntity {
         required: true
     })
     user_id:  mongoose.Types.ObjectId;
-
-    @Prop({
-        required: true
-    })
-    quiz_id:  mongoose.Types.ObjectId;
 
     @Prop({
         required: true

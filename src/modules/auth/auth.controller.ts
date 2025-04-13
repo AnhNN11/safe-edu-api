@@ -118,7 +118,7 @@ export class AuthController {
 	@Post('verify-otp')
 	@ApiOperation({ summary: 'verify-otp'})
 	async verifiedOTP(@Body() verified_otp: VerifiedOTPDto) {
-		return await this.auth_service.verifyOTP(verified_otp.otp);
+		return await this.auth_service.verifyOTP(verified_otp.phone_number, verified_otp.otp);
 	}
 
 	@Post('send-otp')

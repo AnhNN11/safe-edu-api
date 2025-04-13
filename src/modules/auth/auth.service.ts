@@ -155,47 +155,7 @@ export class AuthService {
 
 	async signIn(phone_number: string) {
 		try {
-			const [student, citizen] = await Promise.all([
-				await this.student_service.findOneByCondition({ phone_number }, 'sign-in'),
-				await this.citizen_service.findOneByCondition({ phone_number }, 'sign-in')
-			]);
-
 			await this.sendOtp(phone_number);
-
-			if (student) {
-				const access_token = this.generateAccessToken({
-					userId: student._id.toString(),
-					role: 'Student',
-				});
-				const refresh_token = this.generateRefreshToken({
-					userId: student._id.toString(),
-					role: 'Student',
-				});
-				await this.storeRefreshTokenForStudent(student.id, refresh_token);
-				return {
-					access_token,
-					refresh_token,
-				};
-			} else if (citizen) {
-				const access_token = this.generateAccessToken({
-					userId: citizen._id.toString(),
-					role: 'Citizen',
-				});
-				const refresh_token = this.generateRefreshToken({
-					userId: citizen._id.toString(),
-					role: 'Citizen',
-				});
-				await this.storeRefreshTokenForStudent(citizen.id, refresh_token);
-				return {
-					access_token,
-					refresh_token,
-				};
-			} else {
-				throw new BadRequestException({
-					message: ERRORS_DICTIONARY.USER_NOT_FOUND,
-					details: 'User not found!!',
-				});
-			}
 		} catch (error) {
 			throw error
 		}
@@ -336,14 +296,50 @@ export class AuthService {
 			message: `OTP đã được gửi tới sđt ${phone_number} thành công`
 		}
 	}
-	async verifyOTP(otp: string) {
+	async verifyOTP(phone_number: string, otp: string) {
 		try {
+			const [student, citizen] = await Promise.all([
+				await this.student_service.findOneByCondition({ phone_number }, 'sign-in'),
+				await this.citizen_service.findOneByCondition({ phone_number }, 'sign-in')
+			]);
+
 			if (otp == "000000") {
-				return { 
-					success: true, 
-					message: "OTP Verified Successfully"
+				if (student) {
+					const access_token = this.generateAccessToken({
+						userId: student._id.toString(),
+						role: 'Student',
+				});
+					const refresh_token = this.generateRefreshToken({
+						userId: student._id.toString(),
+						role: 'Student',
+				});
+					await this.storeRefreshTokenForStudent(student.id, refresh_token);
+					return {
+						access_token,
+						refresh_token,
+				};
+				} else if (citizen) {
+					const access_token = this.generateAccessToken({
+						userId: citizen._id.toString(),
+						role: 'Citizen',
+					});
+					const refresh_token = this.generateRefreshToken({
+						userId: citizen._id.toString(),
+						role: 'Citizen',
+					});
+					await this.storeRefreshTokenForStudent(citizen.id, refresh_token);
+					return {
+						access_token,
+						refresh_token,
+					};
+				} else {
+					throw new BadRequestException({
+						message: ERRORS_DICTIONARY.USER_NOT_FOUND,
+						details: 'User not found!!',
+					});
 				}
-			} else {
+			}
+			 else {
 				throw new HttpException(
 					{
 					  status: "error",
