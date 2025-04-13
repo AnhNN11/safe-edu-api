@@ -34,7 +34,6 @@ export class Competition extends BaseEntity {
 
   @Prop({
     required: true,
-    minlength: 5,
     maxlength: 100,
     set: (title: string) => title.trim(),
   })

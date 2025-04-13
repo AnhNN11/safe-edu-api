@@ -58,4 +58,10 @@ export class QuizController {
   async getAllByQuizId(@Param('competitionId') competitionId: string) {
     return this.quizService.getAllByCompetitionId(competitionId)
   }
+
+
+  @Get('find-by-condition')
+  @ApiOperation({summary: "find by condition"})
+  async findByCondition() {
+  }
 }

@@ -42,7 +42,7 @@ export class CompetitionsService {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         message: "Đã có lỗi xảy ra khi tạo cuộc thi, vui lòng thử lại sau",
-        details: `Có lỗi xảy ra khi tạo cuộc thi: ${error.message}`
+        details: `Có lỗi xảy ra khi tạo cuộc thi: ${error}`
       })
     }
   }

@@ -153,12 +153,14 @@ export class AuthService {
 		}
 	}
 
-	async signIn(_id: string) {
+	async signIn(phone_number: string) {
 		try {
 			const [student, citizen] = await Promise.all([
-				await this.student_service.findOneByCondition({ _id }, 'sign-in'),
-				await this.citizen_service.findOneByCondition({ _id }, 'sign-in')
+				await this.student_service.findOneByCondition({ phone_number }, 'sign-in'),
+				await this.citizen_service.findOneByCondition({ phone_number }, 'sign-in')
 			]);
+
+			await this.sendOtp(phone_number);
 
 			if (student) {
 				const access_token = this.generateAccessToken({
@@ -169,7 +171,7 @@ export class AuthService {
 					userId: student._id.toString(),
 					role: 'Student',
 				});
-				await this.storeRefreshTokenForStudent(_id, refresh_token);
+				await this.storeRefreshTokenForStudent(student.id, refresh_token);
 				return {
 					access_token,
 					refresh_token,
@@ -183,7 +185,7 @@ export class AuthService {
 					userId: citizen._id.toString(),
 					role: 'Citizen',
 				});
-				await this.storeRefreshTokenForStudent(_id, refresh_token);
+				await this.storeRefreshTokenForStudent(citizen.id, refresh_token);
 				return {
 					access_token,
 					refresh_token,
