@@ -30,6 +30,8 @@ import { OtpModule } from '@modules/otp/otp.module';
 import { ProvincesModule } from './provinces/provinces.module';
 import { QuestionsModule } from '@modules/questions/questions.module';
 import { QuizModule } from '@modules/quiz/quiz.module';
+import { SubmissionModule } from '@modules/submission/submission.module';
+import { QuizResultModule } from '@modules/quiz-result/quiz-result.module';
 
 @Module({
 	imports: [
@@ -89,6 +91,8 @@ import { QuizModule } from '@modules/quiz/quiz.module';
 		ProvincesModule,
 		QuizModule,
 		QuestionsModule,
+		SubmissionModule,
+		QuizResultModule,
 	],
 	controllers: [AppController],
 	providers: [
