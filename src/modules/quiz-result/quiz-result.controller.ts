@@ -1,16 +1,19 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { SubmissionService } from './submission.service';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
-import { UpdateSubmissionDto } from './dto/update-submission.dto';
+import { QuizResultService } from './quiz-result.service';
+import { CreateQuizResultDto } from './dto/create-quiz-result.dto';
+import { UpdateQuizResultDto } from './dto/update-quiz-result.dto';
 import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 
-@Controller('submission')
-export class SubmissionController {
-  constructor(private readonly submissionService: SubmissionService) {}
+@Controller('quiz-result')
+export class QuizResultController {
+  constructor(private readonly quizResultService: QuizResultService) {}
 
   @Post()
-  create(@Body() createSubmissionDto: CreateSubmissionDto) {
-    return this.submissionService.submitAnswer(createSubmissionDto);
+  
+  create(@Body() createQuizResultDto: CreateQuizResultDto) {
+    return this.quizResultService.calculateQuizResult(
+      createQuizResultDto.userId, createQuizResultDto.quizId
+    );
   }
 
   @Get()
@@ -28,14 +31,14 @@ export class SubmissionController {
     @Query('sortOrder') sortOrder?: 'asc' | 'desc'
   ) {
     if (!pageNumber || !pageSize) {
-			return await this.submissionService.findAll();
+			return await this.quizResultService.findAll();
 		}
-    return this.submissionService.findAll(searchPhase, pageNumber, pageSize, sortBy, sortOrder);
+    return this.quizResultService.findAll(searchPhase, pageNumber, pageSize, sortBy, sortOrder);
   }
 
   @Get(':id')
-  @ApiOperation({summary: "Get submission by userId"})
-  async findByUserId(@Param('id') id: string) {
-    return this.submissionService.findOneByUserId(id);
+  findOne(@Param('id') id: string) {
+    return this.quizResultService.findOne(+id);
   }
+
 }

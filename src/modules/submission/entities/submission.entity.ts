@@ -17,28 +17,42 @@ export class Submission extends BaseEntity {
     constructor(submission: {
         user_id: mongoose.Types.ObjectId;
         question_id: mongoose.Types.ObjectId;
-        result: boolean
+        answer: string
+        isCorrect: boolean
+        score: number;
     }) {
         super();
         this.user_id = submission.user_id;
         this.question_id = submission.question_id;
-        this.result = submission.result;
+        this.isCorrect = submission.isCorrect;
+        this.answer = submission?.answer;
+        this.score = submission?.score;
     }
 
     @Prop({
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     })
     user_id:  mongoose.Types.ObjectId;
 
     @Prop({
+        type: mongoose.Schema.Types.ObjectId, ref: 'Question',
         required: true
     })
     question_id: mongoose.Types.ObjectId;
 
     @Prop({
+      required: true
+    })
+    answer: string;
+
+    @Prop({
         required: true
     })
-    result: boolean
+    isCorrect: boolean
+
+    @Prop()
+    score: number;
 }
 
 export const SubmissionSchema = SchemaFactory.createForClass(Submission);

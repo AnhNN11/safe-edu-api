@@ -17,5 +17,8 @@ import { Question, QuestionSchemaFactory } from './entities/question.entity';
     ],
   controllers: [QuestionsController],
   providers: [QuestionsService],
+  exports: [MongooseModule],
 })
 export class QuestionsModule {}
+
+

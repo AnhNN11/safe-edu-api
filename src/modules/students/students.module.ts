@@ -37,6 +37,7 @@ import { CitizensService } from '@modules/citizens/citizens.service';
 	],
 	exports: [StudentsService,
 		'StudentsRepositoryInterface',
+		MongooseModule
 	],
 })
 export class StudentsModule {}
