@@ -1,8 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+	UseGuards,
+	Request,
+	Query,
+} from '@nestjs/common';
 import { CompetitionsService } from './competitions.service';
 import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+	ApiBearerAuth,
+	ApiOperation,
+	ApiQuery,
+	ApiTags,
+} from '@nestjs/swagger';
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -12,56 +28,79 @@ import { RolesEnum } from 'src/enums/roles..enum';
 // @UseGuards(JwtAccessTokenGuard, RolesGuard)
 @ApiBearerAuth('token')
 export class CompetitionsController {
-  constructor(private readonly competitionsService: CompetitionsService) {}
+	constructor(private readonly competitionsService: CompetitionsService) {}
 
-  @Post()
-  @ApiOperation({summary: 'Create new competition'})
-  async create(@Body() createCompetitionDto: CreateCompetitionDto) {
-    return this.competitionsService.create(createCompetitionDto);
-  }
+	@Post()
+	@ApiOperation({ summary: 'Create new competition' })
+	async create(@Body() createCompetitionDto: CreateCompetitionDto) {
+		return this.competitionsService.create(createCompetitionDto);
+	}
 
-  @Get()
-  @ApiQuery({ name: 'pageNumber', required: false, type: Number }) 
-  @ApiQuery({ name: 'pageSize', required: false, type: Number })
-  @ApiQuery({ name: 'searchPhase', required: false, type: String })
-  @ApiQuery({ name: 'sortBy', required: false, type: String })
-  @ApiQuery({ name: 'sortOrder', required: false, type: String })
-  // @Roles(RolesEnum.ADMIN)
-  @ApiOperation({summary: 'Retrieve all competitions'})
-  async findAll(
-    @Query('searchPhase') searchPhase?: string,
-    @Query('pageNumber') pageNumber?: number,
-    @Query('pageSize') pageSize?: number,
-    @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: 'asc' | 'desc'
-  ) {
-    if (!pageNumber || !pageSize) {
+	@Get()
+	@UseGuards(JwtAccessTokenGuard, RolesGuard)
+	@Roles(
+		RolesEnum.STUDENT,
+		RolesEnum.SUPERVISOR,
+		RolesEnum.ADMIN,
+		RolesEnum.MANAGER,
+	)
+	@ApiQuery({ name: 'pageNumber', required: false, type: Number })
+	@ApiQuery({ name: 'pageSize', required: false, type: Number })
+	@ApiQuery({ name: 'searchPhase', required: false, type: String })
+	@ApiQuery({ name: 'sortBy', required: false, type: String })
+	@ApiQuery({ name: 'sortOrder', required: false, type: String })
+	// @Roles(RolesEnum.ADMIN)
+	@ApiOperation({ summary: 'Retrieve all competitions' })
+	async findAll(
+		@Query('searchPhase') searchPhase?: string,
+		@Query('pageNumber') pageNumber?: number,
+		@Query('pageSize') pageSize?: number,
+		@Query('sortBy') sortBy?: string,
+		@Query('sortOrder') sortOrder?: 'asc' | 'desc',
+	) {
+		if (!pageNumber || !pageSize) {
 			return await this.competitionsService.findAll();
 		}
-    return this.competitionsService.findAll(searchPhase, pageNumber, pageSize, sortBy, sortOrder);
-  }
+		return this.competitionsService.findAll(
+			searchPhase,
+			pageNumber,
+			pageSize,
+			sortBy,
+			sortOrder,
+		);
+	}
 
-  @Get(':id')
-  @ApiOperation({summary: 'Find competition by Id'})
-  async findById(@Param('id') id: string) {
-    return this.competitionsService.findById(id);
-  }
+	@Get(':id')
+	@ApiOperation({ summary: 'Find competition by Id' })
+	async findById(@Param('id') id: string) {
+		return this.competitionsService.findById(id);
+	}
 
-  @Patch(':id')
-  @ApiOperation({summary: 'Update competition'})
-  update(@Param('id') id: string, @Body() updateCompetitionDto: UpdateCompetitionDto) {
-    return this.competitionsService.update(id, updateCompetitionDto);
-  }
+	@Patch(':id')
+	@ApiOperation({ summary: 'Update competition' })
+	update(
+		@Param('id') id: string,
+		@Body() updateCompetitionDto: UpdateCompetitionDto,
+	) {
+		return this.competitionsService.update(id, updateCompetitionDto);
+	}
 
-  @Delete(':id')
-  @ApiOperation({summary: 'Delete competition (set isActive false)'})
-  async remove(@Param('id') id: string) {
-    return await this.competitionsService.remove(id);
-  }
+	@Delete(':id')
+	@ApiOperation({ summary: 'Delete competition (set isActive false)' })
+	async remove(@Param('id') id: string) {
+		return await this.competitionsService.remove(id);
+	}
 
-  @Post(':slug')
-  @ApiOperation({summary: 'Find by slug'})
-  async findBySlug(@Param('slug') slug: string) {
-    return await this.competitionsService.findBySlug(slug)
-  }
+	@Get('/slug/:slug')
+	@UseGuards(JwtAccessTokenGuard, RolesGuard)
+	@Roles(
+		RolesEnum.STUDENT,
+		RolesEnum.SUPERVISOR,
+		RolesEnum.ADMIN,
+		RolesEnum.MANAGER,
+	)
+	@ApiOperation({ summary: 'Find by slug' })
+	async findBySlug(@Param('slug') slug: string) {
+		return await this.competitionsService.findBySlug(slug);
+	}
 }

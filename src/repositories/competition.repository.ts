@@ -83,6 +83,7 @@ export class CompetitionsRepository implements CompetitionsRepositoryInterface {
     async findById(id: string) {
         return await this.competition_model.findById(id).exec();
     }
+    
 
     async remove(id: string | Types.ObjectId): Promise<Competition | null> {
         const stringId = id instanceof Types.ObjectId ? id.toString() : id;

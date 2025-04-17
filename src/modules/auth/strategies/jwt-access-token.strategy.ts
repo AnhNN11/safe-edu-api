@@ -39,9 +39,10 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 				if (!student) {
 					throw new UnauthorizedException('Access Denied: Student not found.');
 				}
+				break;
 			case 'Admin':
 				const admin = await this.adminService.findOneById(userId);
-				if (!admin){
+				if (!admin) {
 					throw new UnauthorizedException('Access Denied: Admin not found.');
 				}
 				break;

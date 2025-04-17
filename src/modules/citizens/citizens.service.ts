@@ -12,9 +12,11 @@ import { Citizen } from './entities/citizen.entity';
 import { CitizensRepositoryInterface } from './interfaces/citizens.interfaces';
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { StudentsRepositoryInterface } from '@modules/students/interfaces/students.interface';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class CitizensService {
+	private readonly SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 	constructor(
 		@Inject('CitizensRepositoryInterface')
 		private readonly citizensRepository: CitizensRepositoryInterface,
@@ -43,26 +45,45 @@ export class CitizensService {
 		}
 	}
 	async create(createDto: CreateCitizenDto): Promise<Citizen> {
-		const { first_name, last_name, phone_number } = createDto;
-
+		const { first_name, last_name, phone_number, username, password, email } =
+			createDto;
 
 		const [existed_phone_number_student, existed_phone_number_student_citizen] =
 			await Promise.all([
 				await this.studentsRepository.findOneByCondition({ phone_number }),
 				await this.citizensRepository.findOneByCondition({ phone_number }),
 			]);
+		const [existed_student_username, existed_citizen_username] =
+			await Promise.all([
+				await this.studentsRepository.findOneByCondition({ username }),
+				await this.citizensRepository.findOneByCondition({ username }),
+			]);
 
-		if (existed_phone_number_student || existed_phone_number_student_citizen) {
+		if (existed_student_username || existed_citizen_username) {
+			throw new BadRequestException({
+				message: ERRORS_DICTIONARY.USERNAME_EXISTS,
+				details: 'username đã tồn tại',
+			});
+		}
+
+		if (
+			phone_number &&
+			(existed_phone_number_student || existed_phone_number_student_citizen)
+		) {
 			throw new BadRequestException({
 				message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
 				details: 'Phone number already exist',
 			});
 		}
+		const hashedPassword = await bcrypt.hash(password, this.SALT_ROUNDS);
 
 		const citizen = await this.citizensRepository.create({
 			first_name,
 			last_name,
 			phone_number,
+			username,
+			password: hashedPassword,
+			email,
 		});
 		return citizen;
 	}
@@ -118,13 +139,13 @@ export class CitizensService {
 	async delete(id: string): Promise<Citizen> {
 		return await this.citizensRepository.update(id, {
 			deleted_at: new Date(),
-			isActive: false
+			isActive: false,
 		});
 	}
 
 	async setIsActiveTrue(id: string): Promise<Citizen> {
 		return await this.citizensRepository.update(id, {
-			isActive: true
+			isActive: true,
 		});
 	}
 }

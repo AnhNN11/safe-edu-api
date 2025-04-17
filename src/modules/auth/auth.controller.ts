@@ -1,5 +1,4 @@
-
-import { Body, Controller, Get, Param, Post, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
@@ -27,18 +26,17 @@ import { RolesGuard } from './guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { RolesEnum } from 'src/enums/roles..enum';
 import { SendOTPDto } from './dto/send-otp';
-
+import { use } from 'passport';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
 	constructor(private readonly auth_service: AuthService) {}
-	
+
 	@Post('google')
 	async authWithGoogle(@Body() sign_in_token: SignInTokenDto) {
 		return this.auth_service.authenticateWithGoogle(sign_in_token);
 	}
-
 
 	@UseGuards(GoogleAuthGuard)
 	@Get('google/callback')
@@ -105,30 +103,42 @@ export class AuthController {
 
 	@Post('sign-up-with-citizen')
 	@ApiOperation({ summary: 'sign up with citizen' })
-	async signUpWithCitizen(@Body() sign_up_with_citizen_dto: SignUpWithCitizenDto) {
+	async signUpWithCitizen(
+		@Body() sign_up_with_citizen_dto: SignUpWithCitizenDto,
+	) {
 		return await this.auth_service.signUpWithCitizen(sign_up_with_citizen_dto);
 	}
 
 	@Post('sign-in')
-	@ApiOperation({ summary: 'sign in'})
-	async signIn(@Body() sign_in_dto: SignInDto){
-		return await this.auth_service.signIn(sign_in_dto.phone_number);
+	@ApiOperation({ summary: 'sign in' })
+	async signIn(@Body() sign_in_dto: SignInDto) {
+		return await this.auth_service.signIn(sign_in_dto);
 	}
 
 	@Post('verify-otp')
-	@ApiOperation({ summary: 'verify-otp'})
+	@ApiOperation({ summary: 'verify-otp' })
 	async verifiedOTP(@Body() verified_otp: VerifiedOTPDto) {
-		return await this.auth_service.verifyOTP(verified_otp.phone_number, verified_otp.otp);
+		return await this.auth_service.verifyOTP(
+			verified_otp.phone_number,
+			verified_otp.otp,
+		);
 	}
 
 	@Post('send-otp')
-	@ApiOperation({summary: 'send otp to phone number'})
+	@ApiOperation({ summary: 'send otp to phone number' })
 	async sendOTP(@Body() sendOTPDto: SendOTPDto) {
 		return await this.auth_service.sendOtp(sendOTPDto.phone_number);
 	}
+	@Get('get-access-token')
+	@ApiOperation({ summary: 'get access token' })
+	@Roles(RolesEnum.STUDENT, RolesEnum.CITIZEN)
+	@UseGuards(JwtRefreshTokenGuard, RolesGuard)
+	getAccessToken(@Req() req) {
+		return this.auth_service.getAccessToken(req.user);
+	}
 
 	@Get()
-	sendMail(): void{
+	sendMail(): void {
 		return this.auth_service.sendMail();
 	}
 }

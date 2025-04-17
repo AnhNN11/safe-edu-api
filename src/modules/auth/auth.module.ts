@@ -1,5 +1,6 @@
 // import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
+import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
@@ -48,6 +49,7 @@ import { ProvincesModule } from 'src/provinces/provinces.module';
 		AuthService,
 		LocalStrategy,
 		JwtAccessTokenStrategy,
+		JwtRefreshTokenStrategy,
 		GoogleStrategy,
 		StudentsService,
 		AdminService,
