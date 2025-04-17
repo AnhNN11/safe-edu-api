@@ -34,6 +34,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { SignInTokenDto } from './dto/sign-in-token.dto';
 import { SupervisorsService } from '@modules/supervisors/supervisors.service';
 import * as request from 'supertest';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -70,19 +71,19 @@ export class AuthService {
 
 	async authenticateWithGoogle(sign_in_token: SignInTokenDto) {
 		// 1. Giải mã token để lấy email
-		const {token} = sign_in_token; 
-		console.log("token:"+token);
+		const { token } = sign_in_token;
+		console.log('token:' + token);
 		const decodedToken = this.jwt_service.decode(token) as { email: string };
-		console.log("decodedToken:"+decodedToken);
+		console.log('decodedToken:' + decodedToken);
 		if (!decodedToken || !decodedToken.email) {
 			throw new HttpException(
 				{ message: 'Invalid token', error: 'Bad Request' },
 				HttpStatus.BAD_REQUEST,
 			);
 		}
-	
+
 		const email = decodedToken.email;
-	
+
 		// 2. Kiểm tra email trong cơ sở dữ liệu
 		const admin = await this.admin_service.getAdminByEmail(email);
 		if (!admin) {
@@ -91,18 +92,18 @@ export class AuthService {
 				HttpStatus.UNAUTHORIZED,
 			);
 		}
-	
+
 		// 3. Sử dụng hàm generateAccessToken và generateRefreshToken
 		const accessToken = this.generateAccessToken({
 			userId: admin.id,
 			role: 'Admin',
 		});
-	
+
 		const refreshToken = this.generateRefreshToken({
 			userId: admin.id,
 			role: 'Admin',
 		});
-	
+
 		// 4. Trả về hai token
 		return {
 			accessToken,
@@ -134,7 +135,6 @@ export class AuthService {
 	// 	}
 	// }
 
-
 	async storeRefreshTokenForStudent(_id: string, token: string): Promise<void> {
 		try {
 			const hashed_token = await bcrypt.hash(token, this.SALT_ROUND);
@@ -153,52 +153,95 @@ export class AuthService {
 		}
 	}
 
-	async signIn(phone_number: string) {
-		try {
-			await this.sendOtp(phone_number);
-			return {
-				statusCode: HttpStatus.OK,
-				message: `OTP đã được gửi tới sđt ${phone_number} thành công`
+	async signIn(sign_in_dto: SignInDto) {
+		const { username, password } = sign_in_dto;
+
+		const [existed_student_username, existed_citizen_username] =
+			await Promise.all([
+				await this.student_service.findOneByCondition({ username }, 'sign-in'),
+				await this.citizen_service.findOneByCondition({ username }, 'sign-in'),
+			]);
+
+		if (existed_student_username) {
+			console.log('first', existed_student_username.password);
+			const is_password_matched = await bcrypt.compare(
+				password,
+				existed_student_username.password,
+			);
+			if (!is_password_matched) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.PASSWORD_NOT_MATCHED,
+					details: 'Password not matched',
+				});
 			}
-		} catch (error) {
-			throw error
+			const refresh_token = this.generateRefreshToken({
+				userId: existed_student_username._id.toString(),
+				role: 'Student',
+			});
+			await this.storeRefreshTokenForStudent(
+				existed_student_username._id.toString(),
+				refresh_token,
+			);
+			return {
+				access_token: this.generateAccessToken({
+					userId: existed_student_username._id.toString(),
+					role: 'Student',
+				}),
+				refresh_token,
+			};
+		} else if (existed_citizen_username) {
+			const is_password_matched = await bcrypt.compare(
+				password,
+				existed_citizen_username.password,
+			);
+			if (!is_password_matched) {
+				throw new BadRequestException({
+					message: ERRORS_DICTIONARY.PASSWORD_NOT_MATCHED,
+					details: 'Password not matched',
+				});
+			}
+			const refresh_token = this.generateRefreshToken({
+				userId: existed_citizen_username._id.toString(),
+				role: 'Citizen',
+			});
+			await this.storeRefreshTokenForCitizen(
+				existed_citizen_username._id.toString(),
+				refresh_token,
+			);
+			return {
+				access_token: this.generateAccessToken({
+					userId: existed_citizen_username._id.toString(),
+					role: 'Citizen',
+				}),
+				refresh_token,
+			};
 		}
+		throw new BadRequestException({
+			message: ERRORS_DICTIONARY.USER_NOT_FOUND,
+			details: 'Username not found',
+		});
 	}
 
 	async signUpWithStudent(sign_up_with_std_dto: SignUpWithStudentDto) {
 		try {
-			const { first_name, last_name, phone_number, organizationId, otp } =
-				sign_up_with_std_dto;
-
-			const [existed_student_phone_number, existed_citizen_phone_number] = await Promise.all([
-				await this.student_service.findOneByCondition({ phone_number: sign_up_with_std_dto.phone_number }, 'sign-up'),
-				await this.citizen_service.findOneByCondition({ phone_number: sign_up_with_std_dto.phone_number }, 'sign-up')
-			]);
-
-			if (existed_student_phone_number) {
-				throw new BadRequestException({
-					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
-					details: 'Phone number already exist',
-				});
-			}
-
-			if (existed_citizen_phone_number) {
-				throw new BadRequestException({
-					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
-					details: 'Phone number already exist',
-				});
-			}
-
-			if (otp != "000000") {
-				throw new BadRequestException({
-					message: 'OTP không đúng',
-				});
-			}
-			
-			const student = await this.student_service.create({
+			const {
 				first_name,
 				last_name,
 				phone_number,
+				organizationId,
+				username,
+				email,
+				date_of_birth,
+				password,
+			} = sign_up_with_std_dto;
+			const student = await this.student_service.create({
+				first_name,
+				last_name,
+				date_of_birth,
+				phone_number,
+				email,
+				username,
+				password,
 				organizationId,
 			});
 
@@ -207,7 +250,10 @@ export class AuthService {
 				role: 'Student',
 			});
 			try {
-				await this.storeRefreshTokenForStudent(student._id.toString(), refresh_token);
+				await this.storeRefreshTokenForStudent(
+					student._id.toString(),
+					refresh_token,
+				);
 				return {
 					access_token: this.generateAccessToken({
 						userId: student._id.toString(),
@@ -215,55 +261,32 @@ export class AuthService {
 					}),
 					refresh_token,
 				};
+			} catch (error) {
+				console.error(
+					'Error storing refresh token or generating access token:',
+					error,
+				);
+				throw new Error(
+					'An error occurred while processing tokens. Please try again.',
+				);
+			}
 		} catch (error) {
-			console.error(
-				'Error storing refresh token or generating access token:',
-				error,
-			);
-			throw new Error(
-				'An error occurred while processing tokens. Please try again.',
-			);
-		}
-		} catch(error) {
 			throw error;
-		}	
+		}
 	}
 
 	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
 		try {
-			const { first_name, last_name, phone_number, otp } =
-			sign_up_with_citizen_dto;
-			const [existed_student_phone_number, existed_citizen_phone_number] = await Promise.all([
-				await this.student_service.findOneByCondition({ phone_number: sign_up_with_citizen_dto.phone_number }, 'sign-up'),
-				await this.citizen_service.findOneByCondition({ phone_number: sign_up_with_citizen_dto.phone_number }, 'sign-up')
-			]);
-			
-			console.log(existed_citizen_phone_number, existed_student_phone_number)
-
-			if (existed_student_phone_number) {
-				throw new BadRequestException({
-					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
-					details: 'Phone number already exist',
-				});
-			}
-
-			if (existed_citizen_phone_number) {
-				throw new BadRequestException({
-					message: ERRORS_DICTIONARY.CITIZEN_PHONE_NUMBER_EXISTS,
-					details: 'Phone number already exist',
-				});
-			}
-
-			if (otp != "000000") {
-				throw new BadRequestException({
-					message: 'OTP không đúng',
-				});
-			}
+			const { first_name, last_name, phone_number, email, username, password } =
+				sign_up_with_citizen_dto;
 
 			const citizen = await this.citizen_service.create({
 				first_name,
 				last_name,
 				phone_number,
+				username,
+				email,
+				password,
 			});
 
 			const refresh_token = this.generateRefreshToken({
@@ -271,7 +294,10 @@ export class AuthService {
 				role: 'Citizen',
 			});
 			try {
-				await this.citizen_service.setCurrentRefreshToken(citizen._id.toString(), refresh_token);
+				await this.citizen_service.setCurrentRefreshToken(
+					citizen._id.toString(),
+					refresh_token,
+				);
 				return {
 					access_token: this.generateAccessToken({
 						userId: citizen._id.toString(),
@@ -279,49 +305,54 @@ export class AuthService {
 					}),
 					refresh_token,
 				};
+			} catch (error) {
+				console.error(
+					'Error storing refresh token or generating access token:',
+					error,
+				);
+				throw new Error(
+					'An error occurred while processing tokens. Please try again.',
+				);
+			}
 		} catch (error) {
-			console.error(
-				'Error storing refresh token or generating access token:',
-				error,
-			);
-			throw new Error(
-				'An error occurred while processing tokens. Please try again.',
-			);
+			throw error;
 		}
-	}
-	catch(error) {
-		throw error;
-	}
 	}
 
 	async sendOtp(phone_number: string): Promise<any> {
 		return {
 			statusCode: HttpStatus.OK,
-			message: `OTP đã được gửi tới sđt ${phone_number} thành công`
-		}
+			message: `OTP đã được gửi tới sđt ${phone_number} thành công`,
+		};
 	}
 	async verifyOTP(phone_number: string, otp: string) {
 		try {
 			const [student, citizen] = await Promise.all([
-				await this.student_service.findOneByCondition({ phone_number }, 'sign-in'),
-				await this.citizen_service.findOneByCondition({ phone_number }, 'sign-in')
+				await this.student_service.findOneByCondition(
+					{ phone_number },
+					'sign-in',
+				),
+				await this.citizen_service.findOneByCondition(
+					{ phone_number },
+					'sign-in',
+				),
 			]);
 
-			if (otp == "000000") {
+			if (otp == '000000') {
 				if (student) {
 					const access_token = this.generateAccessToken({
 						userId: student._id.toString(),
 						role: 'Student',
-				});
+					});
 					const refresh_token = this.generateRefreshToken({
 						userId: student._id.toString(),
 						role: 'Student',
-				});
+					});
 					await this.storeRefreshTokenForStudent(student.id, refresh_token);
 					return {
 						access_token,
 						refresh_token,
-				};
+					};
 				} else if (citizen) {
 					const access_token = this.generateAccessToken({
 						userId: citizen._id.toString(),
@@ -342,103 +373,113 @@ export class AuthService {
 						details: 'User not found!!',
 					});
 				}
-			}
-			 else {
+			} else {
 				throw new HttpException(
 					{
-					  status: "error",
-					  message: "Invalid OTP",
+						status: 'error',
+						message: 'Invalid OTP',
 					},
-					HttpStatus.BAD_REQUEST, 
-				)
+					HttpStatus.BAD_REQUEST,
+				);
 			}
 		} catch (error) {
 			throw new BadRequestException({
 				status: HttpStatus.BAD_REQUEST,
-				message: "Có lỗi xảy ra khi xác nhận OTP, vui lòng thử lại sau",
-				details: `Có lỗi xảy ra ${error.message}`
-			})
+				message: 'Có lỗi xảy ra khi xác nhận OTP, vui lòng thử lại sau',
+				details: `Có lỗi xảy ra ${error.message}`,
+			});
 		}
-		
 	}
 
-	sendMail(): void{
+	sendMail(): void {
 		this.mailer_service.sendMail({
-			to: 'monkeyold113@gmail.com' ,
+			to: 'monkeyold113@gmail.com',
 			from: 'baopqtde181053@fpt.edu.vn',
 			subject: 'Verify email',
 			text: 'hello',
-			html: '<b>Welcome to Safe Edu</b>'
-		})
+			html: '<b>Welcome to Safe Edu</b>',
+		});
+	}
+	async getAccessToken(user: TokenPayload): Promise<{
+		access_token: string;
+		refresh_token: string;
+	}> {
+		const access_token = this.generateAccessToken(user);
+		const refresh_token = this.generateRefreshToken(user);
+		return {
+			access_token,
+			refresh_token,
+		};
 	}
 
 	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
 		console.log('auth');
-	
+
 		try {
 			const results = await Promise.allSettled([
 				this.admin_service.findOneByCondition({ email: sign_up_dto.email }),
-				this.supervisor_service.findOneByCondition({ email: sign_up_dto.email })
+				this.supervisor_service.findOneByCondition({
+					email: sign_up_dto.email,
+				}),
 			]);
-	
-			const admin = results[0].status === "fulfilled" ? results[0].value : null;
-			const supervisor = results[1].status === "fulfilled" ? results[1].value : null;
-	
+
+			const admin = results[0].status === 'fulfilled' ? results[0].value : null;
+			const supervisor =
+				results[1].status === 'fulfilled' ? results[1].value : null;
+
 			if (admin) {
 				return await this.signInAdmin(admin._id.toString());
 			}
 			if (supervisor) {
 				return await this.signInSupervisor(supervisor._id.toString());
 			}
-	
-			throw new Error("User is not an admin or supervisor");
+
+			throw new Error('User is not an admin or supervisor');
 		} catch (error) {
-			console.error("Auth error:", error);
+			console.error('Auth error:', error);
 			throw error;
 		}
 	}
-	
 
+	async signInAdmin(_id: string) {
+		const admin = await this.admin_service.findOneByCondition({ _id });
+		if (admin) {
+			console.log('hello' + admin);
+			const access_token = this.generateAccessToken({
+				userId: admin._id.toString(),
+				role: 'Admin',
+			});
+			const refresh_token = this.generateRefreshToken({
+				userId: admin._id.toString(),
+				role: 'admin',
+			});
 
-	async signInAdmin(_id:string){
-		const admin =await this.admin_service.findOneByCondition({ _id })
-		if(admin)
-			{
-				console.log("hello" + admin)
-				const access_token = this.generateAccessToken({
-					userId: admin._id.toString(),
-					role: 'Admin',
-				});
-				const refresh_token = this.generateRefreshToken({
-					userId: admin._id.toString(),
-					role: 'admin',
-				});
-				
-				return {
-					access_token,
-					refresh_token,
-				};
-			} 
+			return {
+				access_token,
+				refresh_token,
+			};
+		}
 	}
 
-	async signInSupervisor(_id:string){
-		const supervisor =await this.supervisor_service.findOneByCondition({ _id })
-		if(supervisor)
-			{
-				console.log("hello" + supervisor)
-				const access_token = this.generateAccessToken({
-					userId: supervisor._id.toString(),
-					role: 'supervisor',
-				});
-				const refresh_token = this.generateRefreshToken({
-					userId: supervisor._id.toString(),
-					role: 'supervisor',
-				});
-				
-				return {
-					access_token,
-					refresh_token,
-				};
-			} 
+	async signInSupervisor(_id: string) {
+		const supervisor = await this.supervisor_service.findOneByCondition({
+			_id,
+		});
+		if (supervisor) {
+			console.log('hello' + supervisor);
+			const access_token = this.generateAccessToken({
+				userId: supervisor._id.toString(),
+				role: 'supervisor',
+			});
+			const refresh_token = this.generateRefreshToken({
+				userId: supervisor._id.toString(),
+				role: 'supervisor',
+			});
+
+			return {
+				access_token,
+				refresh_token,
+			};
+		}
 	}
 }

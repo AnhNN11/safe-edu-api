@@ -27,7 +27,6 @@ export enum GENDER {
 		virtuals: true,
 	},
 })
-
 export class Student extends BaseEntity {
 	constructor(Student: {
 		first_name?: string;
@@ -36,6 +35,9 @@ export class Student extends BaseEntity {
 		phone_number?: string;
 		date_of_birth?: Date;
 		organizationId?: mongoose.Types.ObjectId;
+		password: string;
+		username: string;
+		email: string;
 	}) {
 		super();
 		this.first_name = Student?.first_name;
@@ -44,8 +46,11 @@ export class Student extends BaseEntity {
 		this.phone_number = Student?.phone_number;
 		this.date_of_birth = Student?.date_of_birth;
 		this.organizationId = Student?.organizationId;
+		this.password = Student?.password;
+		this.username = Student?.username;
+		this.email = Student?.email;
 	}
-	
+
 	@Prop({
 		required: true,
 		minlength: 2,
@@ -68,12 +73,13 @@ export class Student extends BaseEntity {
 
 	@Prop({
 		match: /^\+84\d{9}$/,
-		required: true,
 	})
-	phone_number: string;
+	phone_number?: string;
 
-	@Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }] })
-	organizationId: mongoose.Types.ObjectId
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }],
+	})
+	organizationId: mongoose.Types.ObjectId;
 
 	@Prop({
 		default:
@@ -105,14 +111,28 @@ export class Student extends BaseEntity {
 	achievements: mongoose.Types.ObjectId[];
 
 	@Prop({
-		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationWithStudent' }],
+		type: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationWithStudent' },
+		],
 		default: [],
 	})
 	registration_competition: mongoose.Types.ObjectId[];
-
+	@Prop({
+		required: true,
+		unique: true,
+	})
+	username: string;
+	@Prop({
+		required: true,
+	})
+	password: string;
+	@Prop({
+		required: false,
+	})
+	email: string;
 }
-
 export const StudentSchema = SchemaFactory.createForClass(Student);
+StudentSchema.index({ username: 1 }, { unique: true, background: true });
 
 export const StudentSchemaFactory = () => {
 	const Student_schema = StudentSchema;

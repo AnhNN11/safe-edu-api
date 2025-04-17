@@ -18,83 +18,104 @@ export enum GENDER {
 }
 
 @Schema({
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'updated_at', 
-  },
-  toJSON: {
-    getters: true,
-    virtuals: true, 
-  },
+	timestamps: {
+		createdAt: 'created_at',
+		updatedAt: 'updated_at',
+	},
+	toJSON: {
+		getters: true,
+		virtuals: true,
+	},
 })
 export class Citizen extends BaseEntity {
-  constructor(citizen: {
-    first_name?: string;
-    last_name?: string;
-    avatar?: string;
-    phone_number?: string;
-    gender?: GENDER;
-    date_of_birth?: Date;
-  }) {
-    super();
-    this.first_name = citizen?.first_name;
-    this.last_name = citizen?.last_name;
-    this.avatar = citizen?.avatar;
-    this.phone_number = citizen?.phone_number;
-    this.gender = citizen?.gender;
-    this.date_of_birth = citizen?.date_of_birth;
-  }
+	constructor(citizen: {
+		first_name?: string;
+		last_name?: string;
+		avatar?: string;
+		phone_number?: string;
+		gender?: GENDER;
+		date_of_birth?: Date;
+		username: string;
+		password: string;
+		email: string;
+	}) {
+		super();
+		this.first_name = citizen?.first_name;
+		this.last_name = citizen?.last_name;
+		this.avatar = citizen?.avatar;
+		this.phone_number = citizen?.phone_number;
+		this.gender = citizen?.gender;
+		this.date_of_birth = citizen?.date_of_birth;
+		this.username = citizen?.username;
+		this.password = citizen?.password;
+		this.email = citizen?.email;
+	}
 
-
-  @Prop({
-    required: true,
-    minlength: 2,
-    maxlength: 50,
-    set: (first_name: string) => first_name.trim(),
-  })
-  first_name: string;
-
-  @Prop({
-    required: true,
-    minlength: 2,
-    maxlength: 50,
-    set: (last_name: string) => last_name.trim(),
-  })
-  last_name: string;
-
-  @Prop({
-    default: 'https://example.com/default-avatar.png',
-  })
-  avatar: string;
-
-  @Prop({
+	@Prop({
 		required: true,
+		minlength: 2,
+		maxlength: 50,
+		set: (first_name: string) => first_name.trim(),
 	})
-  phone_number: string;
+	first_name: string;
 
-  @Prop({
-      enum: GENDER,
-  })
-  gender: GENDER;
+	@Prop({
+		required: true,
+		minlength: 2,
+		maxlength: 50,
+		set: (last_name: string) => last_name.trim(),
+	})
+	last_name: string;
 
-  @Prop()
+	@Prop({
+		default: 'https://example.com/default-avatar.png',
+	})
+	avatar: string;
+
+	@Prop({
+		match: /^\+84\d{9}$/,
+	})
+	phone_number: string;
+
+	@Prop({
+		enum: GENDER,
+	})
+	gender: GENDER;
+
+	@Prop()
 	date_of_birth?: Date;
 
-  @Prop()
+	@Prop()
 	@Exclude()
 	current_refresh_token?: string;
 
-  @Prop({
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],
-      default: [],
-  })
-  achievements: mongoose.Types.ObjectId[];
+	@Prop({
+		type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],
+		default: [],
+	})
+	achievements: mongoose.Types.ObjectId[];
 
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationWithStudent' }],
-    default: [],
-  })
-  registration_competition: mongoose.Types.ObjectId[];
+	@Prop({
+		type: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationWithStudent' },
+		],
+		default: [],
+	})
+	registration_competition: mongoose.Types.ObjectId[];
+
+	@Prop({
+		required: true,
+		unique: true,
+	})
+	username: string;
+	@Prop({
+		required: true,
+	})
+	password: string;
+	@Prop({
+		required: false,
+	})
+	email: string;
 }
 
 export const CitizenSchema = SchemaFactory.createForClass(Citizen);

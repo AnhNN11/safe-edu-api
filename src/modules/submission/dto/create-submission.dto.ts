@@ -1,12 +1,9 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateSubmissionDto {
-    @IsNotEmpty({message: "Người làm bài không được để trống"})
-    user_id: string;
+	@IsNotEmpty({ message: 'Id câu hỏi không được để trống ' })
+	question_id: string;
 
-    @IsNotEmpty({message: "Id câu hỏi không được để trống "})
-    question_id: string;
-
-    @IsNotEmpty({message: "Câu trả lời không được để trống"})
-    answer: string
+	@IsOptional()
+	answer: string;
 }
