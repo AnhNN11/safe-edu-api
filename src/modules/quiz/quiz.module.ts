@@ -1,10 +1,8 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { QuizController } from './quiz.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Quiz, QuizSchemaFactory } from './entities/quiz.entity';
-import { CompetitionsService } from '@modules/competitions/competitions.service';
-import { CompetitionsModule } from '@modules/competitions/competitions.module';
 
 @Module({
 	imports: [
@@ -16,9 +14,9 @@ import { CompetitionsModule } from '@modules/competitions/competitions.module';
 				imports: [MongooseModule.forFeature([])],
 			},
 		]),
-		forwardRef(() => CompetitionsModule),
 	],
 	controllers: [QuizController],
 	providers: [QuizService],
+	exports: [QuizService],
 })
 export class QuizModule {}

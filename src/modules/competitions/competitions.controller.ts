@@ -37,13 +37,6 @@ export class CompetitionsController {
 	}
 
 	@Get()
-	@UseGuards(JwtAccessTokenGuard, RolesGuard)
-	@Roles(
-		RolesEnum.STUDENT,
-		RolesEnum.SUPERVISOR,
-		RolesEnum.ADMIN,
-		RolesEnum.MANAGER,
-	)
 	@ApiQuery({ name: 'pageNumber', required: false, type: Number })
 	@ApiQuery({ name: 'pageSize', required: false, type: Number })
 	@ApiQuery({ name: 'searchPhase', required: false, type: String })
@@ -92,15 +85,19 @@ export class CompetitionsController {
 	}
 
 	@Get('/slug/:slug')
-	@UseGuards(JwtAccessTokenGuard, RolesGuard)
-	@Roles(
-		RolesEnum.STUDENT,
-		RolesEnum.SUPERVISOR,
-		RolesEnum.ADMIN,
-		RolesEnum.MANAGER,
-	)
 	@ApiOperation({ summary: 'Find by slug' })
 	async findBySlug(@Param('slug') slug: string) {
 		return await this.competitionsService.findBySlug(slug);
+	}
+
+	@Get('/leaderboard/:slug')
+	@ApiOperation({ summary: 'Find by slug' })
+	async getLeaderBoadBySlug(@Param('slug') slug: string) {
+		return await this.competitionsService.findleaderBoadBySlug(slug);
+	}
+	@Get('/get-all-quiz-by-slug/:slug')
+	@ApiOperation({ summary: 'get all by competition id' })
+	async getAllBySlug(@Param('slug') slug: string) {
+		return this.competitionsService.getAllBySlug(slug);
 	}
 }
