@@ -141,6 +141,22 @@ export class QuizResultService {
 		}
 	}
 
+	async findOneByQuizId(quiz_id: string): Promise<any> {
+		try {
+			const quizResult = await this.quizResultModel
+				.find({ quiz_id })
+				.populate('quiz_id')
+				.exec();
+			return quizResult;
+		} catch (error) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'Đã có lỗi xảy ra trong lúc tìm kiếm, vui lòng thử lại sau',
+				details: `Đã có lỗi xảy ra: ${error.message}`,
+			});
+		}
+	}
+
 	findOne(id: number) {
 		return `This action returns a #${id} quizResult`;
 	}

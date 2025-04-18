@@ -404,6 +404,7 @@ export class AuthService {
 		access_token: string;
 		refresh_token: string;
 	}> {
+		console.log('user', user);
 		const access_token = this.generateAccessToken(user);
 		const refresh_token = this.generateRefreshToken(user);
 		return {

@@ -1,6 +1,8 @@
 import {
 	BadRequestException,
+	forwardRef,
 	HttpStatus,
+	Inject,
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
@@ -17,7 +19,6 @@ export class QuizService {
 	constructor(
 		@InjectModel(Quiz.name)
 		private readonly quizModel: Model<Quiz>,
-		private readonly competitionService: CompetitionsService,
 	) {}
 
 	async create(createQuizDto: CreateQuizDto) {
@@ -150,25 +151,6 @@ export class QuizService {
 		try {
 			const quiz = await this.quizModel
 				.find({ competitionId: competitionId })
-				.populate('competitionId')
-				.exec();
-
-			return {
-				data: quiz,
-			};
-		} catch (error) {
-			throw new BadRequestException({
-				status: HttpStatus.BAD_REQUEST,
-				message: 'Đã có lỗi xảy ra khi lấy câu hỏi theo cuộc thi',
-				details: `Lỗi: ${error.message}`,
-			});
-		}
-	}
-	async getAllBySlug(slug: string) {
-		try {
-			const competition = await this.competitionService.findBySlug(slug);
-			const quiz = await this.quizModel
-				.find({ competitionId: competition._id })
 				.populate('competitionId')
 				.exec();
 
